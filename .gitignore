@@ -1,0 +1,30 @@
+# Dependências
+node_modules/
+dist/
+
+# Variáveis de ambiente — NUNCA comitar
+.env
+.env.local
+.env.production
+*.env.railway
+
+# Logs
+*.log
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+.idea/
+
+# Mobile (Capacitor)
+frontend/android/
+frontend/ios/
+
+# Vercel / Render
+.vercel/
+
+# Testes
+coverage/

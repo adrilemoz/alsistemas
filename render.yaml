@@ -1,0 +1,45 @@
+# render.yaml — Blueprint de deploy automático no Render
+# Documentação: https://render.com/docs/blueprint-spec
+# Uso: conecte o repo no Render e ele lerá este arquivo automaticamente.
+
+services:
+  - type: web
+    name: alsistemas-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm ci --omit=dev
+    startCommand: node src/server.js
+    plan: free              # trocar por "starter" em produção
+    healthCheckPath: /api/health
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false         # preencher no dashboard do Render
+      - key: JWT_SECRET
+        generateValue: true # Render gera automaticamente
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        sync: false         # URL do Vercel: https://SEU-PROJETO.vercel.app
+      - key: REDIS_URL
+        sync: false         # Opcional — deixar vazio = cache in-memory automático
+      - key: AI_PROVIDER
+        value: groq
+      - key: GROQ_API_KEY
+        sync: false
+      - key: AI_MAX_TOKENS
+        value: 1000
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: GITHUB_USER
+        sync: false
+      - key: METRICS_TOKEN
+        generateValue: true
