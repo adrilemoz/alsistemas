@@ -49,6 +49,7 @@
 import { Router }       from 'express'
 import fs               from 'fs'
 import path             from 'path'
+import crypto           from 'crypto'
 import { autenticar }   from '../middleware/auth.js'
 import Projeto          from '../models/Projeto.js'
 import { githubFetch }  from '../utils/githubClient.js'
@@ -849,6 +850,25 @@ const COMMIT_IGNORADOS = new Set([
   '.env','.env.local','.env.production','.env.development',
 ])
 
+/* Extensões de arquivos temporários/lixo — nunca commitadas */
+const COMMIT_EXTENSOES_IGNORADAS = new Set([
+  'bak','tmp','orig','swp','swo','bkp','old',
+])
+
+/**
+ * Calcula o SHA-1 de um blob no formato do Git:
+ *   sha1("blob {size}\0{content}")
+ * Permite comparar com os SHAs retornados pela GitHub Tree API
+ * sem precisar criar um blob real — base do diff detection.
+ */
+function computeGitBlobSha(content, encoding) {
+  const buf = encoding === 'base64'
+    ? Buffer.from(content, 'base64')
+    : Buffer.from(content, 'utf8')
+  const header = Buffer.from(`blob ${buf.length}\0`)
+  return crypto.createHash('sha1').update(header).update(buf).digest('hex')
+}
+
 /**
  * Lista recursiva de arquivos de um diretório, respeitando
  * limites de segurança. Retorna array de objetos
@@ -876,6 +896,10 @@ function listarArquivosCommit(baseDir, relDir = '', lista = []) {
       try { bytes = fs.statSync(absPath).size } catch { continue }
 
       const ext     = e.name.split('.').pop().toLowerCase()
+
+      // Ignorar extensões de arquivos temporários/lixo
+      if (COMMIT_EXTENSOES_IGNORADAS.has(ext)) continue
+
       const binario = COMMIT_EXTENSOES_BINARIAS.has(ext)
 
       lista.push({ relPath, absPath, bytes, binario })
@@ -1119,6 +1143,17 @@ router.get('/:nome/commit-stream', autenticar, async (req, res) => {
     const headCommitSha = refData.object.sha
     narrar(`HEAD atual da branch: ${headCommitSha.slice(0, 7)}`)
 
+    /* ── Verificar divergência com último commit local ────────── */
+    const ultimoCommitLocal = doc?.metadados?.ultimoCommitSha
+    if (ultimoCommitLocal && ultimoCommitLocal !== headCommitSha) {
+      narrar(
+        `⚠ Divergência detectada: o GitHub avançou desde o último commit registrado ` +
+        `(local: ${ultimoCommitLocal.slice(0, 7)} → remoto: ${headCommitSha.slice(0, 7)}). ` +
+        `Pode haver mudanças no GitHub não presentes localmente.`,
+        'warn'
+      )
+    }
+
     // Obter tree SHA do commit HEAD
     let headCommitData
     try {
@@ -1130,6 +1165,23 @@ router.get('/:nome/commit-stream', autenticar, async (req, res) => {
 
     const baseTreeSha = headCommitData.tree.sha
     narrar(`Tree base: ${baseTreeSha.slice(0, 7)}`)
+
+    /* ── Buscar tree atual do GitHub para diff ───────────────── */
+    narrar('Buscando tree atual do GitHub para detectar mudanças...')
+    let githubTreeMap = new Map() // path → sha (blobs atuais no GitHub)
+    try {
+      const treeData = await githubFetch(
+        `/repos/${owner}/${repo}/git/trees/${baseTreeSha}?recursive=1`
+      )
+      for (const item of treeData.tree) {
+        if (item.type === 'blob') githubTreeMap.set(item.path, item.sha)
+      }
+      narrar(`Tree remota carregada: ${githubTreeMap.size} arquivo(s) indexado(s)`)
+    } catch (err) {
+      // Não bloqueia — degradação graciosa: envia tudo se não conseguir a tree
+      narrar(`Não foi possível carregar a tree remota, enviando todos os arquivos: ${err.message}`, 'warn')
+      githubTreeMap = null
+    }
 
     /* ── Resolver autor do commit ────────────────────────────── */
     let autorNome  = process.env.GIT_AUTOR_NOME  || 'AL Sistemas Bot'
@@ -1181,6 +1233,7 @@ router.get('/:nome/commit-stream', autenticar, async (req, res) => {
     const errosBlob   = []
     const ignorados   = []
     const enviados    = []
+    const inalterados = []
 
     const total = arquivosLocais.length
     let   idx   = 0
@@ -1214,7 +1267,23 @@ router.get('/:nome/commit-stream', autenticar, async (req, res) => {
         continue
       }
 
-      // Criar blob via API
+      /* ── Diff detection: pular arquivo se SHA não mudou ──────
+         Compara o git blob SHA local com o SHA que o GitHub já tem.
+         Arquivos inalterados são herdados automaticamente via base_tree
+         e não precisam de um novo blob — economiza chamadas à API.
+      ───────────────────────────────────────────────────────── */
+      if (githubTreeMap) {
+        const remoteSha = githubTreeMap.get(arquivo.relPath)
+        if (remoteSha) {
+          const localSha = computeGitBlobSha(conteudo.content, conteudo.encoding)
+          if (localSha === remoteSha) {
+            inalterados.push(arquivo.relPath)
+            continue // herdado do base_tree, sem novo blob necessário
+          }
+        }
+      }
+
+      // Criar blob via API (apenas arquivos novos ou modificados)
       let blobData
       try {
         blobData = await githubFetch(`/repos/${owner}/${repo}/git/blobs`, {
@@ -1240,6 +1309,24 @@ router.get('/:nome/commit-stream', autenticar, async (req, res) => {
       if (idx % 10 === 0 || idx <= 5) {
         narrar(`[${idx}/${total}] ${arquivo.relPath} (${(arquivo.bytes / 1024).toFixed(1)} KB)`)
       }
+    }
+
+    /* ── Arquivos removidos localmente: deletar do GitHub ─────
+       Qualquer path presente no GitHub mas ausente localmente
+       (e não nos inalterados) recebe sha: null para ser excluído.
+    ───────────────────────────────────────────────────────── */
+    if (githubTreeMap) {
+      const pathsLocais = new Set(arquivosLocais.map(f => f.relPath))
+      for (const [remotePath] of githubTreeMap) {
+        if (!pathsLocais.has(remotePath)) {
+          treeItems.push({ path: remotePath, mode: '100644', type: 'blob', sha: null })
+          narrar(`🗑 Removido do GitHub (não existe localmente): ${remotePath}`, 'warn')
+        }
+      }
+    }
+
+    if (inalterados.length > 0) {
+      narrar(`${inalterados.length} arquivo(s) inalterado(s) — herdados do base_tree sem novo blob`)
     }
 
     if (treeItems.length === 0) {

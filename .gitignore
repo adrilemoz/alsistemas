@@ -11,6 +11,14 @@ dist/
 # Logs
 *.log
 
+# Arquivos temporários — NUNCA comitar
+*.bak
+*.tmp
+*.orig
+*.swp
+*.swo
+*.bkp
+
 # Sistema operacional
 .DS_Store
 Thumbs.db

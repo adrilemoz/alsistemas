@@ -673,7 +673,11 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
 
   function handleAbrirCommit() {
     commitStream.resetar()
-    setCommitMsg('')
+    // Gera mensagem padrão descritiva com data e hora
+    const agora = new Date()
+    const data = agora.toLocaleDateString('pt-BR')
+    const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+    setCommitMsg(`Update ${projeto.nome} — ${data} ${hora}`)
     setCommitBranch('')
     setCommitAutor('')
     setTela('commit')
