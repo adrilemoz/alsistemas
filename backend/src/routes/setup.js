@@ -1,5 +1,5 @@
 /**
- * Setup / Instalação — IguaNews
+ * Setup / Instalação — AL Sistemas
  *
  * Endpoints:
  *   GET  /api/setup/status            — verifica se o setup já foi feito + estado do banco
@@ -90,7 +90,7 @@ async function criarPerfis() {
 
 // ─── executarSeed: dados_escolhidos controla quais coleções popular ───────────
 async function executarSeed(
-  nomeSite = 'IguaNews',
+  nomeSite = 'AL Sistemas',
   dados = ['categorias','noticias','fontes','topicos','eventos','onibus','modulos','noticias_externas']
 ) {
   const incluir = (chave) => dados.includes(chave)
@@ -405,7 +405,7 @@ router.post('/', async (req, res, next) => {
 
     const {
       nome, email, senha,
-      nome_site       = 'IguaNews',
+      nome_site       = 'AL Sistemas',
       importar_seed   = false,
       dados_escolhidos = ['categorias','noticias','fontes','topicos','eventos','onibus','modulos','noticias_externas'],
     } = req.body
@@ -449,7 +449,7 @@ router.post('/', async (req, res, next) => {
     const token = jwt.sign({ id: usuario._id }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES_IN || '7d',
     })
-    res.cookie('iguanews_token', token, COOKIE_OPTS)
+    res.cookie('alsistemas_token', token, COOKIE_OPTS)
 
     res.status(201).json({
       mensagem:       'Instalação concluída com sucesso!',
@@ -466,7 +466,7 @@ router.post('/', async (req, res, next) => {
 router.post('/seed', autenticar, async (req, res, next) => {
   try {
     const {
-      nome_site        = 'IguaNews',
+      nome_site        = 'AL Sistemas',
       limpar_antes     = false,
       dados_escolhidos = ['categorias','noticias','fontes','topicos','eventos','onibus','modulos','noticias_externas'],
     } = req.body

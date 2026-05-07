@@ -7,9 +7,9 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title:       'IguaNews API',
+      title:       'AL Sistemas API',
       version:     '2.0.0',
-      description: 'API do portal de notícias IguaNews. Autenticação via cookie HttpOnly (iguanews_token) ou Bearer token.',
+      description: 'API do painel AL Sistemas. Autenticação via cookie HttpOnly (alsistemas_token) ou Bearer token.',
     },
     servers: [
       { url: '/api', description: 'Servidor atual' },
@@ -19,7 +19,7 @@ const options = {
         cookieAuth: {
           type: 'apiKey',
           in:   'cookie',
-          name: 'iguanews_token',
+          name: 'alsistemas_token',
         },
       },
     },

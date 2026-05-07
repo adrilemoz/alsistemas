@@ -1,59 +1,64 @@
-# 📰 IguaNews — Portal de Notícias
+# ⚙️ AL Sistemas — Painel de Gerenciamento
 
-Portal de notícias para cidades do interior do Brasil.  
+Sistema completo de gerenciamento de conteúdo, projetos, infraestrutura e integrações.  
 Stack: **React + Vite + Tailwind** (frontend) · **Node.js + Express + MongoDB + Cloudinary** (backend)
 
 ---
 
 ## 🌐 URLs de produção
 
-| Serviço   | URL                                          |
-|-----------|----------------------------------------------|
-| Frontend  | https://iguanews.vercel.app                  |
-| Backend   | https://iguanews-backend.onrender.com        |
-| API       | https://iguanews-backend.onrender.com/api    |
-| APK       | GitHub → Actions → Artifacts                 |
+| Serviço   | URL                                         |
+|-----------|---------------------------------------------|
+| Frontend  | https://alsistemas.vercel.app               |
+| Backend   | https://alsistemas.onrender.com             |
+| API       | https://alsistemas.onrender.com/api         |
+| APK       | GitHub → Actions → Artifacts                |
 
 ---
 
-## Estrutura do projeto
+## ✨ Funcionalidades
+
+- **Painel admin** com multi-tema (light, dark, ocean, rose)
+- **Gestão de notícias** com editor Markdown, categorias e badges coloridos
+- **Módulo GitHub** — visualização de repositórios e commits em tempo real
+- **Projetos locais** — sync e acompanhamento de projetos internos
+- **IA Assistant** — integração com Groq (llama-3.3) para análise de conteúdo
+- **RSS Importer** — importação automática de feeds com scheduler
+- **Infraestrutura** — monitoramento de MongoDB, Cloudinary e Redis pelo painel
+- **Backup & Restore** — exportação e restauração de dados via interface
+- **Audit Log** — registro de todas as ações dos usuários
+- **Newsletter** — gestão de assinantes
+- **App Android** — build via Capacitor + GitHub Actions
+
+---
+
+## 📁 Estrutura do projeto
 
 ```
-iguanews/
+alsistemas/
 ├── backend/          → Servidor Node.js (Express + MongoDB + Cloudinary)
 │   ├── .env          → Credenciais (não commitar)
+│   ├── render.yaml   → Blueprint de deploy no Render (vars já preenchidas)
 │   ├── seed.js       → Cria admin e dados iniciais
 │   └── src/
 │       ├── server.js
 │       ├── config/   → MongoDB, Cloudinary, env (Zod)
 │       ├── models/   → Mongoose schemas
-│       ├── routes/   → auth, noticias, categorias, fontes, upload, extras...
-│       ├── middleware/ → auth JWT, upload Cloudinary, audit log...
+│       ├── routes/   → auth, noticias, categorias, fontes, upload, extras…
+│       ├── middleware/ → auth JWT, upload Cloudinary, audit log…
 │       └── utils/    → cache Redis, logger pino
 ├── frontend/         → React + Vite + Tailwind
 │   ├── .env          → VITE_API_URL (aponta para o Render)
 │   ├── capacitor.config.ts → Config do app Android
 │   └── src/
-│       ├── services/api.js        → cliente HTTP para o backend
-│       ├── context/AuthContext.jsx
-│       ├── context/ThemeContext.jsx → provedor de tema multi-skin
-│       ├── themes/                → tokens.js + dark/light/ocean/rose
-│       ├── styles/                → base.css · public.css · admin.css
-│       ├── utils/
-│       │   ├── formatters.js
-│       │   ├── markdown.js
-│       │   └── permissions.js     → GRUPOS_PERMISSOES (fonte única)
-│       ├── components/
-│       │   ├── admin/ui/
-│       │   │   ├── AdminIcon.jsx  → biblioteca SVG centralizada (50+ ícones)
-│       │   │   └── ForcaSenha.jsx → indicador de força de senha (5 níveis)
-│       │   └── (ConfirmModal, Navbar, NoticiaCard…)
-│       ├── pages/    → Home, NoticiaDetalhe, Login, Eventos, Ônibus
-│       └── pages/admin/ → Dashboard, NoticiaForm, Categorias, Módulos…
-├── TERMUX.md         → Guia específico para rodar no Android/Termux
-├── CAPACITOR.md      → Build do app Android via Capacitor
-├── README_MONGO.md   → Guia detalhado de setup e migração
-└── README.md         → Este arquivo
+│       ├── services/ → cliente HTTP centralizado + módulos por domínio
+│       ├── context/  → AuthContext · ThemeContext (multi-skin)
+│       ├── themes/   → tokens.js + dark / light / ocean / rose
+│       ├── styles/   → base.css · public.css · admin.css
+│       ├── components/admin/ui/ → AdminIcon (50+ SVGs) · ForcaSenha
+│       ├── pages/    → Home, Login, Eventos, HorárioÔnibus…
+│       └── pages/admin/ → Dashboard, Noticias, Categorias, GitHub, Projetos…
+└── render.yaml       → Deploy com 1 clique no Render
 ```
 
 ---
@@ -71,23 +76,23 @@ iguanews/
 ```bash
 cd backend
 npm install
-cp .env.example .env   # preencha com suas credenciais locais
-npm run seed           # popula banco com admin + categorias padrão
-npm run dev            # servidor em http://localhost:3001
+cp .env.example .env   # preencha com suas credenciais
+npm run seed           # cria admin + dados iniciais
+npm run dev            # http://localhost:3001
 ```
 
 ### 2. Frontend
 
 ```bash
 cd frontend
-# Para dev local, edite .env e troque VITE_API_URL por http://localhost:3001/api
 npm install
-npm run dev    # app em http://localhost:5173
+# Para dev local: edite .env e troque VITE_API_URL por http://localhost:3001/api
+npm run dev            # http://localhost:5173
 ```
 
-### Credenciais padrão do admin
+### Credenciais padrão
 
-- **Email:** admin@iguanews.com
+- **Email:** admin@al-sistemas.com
 - **Senha:** admin123
 
 ---
@@ -96,38 +101,39 @@ npm run dev    # app em http://localhost:5173
 
 ### Backend — Render
 
-Variáveis de ambiente configuradas no Render:
+Use o `render.yaml` incluído na raiz do repositório:
 
-| Variável               | Valor                                       |
-|------------------------|---------------------------------------------|
-| `NODE_ENV`             | `production`                                |
-| `MONGO_URI`            | string de conexão do MongoDB Atlas          |
-| `JWT_SECRET`           | chave secreta longa (mín. 16 caracteres)    |
-| `JWT_EXPIRES_IN`       | `7d`                                        |
-| `CLOUDINARY_CLOUD_NAME`| cloud name do Cloudinary                    |
-| `CLOUDINARY_API_KEY`   | API key do Cloudinary                       |
-| `CLOUDINARY_API_SECRET`| API secret do Cloudinary                   |
-| `REDIS_URL`            | URL interna do Key Value do Render          |
-| `FRONTEND_URL`         | `https://iguanews.vercel.app`               |
+1. No Render: **New → Blueprint** → conecte o repositório
+2. Clique em **Apply** — todas as variáveis já estão preenchidas
+
+Ou configure manualmente no painel **Environment**:
+
+| Variável                | Valor                                      |
+|-------------------------|--------------------------------------------|
+| `NODE_ENV`              | `production`                               |
+| `FRONTEND_URL`          | `https://alsistemas.vercel.app`            |
+| `MONGO_URI`             | string de conexão do MongoDB Atlas         |
+| `JWT_SECRET`            | chave secreta longa (mín. 64 caracteres)   |
+| `CLOUDINARY_CLOUD_NAME` | cloud name do Cloudinary                   |
+| `CLOUDINARY_API_KEY`    | API key do Cloudinary                      |
+| `CLOUDINARY_API_SECRET` | API secret do Cloudinary                   |
+| `GROQ_API_KEY`          | chave da API Groq                          |
+| `GITHUB_TOKEN`          | Personal Access Token do GitHub            |
 
 ### Frontend — Vercel
 
-Variável de ambiente configurada no Vercel:
-
-| Variável       | Valor                                        |
-|----------------|----------------------------------------------|
-| `VITE_API_URL` | `https://iguanews-backend.onrender.com/api`  |
+| Variável       | Valor                                       |
+|----------------|---------------------------------------------|
+| `VITE_API_URL` | `https://alsistemas.onrender.com/api`       |
 
 ### APK Android
 
-Consulte o [CAPACITOR.md](./CAPACITOR.md) para instruções completas.  
-O APK debug é gerado automaticamente pelo GitHub Actions a cada push na `main`.
+O APK debug é gerado automaticamente via GitHub Actions a cada push na `main`.  
+Consulte o [CAPACITOR.md](./CAPACITOR.md) para build manual.
 
 ---
 
 ## ⚠️ Plano gratuito do Render
 
-No plano gratuito o serviço "adormece" após 15 minutos sem uso.
-A primeira requisição após o sono pode demorar 30–60 segundos.
-Para manter sempre ativo, use o [UptimeRobot](https://uptimerobot.com)
-configurado para pingar `https://iguanews-backend.onrender.com/api/health` a cada 14 minutos.
+O serviço "adormece" após 15 minutos sem uso — a primeira requisição pode levar 30–60 s.  
+Use o [UptimeRobot](https://uptimerobot.com) para pingar `/api/health` a cada 14 minutos e manter sempre ativo.

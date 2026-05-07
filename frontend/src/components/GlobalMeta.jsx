@@ -9,11 +9,11 @@ export default function GlobalMeta() {
   }, [])
 
   useEffect(() => {
-    const titulo      = cfg.site_titulo       || 'IguaNews - Notícias de Iguatama'
+    const titulo      = cfg.site_titulo       || 'AL Sistemas'
     const descricao   = cfg.site_descricao    || 'Seu portal de notícias, curiosidades e histórias sobre Iguatama.'
     const imagem      = cfg.site_imagem       || 'https://images.unsplash.com/photo-1598395927056-8d895e701c3b?w=1200&q=80'
     const keywords    = cfg.site_keywords     || 'Iguatama, notícias, portal, cidade'
-    const author      = cfg.site_author       || 'IguaNews - Notícias de Iguatama'
+    const author      = cfg.site_author       || 'AL Sistemas'
     const twitterCard = cfg.site_twitter_card || 'summary_large_image'
     const twitterSite = cfg.site_twitter_site || ''
     const robots      = cfg.site_robots       || 'index, follow'

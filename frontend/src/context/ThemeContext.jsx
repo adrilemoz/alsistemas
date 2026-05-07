@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { TEMAS_MAP, TEMA_PADRAO_ID } from '../themes'
 
-const STORAGE_KEY = 'iguanews_adm_tema'
+const STORAGE_KEY = 'alsistemas_adm_tema'
 
 const ThemeContext = createContext(null)
 

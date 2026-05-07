@@ -3,7 +3,7 @@ import { api } from './http.js'
 export const setupService = {
   async status()                  { return api('/setup/status') },
   async instalar(dados)           { return api('/setup', { method: 'POST', body: JSON.stringify(dados) }) },
-  async seed({ nome_site = 'IguaNews', limpar_antes = false, dados_escolhidos } = {}) {
+  async seed({ nome_site = 'AL Sistemas', limpar_antes = false, dados_escolhidos } = {}) {
     return api('/setup/seed', { method: 'POST', body: JSON.stringify({ nome_site, limpar_antes, dados_escolhidos }) })
   },
   async resetDb({ confirmar, manter_usuarios = true } = {}) {

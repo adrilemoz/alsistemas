@@ -6,14 +6,14 @@ services:
   # ─── Backend ──────────────────────────────────────────────────
   backend:
     build: .
-    container_name: iguanews-backend
+    container_name: alsistemas-backend
     restart: unless-stopped
     ports:
       - "3001:3001"
     environment:
       NODE_ENV: development
       PORT: 3001
-      MONGO_URI: mongodb://mongo:27017/iguanews
+      MONGO_URI: mongodb://mongo:27017/alsistemas
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET:-dev_secret_troque_em_producao_32chars}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
@@ -31,12 +31,12 @@ services:
       # Hot reload em desenvolvimento: monta código local
       - ./src:/app/src:ro
     networks:
-      - iguanews-net
+      - alsistemas-net
 
   # ─── MongoDB ──────────────────────────────────────────────────
   mongo:
     image: mongo:7
-    container_name: iguanews-mongo
+    container_name: alsistemas-mongo
     restart: unless-stopped
     ports:
       - "27017:27017"
@@ -49,12 +49,12 @@ services:
       retries: 5
       start_period: 20s
     networks:
-      - iguanews-net
+      - alsistemas-net
 
   # ─── Redis ────────────────────────────────────────────────────
   redis:
     image: redis:7-alpine
-    container_name: iguanews-redis
+    container_name: alsistemas-redis
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -67,12 +67,12 @@ services:
       timeout: 3s
       retries: 5
     networks:
-      - iguanews-net
+      - alsistemas-net
 
 volumes:
   mongo_data:
   redis_data:
 
 networks:
-  iguanews-net:
+  alsistemas-net:
     driver: bridge

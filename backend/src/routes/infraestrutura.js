@@ -1,5 +1,5 @@
 /**
- * Infraestrutura — IguaNews
+ * Infraestrutura — AL Sistemas
  *
  * Módulo para gerenciar MongoDB e Cloudinary diretamente pelo painel admin.
  *

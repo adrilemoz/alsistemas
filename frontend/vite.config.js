@@ -19,10 +19,10 @@ function swVersionPlugin() {
       const version = Date.now()
       let sw = fs.readFileSync(swPath, 'utf-8')
       sw = sw
-        .replace(/'iguanews-v1'/g,     `'iguanews-${version}'`)
-        .replace(/'iguanews-api-v1'/g, `'iguanews-api-${version}'`)
+        .replace(/'alsistemas-v1'/g,     `'alsistemas-${version}'`)
+        .replace(/'alsistemas-api-v1'/g, `'alsistemas-api-${version}'`)
       fs.writeFileSync(swPath, sw)
-      console.log(`\x1b[32m✓ sw-version\x1b[0m cache → iguanews-${version}`)
+      console.log(`\x1b[32m✓ sw-version\x1b[0m cache → alsistemas-${version}`)
     },
   }
 }

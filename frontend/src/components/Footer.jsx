@@ -77,7 +77,7 @@ export default function Footer() {
           </div>
 
           <p className="text-white/40 text-xs mt-4">
-            © {new Date().getFullYear()} IguaNews - Notícias de Iguatama · Todos os direitos reservados
+            © {new Date().getFullYear()} AL Sistemas · Todos os direitos reservados
           </p>
         </div>
       </div>

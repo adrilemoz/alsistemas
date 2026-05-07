@@ -15,7 +15,7 @@ let adminId
 
 beforeAll(async () => {
   if (mongoose.connection.readyState === 0) await mongoose.connect(MONGO_URI)
-  const email = `audit_test_${Date.now()}@iguanews.test`
+  const email = `audit_test_${Date.now()}@alsistemas.test`
   const user = await Usuario.create({ email, senha: 'senha123', nome: 'Admin Audit' })
   adminId = user._id.toString()
   const login = await request(app).post('/api/auth/login').send({ email, senha: 'senha123' })
@@ -25,7 +25,7 @@ beforeAll(async () => {
 afterAll(async () => {
   await Noticia.deleteMany({ titulo: /\[AUDIT\]/ })
   await AuditLog.deleteMany({ admin_id: adminId })
-  await Usuario.deleteMany({ email: /audit_test_.*@iguanews\.test/ })
+  await Usuario.deleteMany({ email: /audit_test_.*@alsistemas\.test/ })
   await mongoose.connection.close()
 })
 

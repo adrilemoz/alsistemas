@@ -1,20 +1,20 @@
 import type { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
-  appId: 'com.iguatama.iguanews',
-  appName: 'IguaNews',
+  appId: 'com.alsistemas.painel',
+  appName: 'AL Sistemas',
   webDir: 'dist',
   server: {
     androidScheme: 'https',
     // App carrega o site ao vivo — atualizações no Vercel refletem
     // automaticamente no app sem precisar gerar novo APK.
-    url: 'https://iguanews.vercel.app',
+    url: 'https://alsistemas.vercel.app',
     cleartext: false,
   },
   android: {
     buildOptions: {
       keystorePath: 'release.keystore',
-      keystoreAlias: 'iguanews',
+      keystoreAlias: 'alsistemas',
     },
   },
   plugins: {

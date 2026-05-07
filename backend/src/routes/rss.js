@@ -19,8 +19,8 @@ router.get('/', async (_req, res, next) => {
       return res.send(cached)
     }
 
-    const baseUrl  = process.env.FRONTEND_URL || 'https://iguanews.com.br'
-    const siteName = 'IguaNews'
+    const baseUrl  = process.env.FRONTEND_URL || process.env.FRONTEND_URL || 'http://localhost:5173'
+    const siteName = 'AL Sistemas'
     const siteDesc = 'As últimas notícias de Iguatama e região'
 
     const noticias = await Noticia

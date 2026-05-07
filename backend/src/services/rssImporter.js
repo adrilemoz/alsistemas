@@ -37,7 +37,7 @@ import { logger } from '../utils/logger.js'
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
-const USER_AGENT = 'Mozilla/5.0 (compatible; IguaNews/2.1 RSS Importer; +https://iguanews.com.br)'
+const USER_AGENT = 'Mozilla/5.0 (compatible; ALSistemas/2.1 RSS Importer; +https://alsistemas.com.br)'
 
 const FETCH_HEADERS = {
   'User-Agent': USER_AGENT,

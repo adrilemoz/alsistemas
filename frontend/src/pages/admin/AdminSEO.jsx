@@ -340,9 +340,9 @@ export default function AdminSEO() {
 
   // Campos por aba
   const camposIdentidade = [
-    { key: 'site_titulo',    label: 'Título do site',    type: 'text',     placeholder: 'IguaNews - Notícias de Iguatama', hint: 'Aparece na aba do navegador e nos resultados de busca' },
+    { key: 'site_titulo',    label: 'Título do site',    type: 'text',     placeholder: 'AL Sistemas', hint: 'Aparece na aba do navegador e nos resultados de busca' },
     { key: 'site_descricao', label: 'Descrição padrão',  type: 'textarea', placeholder: 'Portal de notícias de Iguatama...', hint: 'Meta description — exibida nos resultados de busca (ideal: 120–160 caracteres)' },
-    { key: 'site_author',    label: 'Autor padrão',       type: 'text',     placeholder: 'IguaNews - Notícias de Iguatama', hint: 'Valor da meta tag "author"' },
+    { key: 'site_author',    label: 'Autor padrão',       type: 'text',     placeholder: 'AL Sistemas', hint: 'Valor da meta tag "author"' },
     { key: 'site_keywords',  label: 'Palavras-chave',     type: 'text',     placeholder: 'notícias, iguatama, minas gerais', hint: 'Separadas por vírgula' },
   ]
   const camposSocial = [

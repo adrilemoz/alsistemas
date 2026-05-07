@@ -72,7 +72,7 @@ router.get('/', async (req, res, next) => {
     }
 
     const cfg     = await carregarConfig()
-    const baseUrl = (process.env.FRONTEND_URL || 'https://iguanews.com.br').replace(/\/$/, '')
+    const baseUrl = (process.env.FRONTEND_URL || process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, '')
 
     const noticias = await Noticia
       .find({}, 'criado_em atualizado_em')

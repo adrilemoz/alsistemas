@@ -1,5 +1,5 @@
 /**
- * AdminSetup.jsx — Instalador do IguaNews (componente-roteador).
+ * AdminSetup.jsx — Instalador do AL Sistemas (componente-roteador).
  *
  * Gerencia apenas as 4 fases do instalador:
  *   verificando → instalar | painel → sucesso
@@ -87,7 +87,7 @@ function TelaInstalacao({ onSucesso, statusBanco }) {
           <div style={{ width: 54, height: 54, background: C.green, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px', color: 'white' }}>
             {Ico.shield}
           </div>
-          <h1 style={{ fontSize: 22, fontWeight: 800, color: C.text, margin: '0 0 6px' }}>Instalação do IguaNews</h1>
+          <h1 style={{ fontSize: 22, fontWeight: 800, color: C.text, margin: '0 0 6px' }}>Instalação do AL Sistemas</h1>
           <p style={{ fontSize: 12, color: C.muted, lineHeight: 1.6, margin: 0 }}>
             Configure o acesso inicial ao painel.<br/>
             Este formulário só está disponível enquanto o banco estiver vazio.
@@ -116,7 +116,7 @@ function TelaInstalacao({ onSucesso, statusBanco }) {
           </div>
 
           <p style={secTitle}>Sobre o site</p>
-          <Campo label="Nome do site *" placeholder="Ex.: IguaNews" value={form.nomeSite} onChange={set('nomeSite')} erro={erros.nomeSite} autoComplete="off"/>
+          <Campo label="Nome do site *" placeholder="Ex.: AL Sistemas" value={form.nomeSite} onChange={set('nomeSite')} erro={erros.nomeSite} autoComplete="off"/>
 
           <hr style={divider}/>
 
@@ -292,7 +292,7 @@ function TelaSucesso({ resultado, onIrPainel }) {
    TELA — Painel de banco (já instalado)
 ═══════════════════════════════════════════════════════════════ */
 function PainelBanco({ status: statusInicial, onConcluido }) {
-  const [nomeSite, setNomeSite] = useState('IguaNews')
+  const [nomeSite, setNomeSite] = useState('AL Sistemas')
   const [dadosSel, setDadosSel] = useState(OPCOES_SEED.map(o => o.id))
   const [limpar, setLimpar]     = useState(false)
   const [mantUser, setMantUser] = useState(true)
@@ -383,7 +383,7 @@ function PainelBanco({ status: statusInicial, onConcluido }) {
           </div>
           <div style={{ marginBottom: 14 }}>
             <label style={labelSty}>Nome do site nos dados</label>
-            <input value={nomeSite} onChange={e => setNomeSite(e.target.value)} style={inputSty()} placeholder="Ex.: IguaNews" />
+            <input value={nomeSite} onChange={e => setNomeSite(e.target.value)} style={inputSty()} placeholder="Ex.: AL Sistemas" />
           </div>
           <div style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 10, padding: '14px 14px 4px', marginBottom: 14 }}>
             <SeletorDados selecionados={dadosSel} onChange={setDadosSel} />

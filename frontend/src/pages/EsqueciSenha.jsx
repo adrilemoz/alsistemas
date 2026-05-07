@@ -71,7 +71,7 @@ export default function EsqueciSenha() {
                     id="email"
                     type="email"
                     className="input"
-                    placeholder="admin@iguanews.com"
+                    placeholder="admin@al-sistemas.com"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     disabled={loading}

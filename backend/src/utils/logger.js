@@ -18,7 +18,7 @@ export const logger = pino({
           options: { destination: 1 }, // stdout
         },
       }),
-  base: { service: 'iguanews-backend' },
+  base: { service: 'alsistemas-backend' },
   timestamp: pino.stdTimeFunctions.isoTime,
 })
 

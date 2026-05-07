@@ -94,7 +94,7 @@ router.post('/login', loginLimiter, regraLogin, validar, async (req, res, next) 
     const token = gerarToken(usuario._id)
 
     // #1 — Envia token via cookie HttpOnly
-    res.cookie('iguanews_token', token, COOKIE_OPTS)
+    res.cookie('alsistemas_token', token, COOKIE_OPTS)
     res.json({ usuario })
   } catch (err) { next(err) }
 })
@@ -129,7 +129,7 @@ router.put('/me', autenticar, async (req, res, next) => {
 
 // ── POST /api/auth/logout ─────────────────────────────────────────────────────
 router.post('/logout', (_req, res) => {
-  res.clearCookie('iguanews_token', { path: '/' })
+  res.clearCookie('alsistemas_token', { ...COOKIE_OPTS, maxAge: undefined })
   res.json({ mensagem: 'Logout realizado' })
 })
 

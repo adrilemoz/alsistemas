@@ -1,9 +1,9 @@
-# IguaNews — Guia de Migração Supabase → MongoDB + Cloudinary
+# AL Sistemas — Guia de Migração Supabase → MongoDB + Cloudinary
 
 ## Estrutura do projeto
 
 ```
-iguanews/
+alsistemas/
 ├── backend/          ← Servidor Node.js (Express + MongoDB + Cloudinary)
 │   ├── .env          ← Credenciais (já preenchidas)
 │   ├── seed.js       ← Cria admin e dados iniciais
@@ -29,7 +29,7 @@ iguanews/
 Acesse https://cloud.mongodb.com e:
 1. Vá em **Network Access** → **Add IP Address** → **Allow Access from Anywhere** (0.0.0.0/0)
    > Isso é necessário para o backend conseguir conectar!
-2. O banco `iguanews` será criado automaticamente na primeira conexão.
+2. O banco `alsistemas` será criado automaticamente na primeira conexão.
 
 ### 2. Instalar e iniciar o Backend
 
@@ -43,7 +43,7 @@ npm run dev      # ← Inicia o servidor em http://localhost:3001
 > ⚠️ **Não rode `npm run seed` mais de uma vez** — ele limpa o banco antes de recriar tudo.
 
 Credenciais do admin criadas pelo seed:
-- **Email:** admin@iguanews.com
+- **Email:** admin@al-sistemas.com
 - **Senha:** admin123
 
 > ⚠️ Troque a senha após o primeiro login!
@@ -60,7 +60,7 @@ npm run dev      # ← Inicia em http://localhost:5173
 
 - Acesse http://localhost:5173
 - Clique em "Entrar" (ou /login)
-- Use: admin@iguanews.com / admin123
+- Use: admin@al-sistemas.com / admin123
 
 ---
 

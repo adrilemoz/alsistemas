@@ -1,4 +1,4 @@
-# IguaNews Backend — Melhorias v2.0
+# AL Sistemas Backend — Melhorias v2.0
 
 Documentação das 19 melhorias implementadas.
 
@@ -63,10 +63,10 @@ Nenhuma alteração necessária — já estava correto.
 
 ## #8 — Métricas de desempenho (`src/middleware/metricas.js`, `src/routes/metrics.js`)
 
-- **`GET /metrics`** — formato Prometheus (scraping com `curl /metrics | grep iguanews`)
+- **`GET /metrics`** — formato Prometheus (scraping com `curl /metrics | grep alsistemas`)
 - Métricas expostas:
-  - `iguanews_http_duration_seconds` — histograma por rota/método/status
-  - `iguanews_http_requests_total` — contador por rota/método/status
+  - `alsistemas_http_duration_seconds` — histograma por rota/método/status
+  - `alsistemas_http_requests_total` — contador por rota/método/status
   - Métricas de processo: `process_cpu_seconds_total`, `process_resident_memory_bytes`, etc.
 - Proteção por `X-Metrics-Token` em produção (variável `METRICS_TOKEN`)
 
@@ -146,8 +146,8 @@ Cobertura expandida com 5 arquivos de teste:
 docker compose up --build
 
 # Produção (multi-stage, imagem ~120MB)
-docker build -t iguanews-backend .
-docker run -p 3001:3001 --env-file .env iguanews-backend
+docker build -t alsistemas-backend .
+docker run -p 3001:3001 --env-file .env alsistemas-backend
 ```
 
 - Multi-stage build (Node 20 Alpine)

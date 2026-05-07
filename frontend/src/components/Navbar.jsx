@@ -119,10 +119,10 @@ export default function Navbar() {
       <div className="wrap">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2.5 group flex-shrink-0"
-            aria-label="IguaNews - Notícias de Iguatama — Página inicial">
+            aria-label="AL Sistemas — Página inicial">
             <LogoIcon size={40} />
             <div className="leading-tight" aria-hidden="true">
-              <span className="block font-display font-bold text-lg text-gray-900 leading-none">IguaNews</span>
+              <span className="block font-display font-bold text-lg text-gray-900 leading-none">AL Sistemas</span>
               <span className="block font-grotesk text-xs font-semibold text-brand-500 leading-none mt-0.5">Notícias de Iguatama</span>
             </div>
           </Link>

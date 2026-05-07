@@ -100,7 +100,7 @@ async function seed() {
   console.log('✅ Perfis de acesso padrão prontos')
 
   // ── Admin ────────────────────────────────────────────
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@iguanews.com'
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@al-sistemas.com'
   const adminSenha = process.env.ADMIN_SENHA || 'admin123'
   const adminExiste = await Usuario.findOne({ email: adminEmail })
   if (!adminExiste) {

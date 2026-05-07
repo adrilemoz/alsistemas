@@ -112,7 +112,7 @@ app.use(compression({
 
 // ─── CORS ────────────────────────────────────────────────────
 // FRONTEND_URL aceita lista separada por vírgula para cobrir múltiplos domínios.
-// Ex.: FRONTEND_URL=https://iguanews.com.br,https://www.iguanews.com.br
+// Ex.: FRONTEND_URL=https://alsistemas.vercel.app
 const allowedOrigins = new Set([
   'http://localhost:5173',
   'http://localhost:4173',
@@ -171,7 +171,7 @@ app.use('/metrics', metricsRoutes)
 
 // ─── #13 — Swagger UI ────────────────────────────────────────
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-  customSiteTitle: 'IguaNews API Docs',
+  customSiteTitle: 'AL Sistemas API Docs',
   swaggerOptions: { persistAuthorization: true },
 }))
 // Endpoint que retorna o spec em JSON (útil para geração de clientes)

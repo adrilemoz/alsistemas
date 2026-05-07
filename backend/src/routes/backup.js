@@ -1,5 +1,5 @@
 /**
- * Backup — IguaNews
+ * Backup — AL Sistemas
  *
  * Sistema completo de backup/restore/importação do MongoDB em JSON.
  * Armazena backups em backend/backups/ com metadados.

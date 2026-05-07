@@ -8,7 +8,7 @@ require('dotenv').config()
 
 const config = {
   mongodb: {
-    url: process.env.MONGO_URI || 'mongodb://localhost:27017/iguanews',
+    url: process.env.MONGO_URI || 'mongodb://localhost:27017/alsistemas',
     options: {},
   },
   migrationsDir: 'migrations',

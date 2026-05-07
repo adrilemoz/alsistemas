@@ -10,7 +10,7 @@ import ErrorMessage from '../components/ErrorMessage'
 // ─── SEO: atualiza <title> e meta tags dinamicamente ──────────
 function useSEO({ titulo, descricao, imagem, url }) {
   useEffect(() => {
-    const siteName = 'IguaNews - Notícias de Iguatama'
+    const siteName = 'AL Sistemas'
     const fullTitle = titulo ? `${titulo} | ${siteName}` : siteName
 
     document.title = fullTitle

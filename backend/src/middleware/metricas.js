@@ -6,11 +6,11 @@ import client from 'prom-client'
 
 // Registro padrão (inclui métricas de processo: CPU, memória, etc.)
 export const registry = new client.Registry()
-client.collectDefaultMetrics({ register: registry, prefix: 'iguanews_' })
+client.collectDefaultMetrics({ register: registry, prefix: 'alsistemas_' })
 
 // Histograma de duração por rota
 export const httpDuration = new client.Histogram({
-  name: 'iguanews_http_duration_seconds',
+  name: 'alsistemas_http_duration_seconds',
   help: 'Duração das requisições HTTP em segundos',
   labelNames: ['method', 'route', 'status'],
   buckets: [0.01, 0.05, 0.1, 0.3, 0.5, 1, 2, 5],
@@ -19,7 +19,7 @@ export const httpDuration = new client.Histogram({
 
 // Contador de requisições
 export const httpRequests = new client.Counter({
-  name: 'iguanews_http_requests_total',
+  name: 'alsistemas_http_requests_total',
   help: 'Total de requisições HTTP',
   labelNames: ['method', 'route', 'status'],
   registers: [registry],

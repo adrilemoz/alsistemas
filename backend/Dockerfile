@@ -9,14 +9,14 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 # Usuário não-root por segurança
-RUN addgroup -S iguanews && adduser -S iguanews -G iguanews
+RUN addgroup -S alsistemas && adduser -S alsistemas -G alsistemas
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Permissões
-RUN chown -R iguanews:iguanews /app
-USER iguanews
+RUN chown -R alsistemas:alsistemas /app
+USER alsistemas
 
 EXPOSE 3001
 

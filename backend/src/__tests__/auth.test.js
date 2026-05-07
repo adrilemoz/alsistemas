@@ -14,7 +14,7 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-  await Usuario.deleteMany({ email: /auth_test_.*@iguanews\.test/ })
+  await Usuario.deleteMany({ email: /auth_test_.*@alsistemas\.test/ })
   await mongoose.connection.close()
 })
 
@@ -22,7 +22,7 @@ describe('POST /api/auth/login', () => {
   let email, senha
 
   beforeAll(async () => {
-    email = `auth_test_${Date.now()}@iguanews.test`
+    email = `auth_test_${Date.now()}@alsistemas.test`
     senha = 'SenhaSegura123'
     await Usuario.create({ email, senha, nome: 'Teste Auth' })
   })
@@ -33,7 +33,7 @@ describe('POST /api/auth/login', () => {
     expect(res.body).toHaveProperty('usuario')
     const cookies = res.headers['set-cookie']
     expect(cookies).toBeDefined()
-    expect(cookies.join('')).toMatch(/iguanews_token/)
+    expect(cookies.join('')).toMatch(/alsistemas_token/)
   })
 
   it('401 com senha incorreta', async () => {
@@ -62,7 +62,7 @@ describe('POST /api/auth/login', () => {
 
 describe('POST /api/auth/logout', () => {
   it('200 limpa cookie de sessão', async () => {
-    const email = `auth_test_logout_${Date.now()}@iguanews.test`
+    const email = `auth_test_logout_${Date.now()}@alsistemas.test`
     await Usuario.create({ email, senha: 'senha123', nome: 'Logout Teste' })
     const login = await request(app).post('/api/auth/login').send({ email, senha: 'senha123' })
     const cookie = login.headers['set-cookie']

@@ -74,7 +74,7 @@ export default function AbaConfiguracoes() {
           value={form.mongo_uri}
           onChange={v => setForm(p => ({ ...p, mongo_uri: v }))}
           showToggle
-          placeholder="mongodb+srv://usuario:senha@cluster.mongodb.net/iguanews"
+          placeholder="mongodb+srv://usuario:senha@cluster.mongodb.net/alsistemas"
         />
       </PageCard>
 

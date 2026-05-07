@@ -1,5 +1,5 @@
 /**
- * Usuários — IguaNews
+ * Usuários — AL Sistemas
  * CRUD completo de usuários e perfis de acesso ao painel admin.
  */
 import { Router } from 'express'

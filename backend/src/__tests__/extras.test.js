@@ -15,7 +15,7 @@ let authCookie
 
 beforeAll(async () => {
   if (mongoose.connection.readyState === 0) await mongoose.connect(MONGO_URI)
-  const email = `extras_test_${Date.now()}@iguanews.test`
+  const email = `extras_test_${Date.now()}@alsistemas.test`
   await Usuario.create({ email, senha: 'senha123', nome: 'Admin Extras' })
   const login = await request(app).post('/api/auth/login').send({ email, senha: 'senha123' })
   authCookie = login.headers['set-cookie']
@@ -25,7 +25,7 @@ afterAll(async () => {
   await Evento.deleteMany({ titulo: /\[TESTE\]/ })
   await Onibus.deleteMany({ destino: /\[TESTE\]/ })
   await NoticiaExterna.deleteMany({ titulo: /\[TESTE\]/ })
-  await Usuario.deleteMany({ email: /extras_test_.*@iguanews\.test/ })
+  await Usuario.deleteMany({ email: /extras_test_.*@alsistemas\.test/ })
   await mongoose.connection.close()
 })
 

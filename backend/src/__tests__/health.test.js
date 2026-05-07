@@ -46,7 +46,7 @@ describe('GET /metrics', () => {
     expect(res.status).toBe(200)
     expect(res.headers['content-type']).toMatch(/text\/plain/)
     // prom-client sempre inclui essas métricas de processo
-    expect(res.text).toMatch(/iguanews_/)
+    expect(res.text).toMatch(/alsistemas_/)
   })
 })
 

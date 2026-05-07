@@ -6,7 +6,7 @@ import Usuario from '../models/Usuario.js'
 export async function autenticar(req, res, next) {
   try {
     const token =
-      req.cookies?.iguanews_token ||
+      req.cookies?.alsistemas_token ||
       (req.headers.authorization?.startsWith('Bearer ')
         ? req.headers.authorization.split(' ')[1]
         : null)
@@ -40,7 +40,7 @@ export async function autenticar(req, res, next) {
 export async function autenticarOpcional(req, res, next) {
   try {
     const token =
-      req.cookies?.iguanews_token ||
+      req.cookies?.alsistemas_token ||
       (req.headers.authorization?.startsWith('Bearer ')
         ? req.headers.authorization.split(' ')[1]
         : null)

@@ -6,10 +6,10 @@ Copie cada arquivo para o caminho correspondente no seu projeto:
 
 | Arquivo neste zip | Destino no projeto |
 |---|---|
-| `frontend/src/App.jsx` | `iguanews/frontend/src/App.jsx` |
-| `frontend/src/components/PrivateRoute.jsx` | `iguanews/frontend/src/components/PrivateRoute.jsx` |
-| `frontend/src/pages/Login.jsx` | `iguanews/frontend/src/pages/Login.jsx` |
-| `frontend/src/pages/admin/AdminLayout.jsx` | `iguanews/frontend/src/pages/admin/AdminLayout.jsx` |
+| `frontend/src/App.jsx` | `alsistemas/frontend/src/App.jsx` |
+| `frontend/src/components/PrivateRoute.jsx` | `alsistemas/frontend/src/components/PrivateRoute.jsx` |
+| `frontend/src/pages/Login.jsx` | `alsistemas/frontend/src/pages/Login.jsx` |
+| `frontend/src/pages/admin/AdminLayout.jsx` | `alsistemas/frontend/src/pages/admin/AdminLayout.jsx` |
 | `.env.additions` | cole o conteúdo no seu `frontend/.env` |
 
 ## Backend
