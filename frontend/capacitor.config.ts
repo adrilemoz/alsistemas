@@ -5,11 +5,11 @@ const config: CapacitorConfig = {
   appName: 'AL Sistemas',
   webDir: 'dist',
   server: {
-    androidScheme: 'https',
-    // App carrega o site ao vivo — atualizações no Vercel refletem
-    // automaticamente no app sem precisar gerar novo APK.
-    url: 'https://alsistemas.vercel.app',
-    cleartext: false,
+    androidScheme: 'http',
+    // Para rodar localmente no Termux, comente a linha `url` abaixo
+    // e use `npx cap copy android` + build local.
+    // url: 'https://alsistemas.vercel.app',
+    cleartext: true,
   },
   android: {
     buildOptions: {

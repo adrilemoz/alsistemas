@@ -300,6 +300,80 @@ export default function AdminDashboard() {
       </div>
 
       {/* ══════════════════════════════════════════════
+          SEÇÃO 1-B — INTEGRAÇÕES EXTERNAS (GitHub + IA)
+      ══════════════════════════════════════════════ */}
+      <div className="db2-card" style={{ marginBottom:20 }}>
+        <SectionHead
+          icon={<AdminIcon name="git" size={14} />}
+          title="Integrações Externas"
+          action={
+            <Link to="/admin/github" style={{ fontSize:11, color:'#3b82f6', textDecoration:'none', fontWeight:600 }}>
+              Ver GitHub →
+            </Link>
+          }
+        />
+        <div className="db2-chips">
+          <ServiceChip
+            label="GitHub"
+            ok={health.github.ok}
+            loading={health.loading}
+            detalhe={health.github.status}
+          />
+          <ServiceChip
+            label={`Groq / IA`}
+            ok={health.groq.ok}
+            loading={health.loading}
+            detalhe={health.groq.status}
+          />
+        </div>
+
+        {/* Cards de detalhe */}
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+          {/* GitHub detail */}
+          <div style={{
+            background:C.surf2, border:`1px solid ${C.border}`, borderRadius:8,
+            padding:'10px 14px', display:'flex', alignItems:'center', gap:10,
+          }}>
+            <div style={{
+              width:32, height:32, borderRadius:8, flexShrink:0,
+              background: health.loading ? `${C.muted}18` : health.github.ok ? '#22c55e18' : '#ef444418',
+              display:'flex', alignItems:'center', justifyContent:'center',
+              color: health.loading ? C.muted : health.github.ok ? '#22c55e' : '#ef4444',
+            }}>
+              <AdminIcon name="git" size={16} />
+            </div>
+            <div style={{ minWidth:0 }}>
+              <div style={{ fontSize:11, fontWeight:700, color:C.text }}>GitHub API</div>
+              <div style={{ fontSize:10, color:C.muted, marginTop:2, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
+                {health.loading ? 'verificando…' : health.github.status}
+              </div>
+            </div>
+          </div>
+
+          {/* Groq / IA detail */}
+          <div style={{
+            background:C.surf2, border:`1px solid ${C.border}`, borderRadius:8,
+            padding:'10px 14px', display:'flex', alignItems:'center', gap:10,
+          }}>
+            <div style={{
+              width:32, height:32, borderRadius:8, flexShrink:0,
+              background: health.loading ? `${C.muted}18` : health.groq.ok ? '#22c55e18' : '#ef444418',
+              display:'flex', alignItems:'center', justifyContent:'center',
+              color: health.loading ? C.muted : health.groq.ok ? '#22c55e' : '#ef4444',
+            }}>
+              <AdminIcon name="ia" size={16} />
+            </div>
+            <div style={{ minWidth:0 }}>
+              <div style={{ fontSize:11, fontWeight:700, color:C.text }}>Groq / IA Assistant</div>
+              <div style={{ fontSize:10, color:C.muted, marginTop:2, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
+                {health.loading ? 'verificando…' : health.groq.status}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ══════════════════════════════════════════════
           SEÇÃO 2 — MÉTRICAS SAAS
       ══════════════════════════════════════════════ */}
       <div className="db2-grid-4">

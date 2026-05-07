@@ -7,9 +7,6 @@ import { fileURLToPath } from 'url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // ─── Plugin: injeta versão de build no sw.js ─────────────────
-// O sw.js fica em public/ e é copiado como está pelo Vite.
-// Este plugin substitui os nomes de cache por versões contendo o
-// timestamp do build, garantindo que cada deploy limpe o cache antigo.
 function swVersionPlugin() {
   return {
     name: 'vite-plugin-sw-version',
@@ -29,7 +26,19 @@ function swVersionPlugin() {
 
 export default defineConfig({
   plugins: [react(), swVersionPlugin()],
-  server: { port: 5173, host: true },
+  server: {
+    port: 5173,
+    host: true,
+    // ─── Proxy local: redireciona /api → backend Termux ───────
+    // Evita problemas de CORS em dev sem precisar de extensão no browser.
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
   resolve: {
     dedupe: ['react', 'react-dom', 'react-router-dom'],
   },

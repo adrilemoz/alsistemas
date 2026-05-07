@@ -1,27 +1,49 @@
-# Sprint 1 — Substituição direta (completa)
+# AL Sistemas — Rodando no Termux (localhost)
 
-## Como aplicar
+## O que foi corrigido
 
-Copie cada arquivo para o caminho correspondente no seu projeto:
-
-| Arquivo neste zip | Destino no projeto |
+| Arquivo | Alteração |
 |---|---|
-| `frontend/src/App.jsx` | `alsistemas/frontend/src/App.jsx` |
-| `frontend/src/components/PrivateRoute.jsx` | `alsistemas/frontend/src/components/PrivateRoute.jsx` |
-| `frontend/src/pages/Login.jsx` | `alsistemas/frontend/src/pages/Login.jsx` |
-| `frontend/src/pages/admin/AdminLayout.jsx` | `alsistemas/frontend/src/pages/admin/AdminLayout.jsx` |
-| `.env.additions` | cole o conteúdo no seu `frontend/.env` |
+| `backend/.env` | `NODE_ENV=development`, `FRONTEND_URL=http://localhost:5173`, removido conteúdo duplicado do `.env.example` |
+| `frontend/.env` | `VITE_API_URL=http://localhost:3001/api` |
+| `frontend/src/services/domains/http.js` | Fallback hardcoded trocado de Render → `http://localhost:3001/api` |
+| `frontend/vite.config.js` | Adicionado proxy `/api → localhost:3001` (resolve CORS em dev) |
+| `frontend/capacitor.config.ts` | URL do Vercel comentada; `cleartext: true` e `androidScheme: 'http'` |
 
-## Backend
-Nenhum arquivo de backend foi alterado.
+---
 
-## O que muda visivelmente
-- Acessar `/` redireciona para `/login`
-- Topbar e drawer mostram o nome definido em `VITE_APP_NAME`
-- Botões "Ver site" e "Nova notícia" sumem da topbar (sem portal público)
-- NAV: Dashboard / Erros & Logs / Usuários / Sistema / Módulo: Portal
-- Todas as páginas de admin continuam funcionando normalmente
+## Como rodar no Termux
 
-## Próxima sprint
-Sprint 2 — reescrita do AdminDashboard com foco em saúde do sistema.
-Ver `SAAS_TRANSFORMATION_PLAN.md` para o detalhamento.
+### Pré-requisito: Node.js instalado
+```bash
+pkg install nodejs
+```
+
+### 1. Backend
+```bash
+cd alsistemas/backend
+npm install
+npm run dev
+# → http://localhost:3001
+```
+
+### 2. Frontend (outro terminal Termux)
+```bash
+cd alsistemas/frontend
+npm install
+npm run dev
+# → http://localhost:5173
+```
+
+### Credenciais padrão
+- **Email:** admin@al-sistemas.com  
+- **Senha:** admin123
+
+---
+
+## Redis (opcional)
+O backend sobe normalmente sem Redis — usa cache em memória como fallback automático.  
+Se quiser instalar: `pkg install redis` e depois `redis-server &`
+
+## MongoDB
+Já configurado para conectar no Atlas (nuvem). Sem instalação local necessária.
