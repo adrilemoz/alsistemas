@@ -22,6 +22,7 @@ import {
 } from '../../components/admin/setup/SetupForms'
 import ConfigMongo      from '../../components/admin/setup/ConfigMongo'
 import ConfigCloudinary from '../../components/admin/setup/ConfigCloudinary'
+import { SPACE, RADIUS, FONT } from '../../themes/tokens'
 
 /* ═══════════════════════════════════════════════════════════════
    TELA — Verificando
@@ -29,7 +30,7 @@ import ConfigCloudinary from '../../components/admin/setup/ConfigCloudinary'
 function TelaVerificando() {
   return (
     <div style={wrap}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: C.muted, fontSize: 13 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: C.muted, fontSize: FONT.md }}>
         <Spin/> Verificando instalação…
       </div>
     </div>
@@ -84,11 +85,11 @@ function TelaInstalacao({ onSucesso, statusBanco }) {
     <div style={wrap}>
       <div style={{ width: '100%', maxWidth: 520 }}>
         <div style={{ textAlign: 'center', marginBottom: 18 }}>
-          <div style={{ width: 54, height: 54, background: C.green, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px', color: 'white' }}>
+          <div style={{ width: 54, height: 54, background: C.green, borderRadius: RADIUS.xl2, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px', color: 'white' }}>
             {Ico.shield}
           </div>
           <h1 style={{ fontSize: 22, fontWeight: 800, color: C.text, margin: '0 0 6px' }}>Instalação do AL Sistemas</h1>
-          <p style={{ fontSize: 12, color: C.muted, lineHeight: 1.6, margin: 0 }}>
+          <p style={{ fontSize: FONT.base, color: C.muted, lineHeight: 1.6, margin: 0 }}>
             Configure o acesso inicial ao painel.<br/>
             Este formulário só está disponível enquanto o banco estiver vazio.
           </p>
@@ -97,7 +98,7 @@ function TelaInstalacao({ onSucesso, statusBanco }) {
         {statusBanco?.banco_nome && (
           <div style={infoBox(C.blue)}>
             <span style={{ color: C.blue, flexShrink: 0, marginTop: 1 }}>{Ico.db}</span>
-            <span style={{ fontSize: 12, color: '#93c5fd', lineHeight: 1.5 }}>
+            <span style={{ fontSize: FONT.base, color: '#93c5fd', lineHeight: 1.5 }}>
               Banco detectado: <strong>{statusBanco.banco_nome}</strong> — vazio e pronto para instalação.
             </span>
           </div>
@@ -109,7 +110,7 @@ function TelaInstalacao({ onSucesso, statusBanco }) {
         <div style={{ ...card(), marginTop: 16 }}>
           <div style={infoBox(C.blue)}>
             <span style={{ color: C.blue, flexShrink: 0, marginTop: 1 }}>{Ico.info}</span>
-            <span style={{ fontSize: 12, color: '#93c5fd', lineHeight: 1.5 }}>
+            <span style={{ fontSize: FONT.base, color: '#93c5fd', lineHeight: 1.5 }}>
               Serão criados automaticamente os perfis&nbsp;
               <strong>Superadmin</strong>, <strong>Jornalista</strong> e&nbsp;<strong>Usuário</strong>.
             </span>
@@ -136,7 +137,7 @@ function TelaInstalacao({ onSucesso, statusBanco }) {
             desc="Popula o banco com categorias, notícias, eventos e horários de ônibus para explorar o painel." />
 
           {seed && (
-            <div style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 10, padding: '14px 14px 4px', marginBottom: 16 }}>
+            <div style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: RADIUS.lg, padding: '14px 14px 4px', marginBottom: SPACE.xl }}>
               <SeletorDados selecionados={dadosSel} onChange={setDadosSel} />
             </div>
           )}
@@ -146,8 +147,8 @@ function TelaInstalacao({ onSucesso, statusBanco }) {
           </button>
         </div>
 
-        <p style={{ textAlign: 'center', fontSize: 11, color: C.muted, marginTop: 14 }}>
-          Rota: <code style={{ color: C.subtle, fontSize: 11 }}>POST /api/setup</code>
+        <p style={{ textAlign: 'center', fontSize: FONT.sm, color: C.muted, marginTop: 14 }}>
+          Rota: <code style={{ color: C.subtle, fontSize: FONT.sm }}>POST /api/setup</code>
         </p>
       </div>
     </div>
@@ -178,19 +179,19 @@ function TelaSucesso({ resultado, onIrPainel }) {
       <div style={{ width: '100%', maxWidth: 500, textAlign: 'center' }}>
         <div style={{ color: C.greenAcc, marginBottom: 14 }}>{Ico.check}</div>
         <h2 style={{ fontSize: 22, fontWeight: 800, color: C.text, marginBottom: 6 }}>Instalação concluída!</h2>
-        <p style={{ color: C.muted, fontSize: 13, marginBottom: 24 }}>
+        <p style={{ color: C.muted, fontSize: FONT.md, marginBottom: 24 }}>
           O sistema foi configurado e você já está autenticado.
         </p>
 
         {resultado?.usuario && (
           <div style={{ ...card({ textAlign: 'left' }), marginBottom: 14 }}>
             <p style={secTitle}>Conta criada</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: SPACE.sm }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: FONT.base }}>
                 <span style={{ color: C.muted }}>Nome</span>
                 <strong style={{ color: C.text }}>{resultado.usuario.nome}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: FONT.base }}>
                 <span style={{ color: C.muted }}>Email</span>
                 <strong style={{ color: C.text }}>{resultado.usuario.email}</strong>
               </div>
@@ -201,9 +202,9 @@ function TelaSucesso({ resultado, onIrPainel }) {
         {resultado?.perfis_criados?.length > 0 && (
           <div style={{ ...card({ textAlign: 'left' }), marginBottom: 14 }}>
             <p style={secTitle}>Perfis de acesso criados</p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: SPACE.sm }}>
               {resultado.perfis_criados.map(p => (
-                <span key={p} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600, background: C.greenAcc + '22', color: C.greenAcc }}>{p}</span>
+                <span key={p} style={{ padding: '4px 10px', borderRadius: RADIUS.pill, fontSize: FONT.sm, fontWeight: 600, background: C.greenAcc + '22', color: C.greenAcc }}>{p}</span>
               ))}
             </div>
           </div>
@@ -212,9 +213,9 @@ function TelaSucesso({ resultado, onIrPainel }) {
         {resultado?.seed && Object.values(resultado.seed).some(v => v > 0) && (
           <div style={{ ...card({ textAlign: 'left' }), marginBottom: 14 }}>
             <p style={secTitle}>Dados de exemplo importados</p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: SPACE.sm }}>
               {Object.entries(resultado.seed).filter(([, v]) => v > 0).map(([k, v]) => (
-                <span key={k} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600, background: C.blue + '22', color: C.blue }}>{k}: {v}</span>
+                <span key={k} style={{ padding: '4px 10px', borderRadius: RADIUS.pill, fontSize: FONT.sm, fontWeight: 600, background: C.blue + '22', color: C.blue }}>{k}: {v}</span>
               ))}
             </div>
           </div>
@@ -223,7 +224,7 @@ function TelaSucesso({ resultado, onIrPainel }) {
         {resultado?.seed_erro && (
           <div style={{ ...infoBox(C.orange), textAlign: 'left', marginBottom: 14 }}>
             <span style={{ color: C.orange, flexShrink: 0 }}>{Ico.warn}</span>
-            <div style={{ fontSize: 12, color: '#fdba74', lineHeight: 1.5 }}>
+            <div style={{ fontSize: FONT.base, color: '#fdba74', lineHeight: 1.5 }}>
               <strong>Dados de exemplo não importados:</strong><br/>
               {resultado.seed_erro}<br/>
               <span style={{ opacity: .8 }}>Você pode importá-los depois em <strong>Gerenciar Banco → Importar Seed</strong>.</span>
@@ -238,43 +239,43 @@ function TelaSucesso({ resultado, onIrPainel }) {
             <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
               <svg viewBox="0 0 24 24" fill="none" stroke={C.greenAcc} strokeWidth="2.2" width="16" height="16" style={{ flexShrink: 0, marginTop: 1 }}><polyline points="20 6 9 17 4 12"/></svg>
               <div>
-                <p style={{ fontSize: 12, color: C.greenAcc, fontWeight: 700, marginBottom: 3 }}>Setup desativado com sucesso!</p>
-                <p style={{ fontSize: 11, color: C.muted, lineHeight: 1.5 }}>{desativarMsg}</p>
+                <p style={{ fontSize: FONT.base, color: C.greenAcc, fontWeight: 700, marginBottom: 3 }}>Setup desativado com sucesso!</p>
+                <p style={{ fontSize: FONT.sm, color: C.muted, lineHeight: 1.5 }}>{desativarMsg}</p>
               </div>
             </div>
           ) : desativarStatus === 'error' ? (
             <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 10 }}>
               <span style={{ color: C.orange, flexShrink: 0 }}>{Ico.warn}</span>
-              <p style={{ fontSize: 11, color: '#fdba74', lineHeight: 1.5 }}>{desativarMsg}</p>
+              <p style={{ fontSize: FONT.sm, color: '#fdba74', lineHeight: 1.5 }}>{desativarMsg}</p>
             </div>
           ) : (
-            <p style={{ fontSize: 12, color: C.muted, lineHeight: 1.6, marginBottom: 12 }}>
+            <p style={{ fontSize: FONT.base, color: C.muted, lineHeight: 1.6, marginBottom: SPACE.lg }}>
               Recomendamos desativar o arquivo de setup após a instalação para impedir que terceiros acessem esta tela.
             </p>
           )}
           {desativarStatus !== 'done' && desativarStatus !== 'confirm' && (
             <button onClick={() => setDesativarStatus('confirm')} disabled={desativarStatus === 'loading'}
-              style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 14px', borderRadius: 8, border: `1px solid ${C.redDim}`, background: C.redDim + '44', color: '#fca5a5', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+              style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 14px', borderRadius: RADIUS.md, border: `1px solid ${C.redDim}`, background: C.redDim + '44', color: '#fca5a5', fontSize: FONT.base, fontWeight: 600, cursor: 'pointer' }}>
               {Ico.trash} Desativar arquivo de setup
             </button>
           )}
           {desativarStatus === 'confirm' && (
-            <div style={{ background: C.redDim + '33', border: `1px solid ${C.red}44`, borderRadius: 8, padding: '12px 14px' }}>
-              <p style={{ fontSize: 12, color: '#fca5a5', marginBottom: 10, lineHeight: 1.5 }}>
+            <div style={{ background: C.redDim + '33', border: `1px solid ${C.red}44`, borderRadius: RADIUS.md, padding: '12px 14px' }}>
+              <p style={{ fontSize: FONT.base, color: '#fca5a5', marginBottom: 10, lineHeight: 1.5 }}>
                 <strong>Atenção:</strong> Esta ação irá desativar as rotas de setup. Tem certeza?
               </p>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button onClick={handleDesativar} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '8px 0', borderRadius: 8, border: 'none', background: C.redDim, color: C.text, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+              <div style={{ display: 'flex', gap: SPACE.md }}>
+                <button onClick={handleDesativar} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: SPACE.sm, padding: '8px 0', borderRadius: RADIUS.md, border: 'none', background: C.redDim, color: C.text, fontSize: FONT.base, fontWeight: 700, cursor: 'pointer' }}>
                   {Ico.trash} Sim, desativar
                 </button>
-                <button onClick={() => setDesativarStatus(null)} style={{ flex: 1, padding: '8px 0', borderRadius: 8, border: `1px solid ${C.border}`, background: 'none', color: C.muted, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                <button onClick={() => setDesativarStatus(null)} style={{ flex: 1, padding: '8px 0', borderRadius: RADIUS.md, border: `1px solid ${C.border}`, background: 'none', color: C.muted, fontSize: FONT.base, fontWeight: 600, cursor: 'pointer' }}>
                   Cancelar
                 </button>
               </div>
             </div>
           )}
           {desativarStatus === 'loading' && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: C.muted, fontSize: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: SPACE.md, color: C.muted, fontSize: FONT.base }}>
               <Spin size={13}/> Desativando arquivo de setup…
             </div>
           )}
@@ -340,7 +341,7 @@ function PainelBanco({ status: statusInicial, onConcluido }) {
     <div style={{ minHeight: '100vh', background: C.pageBg, fontFamily: "'Inter','Segoe UI',system-ui,sans-serif", padding: '16px 10px' }}>
       <div style={{ maxWidth: 540, margin: '0 auto' }}>
         <h2 style={{ fontSize: 18, fontWeight: 800, color: C.text, marginBottom: 4 }}>Gerenciar Banco de Dados</h2>
-        <p style={{ fontSize: 12, color: C.muted, marginBottom: 24 }}>
+        <p style={{ fontSize: FONT.base, color: C.muted, marginBottom: 24 }}>
           Banco: <strong style={{ color: C.subtle }}>{statusInicial?.banco_nome ?? '—'}</strong>
         </p>
 
@@ -349,7 +350,7 @@ function PainelBanco({ status: statusInicial, onConcluido }) {
             <span style={{ color: bancoDone.tipo === 'reset' ? C.orange : C.greenAcc, flexShrink: 0 }}>
               {bancoDone.tipo === 'reset' ? Ico.trash : Ico.seed}
             </span>
-            <span style={{ fontSize: 12, color: bancoDone.tipo === 'reset' ? '#fdba74' : '#86efac', lineHeight: 1.5 }}>
+            <span style={{ fontSize: FONT.base, color: bancoDone.tipo === 'reset' ? '#fdba74' : '#86efac', lineHeight: 1.5 }}>
               {bancoDone.msg}
             </span>
           </div>
@@ -357,19 +358,19 @@ function PainelBanco({ status: statusInicial, onConcluido }) {
 
         <ConfigMongo initialUri={envConfig.mongo_uri} />
         <ConfigCloudinary initialValues={envConfig} />
-        <div style={{ marginBottom: 8 }} />
+        <div style={{ marginBottom: SPACE.md }} />
 
         {/* Estado atual */}
         <div style={{ ...card(), marginBottom: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: SPACE.md, marginBottom: 14 }}>
             <span style={{ color: C.blue }}>{Ico.db}</span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>Estado atual</span>
+            <span style={{ fontSize: FONT.md, fontWeight: 700, color: C.text }}>Estado atual</span>
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: SPACE.md }}>
             {Object.entries(cnt).map(([k, v]) => (
-              <div key={k} style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 8, padding: '7px 14px', textAlign: 'center', minWidth: 64 }}>
+              <div key={k} style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: RADIUS.md, padding: '7px 14px', textAlign: 'center', minWidth: 64 }}>
                 <div style={{ fontSize: 22, fontWeight: 800, color: v > 0 ? C.greenAcc : C.muted }}>{v}</div>
-                <div style={{ fontSize: 10, color: C.muted, textTransform: 'uppercase', letterSpacing: '.05em' }}>{k}</div>
+                <div style={{ fontSize: FONT.xs, color: C.muted, textTransform: 'uppercase', letterSpacing: '.05em' }}>{k}</div>
               </div>
             ))}
           </div>
@@ -377,15 +378,15 @@ function PainelBanco({ status: statusInicial, onConcluido }) {
 
         {/* Importar seed */}
         <div style={{ ...card(), marginBottom: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: SPACE.md, marginBottom: 14 }}>
             <span style={{ color: C.greenAcc }}>{Ico.seed}</span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>Importar dados de exemplo</span>
+            <span style={{ fontSize: FONT.md, fontWeight: 700, color: C.text }}>Importar dados de exemplo</span>
           </div>
           <div style={{ marginBottom: 14 }}>
             <label style={labelSty}>Nome do site nos dados</label>
             <input value={nomeSite} onChange={e => setNomeSite(e.target.value)} style={inputSty()} placeholder="Ex.: AL Sistemas" />
           </div>
-          <div style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 10, padding: '14px 14px 4px', marginBottom: 14 }}>
+          <div style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: RADIUS.lg, padding: '14px 14px 4px', marginBottom: 14 }}>
             <SeletorDados selecionados={dadosSel} onChange={setDadosSel} />
           </div>
           <Check checked={limpar} onChange={setLimpar} warnMode color={C.red}
@@ -394,7 +395,7 @@ function PainelBanco({ status: statusInicial, onConcluido }) {
           {limpar && (
             <div style={{ ...infoBox(C.orange), marginBottom: 14 }}>
               <span style={{ color: C.orange, flexShrink: 0 }}>{Ico.warn}</span>
-              <span style={{ fontSize: 11, color: '#fdba74', lineHeight: 1.5 }}>
+              <span style={{ fontSize: FONT.sm, color: '#fdba74', lineHeight: 1.5 }}>
                 Todas as notícias, categorias, eventos e ônibus serão excluídos antes da importação.
               </span>
             </div>
@@ -406,20 +407,20 @@ function PainelBanco({ status: statusInicial, onConcluido }) {
 
         {/* Reset total */}
         <div style={{ ...card({ border: `1px solid ${C.red}44` }) }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: SPACE.md, marginBottom: 14 }}>
             <span style={{ color: C.red }}>{Ico.trash}</span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>Reset do banco</span>
+            <span style={{ fontSize: FONT.md, fontWeight: 700, color: C.text }}>Reset do banco</span>
           </div>
           <div style={{ ...infoBox(C.red), marginBottom: 14 }}>
             <span style={{ color: C.red, flexShrink: 0, marginTop: 1 }}>{Ico.warn}</span>
-            <span style={{ fontSize: 11, color: '#fca5a5', lineHeight: 1.5 }}>
+            <span style={{ fontSize: FONT.sm, color: '#fca5a5', lineHeight: 1.5 }}>
               Ação <strong>irreversível</strong>. Todo conteúdo será apagado permanentemente.
             </span>
           </div>
           <Check checked={mantUser} onChange={setMantUser}
             label="Manter usuários e perfis de acesso"
             desc="Apenas o conteúdo (notícias, eventos, etc.) será removido." />
-          <div style={{ marginBottom: 16 }}>
+          <div style={{ marginBottom: SPACE.xl }}>
             <label style={labelSty}>Digite <strong style={{ color: C.subtle }}>CONFIRMAR_RESET</strong> para continuar</label>
             <input value={resetTxt} onChange={e => setResetTxt(e.target.value)} style={inputSty()} placeholder="CONFIRMAR_RESET" />
           </div>

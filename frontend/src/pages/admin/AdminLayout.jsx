@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { errosService } from '../../services/api'
 import { useTheme } from '../../context/ThemeContext'
 import toast from 'react-hot-toast'
+import { T as C, SPACE, RADIUS, FONT } from '../../themes/tokens'
 
 /**
  * Estrutura de navegação.
@@ -23,7 +24,9 @@ const NAV = [
   { to: '/admin',                label: 'Dashboard',      icon: IconGrid,      perm: null                      },
   { to: '/admin/erros',          label: 'Erros & Logs',   icon: IconAlerta,    perm: 'erros.ver'               },
   { to: '/admin/usuarios',       label: 'Usuários',       icon: IconUsers,     perm: 'usuarios.gerenciar'      },
-  { to: '/admin/infraestrutura', label: 'Infraestrutura', icon: IconInfra,     perm: 'configuracoes.gerenciar' },
+  { to: '/admin/mongo',          label: 'MongoDB',         icon: IconMongo,     perm: 'configuracoes.gerenciar' },
+  { to: '/admin/cloudinary',     label: 'Cloudinary',      icon: IconCloud,     perm: 'configuracoes.gerenciar' },
+  { to: '/admin/sistema',        label: 'Sistema',         icon: IconCpu,       perm: 'configuracoes.gerenciar' },
   { to: '/admin/github',         label: 'GitHub',         icon: IconGitHub,    perm: 'configuracoes.gerenciar' },
   { to: '/admin/projetos',       label: 'Projetos',       icon: IconFolderCode,perm: 'configuracoes.gerenciar' },
   { to: '/admin/ai-assistant',   label: 'IA Assistant',   icon: IconIA,        perm: 'configuracoes.gerenciar' },
@@ -140,7 +143,7 @@ export default function AdminLayout() {
   function badgeErros(style = {}) {
     if (!naoLidos) return null
     return (
-      <span style={{ background:'#ef4444', color:'#fff', borderRadius:10, fontSize:10,
+      <span style={{ background:C.red, color:'#fff', borderRadius:RADIUS.lg, fontSize:FONT.xs,
         fontWeight:800, padding:'1px 6px', lineHeight:1.4, ...style }}>
         {naoLidos > 99 ? '99+' : naoLidos}
       </span>
@@ -154,7 +157,7 @@ export default function AdminLayout() {
       <Link to={item.to} aria-current={active ? 'page' : undefined}
         style={{
           display:'flex', alignItems:'center', gap:10,
-          padding:'9px 12px', borderRadius:8, marginBottom:2,
+          padding:'9px 12px', borderRadius:RADIUS.md, marginBottom:2,
           fontSize:13, fontWeight:500, textDecoration:'none',
           color: active ? 'var(--adm-text)' : 'var(--adm-muted)',
           background: active ? 'var(--adm-surface2)' : 'transparent',
@@ -189,7 +192,7 @@ export default function AdminLayout() {
         <button onClick={() => toggleGrupo(item.label)}
           style={{
             display:'flex', alignItems:'center', gap:10, width:'100%',
-            padding:'9px 12px', borderRadius:8,
+            padding:'9px 12px', borderRadius:RADIUS.md,
             fontSize:13, fontWeight:500, textAlign:'left',
             background: temAtivo ? 'var(--adm-surface2)' : 'transparent',
             border:'none', cursor:'pointer',
@@ -287,7 +290,7 @@ export default function AdminLayout() {
           justifyContent:'center', padding:20 }}
           onClick={e => { if (e.target === e.currentTarget) setConfirmLogout(false) }}>
           <div style={{ background:'var(--adm-surface)', border:'1px solid var(--adm-border)',
-            borderRadius:14, padding:24, width:'100%', maxWidth:340,
+            borderRadius:RADIUS.xl2, padding:24, width:'100%', maxWidth:340,
             boxShadow:'0 20px 60px rgba(0,0,0,.5)' }}>
             <div style={{ fontSize:15, fontWeight:700, color:'var(--adm-text)', marginBottom:8 }}>Sair da conta?</div>
             <div style={{ fontSize:13, color:'var(--adm-muted)', marginBottom:20, lineHeight:1.5 }}>
@@ -354,7 +357,7 @@ export default function AdminLayout() {
             {user?.email}
           </div>
           <button onClick={() => { setDrawerAberto(false); setConfirmLogout(true) }}
-            style={{ display:'flex', alignItems:'center', gap:10, padding:'9px 12px', borderRadius:8,
+            style={{ display:'flex', alignItems:'center', gap:10, padding:'9px 12px', borderRadius:RADIUS.md,
               width:'100%', fontSize:13, fontWeight:500, textAlign:'left',
               background:'none', border:'none', cursor:'pointer',
               color:'var(--adm-red)', transition:'all .15s' }}>
@@ -446,8 +449,8 @@ export default function AdminLayout() {
                 <item.icon />
                 <span>{item.label}</span>
                 {item.to === '/admin/erros' && naoLidos > 0 && (
-                  <span style={{ position:'absolute', top:2, right:2, background:'#ef4444', color:'#fff',
-                    borderRadius:10, fontSize:9, fontWeight:800, padding:'1px 4px',
+                  <span style={{ position:'absolute', top:2, right:2, background:C.red, color:'#fff',
+                    borderRadius:RADIUS.lg, fontSize:9, fontWeight:800, padding:'1px 4px',
                     lineHeight:1.4, minWidth:14, textAlign:'center' }}>
                     {naoLidos > 99 ? '99+' : naoLidos}
                   </span>
@@ -473,7 +476,7 @@ export default function AdminLayout() {
             {avatarAberto && (
               <div role="menu" style={{ position:'absolute', top:'calc(100% + 8px)', right:0,
                 minWidth:200, background:'var(--adm-surface)', border:'1px solid var(--adm-border)',
-                borderRadius:10, boxShadow:'var(--adm-shadow-md)', zIndex:300, overflow:'hidden' }}>
+                borderRadius:RADIUS.lg, boxShadow:'var(--adm-shadow-md)', zIndex:300, overflow:'hidden' }}>
                 <div style={{ padding:'10px 14px', borderBottom:'1px solid var(--adm-border)' }}>
                   <div style={{ fontSize:11, color:'var(--adm-muted)', marginBottom:3 }}>Logado como</div>
                   <div style={{ fontSize:12, fontWeight:600, color:'var(--adm-text)', wordBreak:'break-all' }}>
@@ -531,3 +534,7 @@ function IconPlug()      { return <svg viewBox="0 0 24 24" fill="none" stroke="c
 function IconGitHub()    { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" style={{width:'100%',height:'100%'}}><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg> }
 function IconFolderCode(){ return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" style={{width:'100%',height:'100%'}}><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/><polyline points="10 14 8 16 10 18"/><polyline points="14 14 16 16 14 18"/></svg> }
 function IconIA()        { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" style={{width:'100%',height:'100%'}}><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/><circle cx="18" cy="6" r="3"/><path d="M21 3l-1.5 1.5"/></svg> }
+function IconMongo()     { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" style={{width:'100%',height:'100%'}}><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg> }
+function IconGear()      { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" style={{width:'100%',height:'100%'}}><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg> }
+function IconCloud()     { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" style={{width:'100%',height:'100%'}}><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg> }
+function IconCpu()       { return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" style={{width:'100%',height:'100%'}}><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/></svg> }

@@ -154,16 +154,45 @@ router.patch('/marcar-todos-lidos', autenticar, verificarPermissao('erros.gerenc
 })
 
 // ─── DELETE /api/erros ────────────────────────────────────────
-// Remove todos os erros (ou filtra por tipo).
+// Remove todos os erros (filtra por tipo / status / apenas_lidos).
 router.delete('/', autenticar, verificarPermissao('erros.gerenciar'), async (req, res, next) => {
   try {
-    const { tipo, apenas_lidos } = req.query
+    const { tipo, status, apenas_lidos } = req.query
     const filtro = {}
-    if (tipo)               filtro.tipo = tipo
-    if (apenas_lidos === 'true') filtro.lido = true
+    if (tipo)                    filtro.tipo   = tipo
+    if (status)                  filtro.status = status
+    if (apenas_lidos === 'true') filtro.lido   = true
 
     const { deletedCount } = await ErroLog.deleteMany(filtro)
     res.json({ ok: true, removidos: deletedCount })
+  } catch (err) { next(err) }
+})
+
+// ─── DELETE /api/erros/bulk ───────────────────────────────────
+// Remove lista de IDs específicos.
+router.delete('/bulk', autenticar, verificarPermissao('erros.gerenciar'), async (req, res, next) => {
+  try {
+    const { ids } = req.body
+    if (!Array.isArray(ids) || ids.length === 0)
+      return res.status(400).json({ erro: 'ids deve ser um array não-vazio.' })
+    const { deletedCount } = await ErroLog.deleteMany({ _id: { $in: ids } })
+    res.json({ ok: true, removidos: deletedCount })
+  } catch (err) { next(err) }
+})
+
+// ─── PATCH /api/erros/bulk-status ────────────────────────────
+// Atualiza status de uma lista de IDs.
+router.patch('/bulk-status', autenticar, verificarPermissao('erros.gerenciar'), async (req, res, next) => {
+  try {
+    const { ids, status } = req.body
+    const statusValidos = ['novo', 'investigando', 'resolvido', 'ignorado']
+    if (!Array.isArray(ids) || ids.length === 0)
+      return res.status(400).json({ erro: 'ids deve ser um array não-vazio.' })
+    if (!status || !statusValidos.includes(status))
+      return res.status(400).json({ erro: `Status inválido. Use: ${statusValidos.join(', ')}` })
+    const lido = status !== 'novo'
+    const { modifiedCount } = await ErroLog.updateMany({ _id: { $in: ids } }, { status, lido })
+    res.json({ ok: true, atualizados: modifiedCount })
   } catch (err) { next(err) }
 })
 

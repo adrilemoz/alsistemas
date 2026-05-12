@@ -1,6 +1,10 @@
 /**
  * SetupForms.jsx — Componentes de UI primitivos do instalador.
  *
+ * MIGRADO: DS Sprint — todas as cores, espaçamentos e border-radius
+ * agora usam tokens de design. Funções de estilo delegam para helpers
+ * do tokens.js para garantir consistência multi-tema.
+ *
  * Exporta:
  *   estilos:       wrap, card, labelSty, inputSty, errMsg, btnSty,
  *                  infoBox, divider, secTitle
@@ -9,12 +13,13 @@
  *   compostos:     SeletorDados, RegrasSenha
  */
 import { useState } from 'react'
-import { T as C }   from '../../../themes/tokens'
+import { T as C, SPACE, RADIUS, FONT, cardStyle, alertBoxStyle } from '../../../themes/tokens'
 import AdminIcon     from '../ui/AdminIcon'
 import ForcaSenha    from '../ui/ForcaSenha'
 
-// Redefine green para o verde escuro do instalador (fora do tema)
-Object.assign(C, { green: C.greenDk })
+// Setup roda standalone (fora do .admin-shell) com fundo escuro fixo.
+// O verde do instalador é o verde hardcoded — não usa var(--adm-accent).
+const GREEN_SETUP = C.greenDk
 
 // ── Ícones ────────────────────────────────────────────────────
 export const Ico = {
@@ -38,83 +43,140 @@ export function Spin({ size = 14 }) {
   return <AdminIcon name="spinSm" size={size} />
 }
 
-// ── Tokens de estilo ──────────────────────────────────────────
+// Exporta C para uso nos componentes do instalador
 export { C }
 
+// ── Tokens de layout do instalador (standalone dark) ──────────
 export const wrap = {
-  minHeight: '100vh', background: C.pageBg,
-  display: 'flex', alignItems: 'center', justifyContent: 'center',
-  padding: '16px 10px',
+  minHeight: '100vh',
+  background: C.pageBg,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: `${SPACE.xl}px ${SPACE.md}px`,
   fontFamily: "'Inter','Segoe UI',system-ui,sans-serif",
 }
+
+// card() — usa cardStyle() do tokens como base, sobrepõe fundo escuro
 export const card = (extra = {}) => ({
-  background: C.surface, border: `1px solid ${C.border}`,
-  borderRadius: 12, padding: '18px 16px', ...extra,
+  ...cardStyle({ padding: `${SPACE.xl}px`, radius: RADIUS.xl }),
+  background: C.surface,
+  ...extra,
 })
+
 export const labelSty = {
-  display: 'block', fontSize: 11, fontWeight: 700,
-  color: C.subtle, marginBottom: 6, letterSpacing: '.04em', textTransform: 'uppercase',
+  display: 'block',
+  fontSize: FONT.sm,
+  fontWeight: 700,
+  color: C.subtle,
+  marginBottom: SPACE.sm,
+  letterSpacing: '.04em',
+  textTransform: 'uppercase',
 }
+
 export const inputSty = (err = false, foc = false) => ({
-  width: '100%', padding: '10px 13px', borderRadius: 8, fontSize: 13,
-  background: '#0f172a',
+  width: '100%',
+  padding: `10px 13px`,
+  borderRadius: RADIUS.md,
+  fontSize: FONT.md,
+  background: C.pageBg,
   border: `1.5px solid ${err ? C.red : foc ? C.borderFoc : C.border}`,
-  color: C.text, outline: 'none', boxSizing: 'border-box', transition: 'border .15s',
+  color: C.text,
+  outline: 'none',
+  boxSizing: 'border-box',
+  transition: 'border .15s',
 })
-export const errMsg    = { color: '#f87171', fontSize: 11, marginTop: 4 }
-export const divider   = { border: 'none', borderTop: `1px solid ${C.border}`, margin: '20px 0' }
-export const secTitle  = {
-  fontSize: 10, fontWeight: 800, color: C.muted,
-  letterSpacing: '.08em', textTransform: 'uppercase', marginBottom: 14,
+
+export const errMsg = {
+  color: '#f87171',
+  fontSize: FONT.sm,
+  marginTop: SPACE.xs,
 }
+
+export const divider = {
+  border: 'none',
+  borderTop: `1px solid ${C.border}`,
+  margin: `${SPACE.xl2}px 0`,
+}
+
+export const secTitle = {
+  fontSize: FONT.xs,
+  fontWeight: 800,
+  color: C.muted,
+  letterSpacing: '.08em',
+  textTransform: 'uppercase',
+  marginBottom: SPACE.lg,
+}
+
+// infoBox() — usa alertBoxStyle() do tokens como base
 export const infoBox = (color = C.blue) => ({
-  background: color + '1a', border: `1px solid ${color}40`,
-  borderRadius: 10, padding: '10px 14px', marginBottom: 18,
-  display: 'flex', gap: 9, alignItems: 'flex-start',
+  ...alertBoxStyle('blue'),
+  background: `${color}1a`,
+  border: `1px solid ${color}40`,
+  borderRadius: RADIUS.lg,
+  padding: `${SPACE.md}px 14px`,
+  marginBottom: SPACE.xl2 - 2,
 })
+
 export const btnSty = (variant = 'green', disabled = false) => {
-  const bg = disabled ? '#1e293b'
-    : variant === 'green'  ? C.green
+  const bg = disabled
+    ? '#1e293b'
+    : variant === 'green'  ? GREEN_SETUP
     : variant === 'blue'   ? '#1d4ed8'
     : variant === 'danger' ? C.redDim
     : '#1e293b'
   return {
-    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-    width: '100%', padding: '11px 16px', borderRadius: 10, border: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SPACE.md,
+    width: '100%',
+    padding: `11px ${SPACE.xl}px`,
+    borderRadius: RADIUS.lg,
+    border: 'none',
     cursor: disabled ? 'not-allowed' : 'pointer',
-    fontSize: 13, fontWeight: 700, transition: 'opacity .15s',
-    background: bg, color: disabled ? C.muted : C.text, opacity: disabled ? .55 : 1,
+    fontSize: FONT.md,
+    fontWeight: 700,
+    transition: 'opacity .15s',
+    background: bg,
+    color: disabled ? C.muted : C.text,
+    opacity: disabled ? .55 : 1,
   }
 }
 
 // ── Regras de senha ───────────────────────────────────────────
 export const REGRAS_SENHA = [
-  { id: 'len',     label: 'Mínimo 8 caracteres',                      test: s => s.length >= 8 },
-  { id: 'upper',   label: 'Pelo menos uma letra maiúscula',            test: s => /[A-Z]/.test(s) },
-  { id: 'number',  label: 'Pelo menos um número',                      test: s => /[0-9]/.test(s) },
-  { id: 'special', label: 'Pelo menos um caractere especial (!@#$…)',  test: s => /[^A-Za-z0-9]/.test(s) },
+  { id: 'len',     label: 'Mínimo 8 caracteres',                     test: s => s.length >= 8 },
+  { id: 'upper',   label: 'Pelo menos uma letra maiúscula',           test: s => /[A-Z]/.test(s) },
+  { id: 'number',  label: 'Pelo menos um número',                     test: s => /[0-9]/.test(s) },
+  { id: 'special', label: 'Pelo menos um caractere especial (!@#$…)', test: s => /[^A-Za-z0-9]/.test(s) },
 ]
 
 export function RegrasSenha({ senha }) {
   if (!senha) return null
   return (
     <div style={{
-      background: C.elevated, border: `1px solid ${C.border}`,
-      borderRadius: 8, padding: '10px 12px', marginTop: 8,
-      display: 'flex', flexDirection: 'column', gap: 5,
+      background: C.elevated,
+      border: `1px solid ${C.border}`,
+      borderRadius: RADIUS.md,
+      padding: `${SPACE.md}px ${SPACE.lg}px`,
+      marginTop: SPACE.md,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: SPACE.xs + 1,
     }}>
       {REGRAS_SENHA.map(r => {
         const ok = r.test(senha)
         return (
-          <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-            <svg viewBox="0 0 12 12" fill="none" stroke={ok ? C.greenAcc : C.border}
+          <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: SPACE.sm + 1 }}>
+            <svg viewBox="0 0 12 12" fill="none"
+              stroke={ok ? C.greenAcc : C.border}
               strokeWidth="2.5" width="11" height="11">
               {ok
-                ? <polyline points="1 6 4.5 9.5 11 2"/>
-                : <line x1="6" y1="1" x2="6" y2="11"/>
-              }
+                ? <polyline points="1 6 4.5 9.5 11 2" />
+                : <line x1="6" y1="1" x2="6" y2="11" />}
             </svg>
-            <span style={{ fontSize: 11, color: ok ? C.greenAcc : C.muted, transition: 'color .15s' }}>
+            <span style={{ fontSize: FONT.sm, color: ok ? C.greenAcc : C.muted, transition: 'color .15s' }}>
               {r.label}
             </span>
           </div>
@@ -127,26 +189,32 @@ export function RegrasSenha({ senha }) {
 // ── CampoAcessoFixo ───────────────────────────────────────────
 export function CampoAcessoFixo() {
   return (
-    <div style={{ marginBottom: 16 }}>
+    <div style={{ marginBottom: SPACE.xl }}>
       <label style={labelSty}>Nível de acesso</label>
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 10,
-        padding: '10px 13px', borderRadius: 8, fontSize: 13,
-        background: '#0f172a', border: `1.5px solid ${C.border}`,
-        color: C.muted, boxSizing: 'border-box',
+        display: 'flex',
+        alignItems: 'center',
+        gap: SPACE.md + 2,
+        padding: `10px 13px`,
+        borderRadius: RADIUS.md,
+        fontSize: FONT.md,
+        background: C.pageBg,
+        border: `1.5px solid ${C.border}`,
+        color: C.muted,
+        boxSizing: 'border-box',
       }}>
         <svg viewBox="0 0 24 24" fill="none" stroke={C.greenAcc} strokeWidth="2" width="14" height="14">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
         </svg>
         <span style={{ color: C.text, fontWeight: 600 }}>Superadmin</span>
-        <span style={{ color: C.muted, fontSize: 11 }}>— Acesso total ao sistema</span>
+        <span style={{ color: C.muted, fontSize: FONT.sm }}>— Acesso total ao sistema</span>
         <svg viewBox="0 0 24 24" fill="none" stroke={C.muted} strokeWidth="2" width="13" height="13"
           style={{ marginLeft: 'auto', flexShrink: 0 }}>
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
         </svg>
       </div>
-      <p style={{ fontSize: 10, color: C.muted, marginTop: 4 }}>
+      <p style={{ fontSize: FONT.xs, color: C.muted, marginTop: SPACE.xs }}>
         O primeiro usuário recebe automaticamente acesso total. Outros perfis podem ser criados depois.
       </p>
     </div>
@@ -155,19 +223,21 @@ export function CampoAcessoFixo() {
 
 // ── Campo com toggle de senha ─────────────────────────────────
 export function Campo({ label: lbl, type = 'text', placeholder, value, onChange, erro, autoComplete, mostrarForca }) {
-  const [foc,    setFoc]    = useState(false)
+  const [foc,     setFoc]     = useState(false)
   const [visivel, setVisivel] = useState(false)
   const eSenha = type === 'password'
   return (
-    <div style={{ marginBottom: 16 }}>
+    <div style={{ marginBottom: SPACE.xl }}>
       <label style={labelSty}>{lbl}</label>
       <div style={{ position: 'relative' }}>
         <input
           type={eSenha ? (visivel ? 'text' : 'password') : type}
-          value={value} placeholder={placeholder}
+          value={value}
+          placeholder={placeholder}
           autoComplete={autoComplete}
           onChange={e => onChange(e.target.value)}
-          onFocus={() => setFoc(true)} onBlur={() => setFoc(false)}
+          onFocus={() => setFoc(true)}
+          onBlur={() => setFoc(false)}
           style={{ ...inputSty(!!erro, foc), paddingRight: eSenha ? 38 : 13 }}
         />
         {eSenha && (
@@ -191,28 +261,44 @@ export function Campo({ label: lbl, type = 'text', placeholder, value, onChange,
   )
 }
 
-// ── Check estilizado ─────────────────────────────────────────
+// ── Check estilizado ──────────────────────────────────────────
 export function Check({ checked, onChange, label: lbl, desc, color = C.greenAcc, warnMode = false }) {
   return (
-    <div onClick={() => onChange(!checked)} style={{
-      display: 'flex', alignItems: 'flex-start', gap: 11, cursor: 'pointer',
-      padding: '11px 13px', borderRadius: 10, marginBottom: 10,
-      background: checked ? (warnMode ? '#7f1d1d22' : '#16653422') : C.elevated,
-      border: `1.5px solid ${checked ? color + '55' : C.border}`,
-      transition: 'all .15s',
-    }}>
+    <div
+      onClick={() => onChange(!checked)}
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: 11,
+        cursor: 'pointer',
+        padding: `11px 13px`,
+        borderRadius: RADIUS.lg,
+        marginBottom: SPACE.md + 2,
+        background: checked ? (warnMode ? '#7f1d1d22' : '#16653422') : C.elevated,
+        border: `1.5px solid ${checked ? `${color}55` : C.border}`,
+        transition: 'all .15s',
+      }}
+    >
       <div style={{
-        width: 17, height: 17, borderRadius: 5, flexShrink: 0, marginTop: 1,
+        width: 17, height: 17,
+        borderRadius: RADIUS.xs + 1,
+        flexShrink: 0, marginTop: 1,
         border: `2px solid ${checked ? color : C.border}`,
         background: checked ? color : 'transparent',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         transition: 'all .15s',
       }}>
-        {checked && <svg viewBox="0 0 12 12" fill="none" stroke={warnMode ? 'white' : '#0f172a'} strokeWidth="2.5" width="10" height="10"><polyline points="1 6 4.5 9.5 11 2"/></svg>}
+        {checked && (
+          <svg viewBox="0 0 12 12" fill="none"
+            stroke={warnMode ? 'white' : '#0f172a'}
+            strokeWidth="2.5" width="10" height="10">
+            <polyline points="1 6 4.5 9.5 11 2" />
+          </svg>
+        )}
       </div>
       <div>
-        <p style={{ fontSize: 13, fontWeight: 600, color: C.text, margin: '0 0 2px' }}>{lbl}</p>
-        {desc && <p style={{ fontSize: 11, color: C.muted, lineHeight: 1.55, margin: 0 }}>{desc}</p>}
+        <p style={{ fontSize: FONT.md, fontWeight: 600, color: C.text, margin: `0 0 2px` }}>{lbl}</p>
+        {desc && <p style={{ fontSize: FONT.sm, color: C.muted, lineHeight: 1.55, margin: 0 }}>{desc}</p>}
       </div>
     </div>
   )
@@ -224,16 +310,20 @@ export function StatusBadge({ status }) {
   const ok = status.ok
   return (
     <div style={{
-      display: 'flex', alignItems: 'center', gap: 6,
-      padding: '7px 12px', borderRadius: 8, marginTop: 10,
+      display: 'flex',
+      alignItems: 'center',
+      gap: SPACE.sm,
+      padding: `7px ${SPACE.lg}px`,
+      borderRadius: RADIUS.md,
+      marginTop: SPACE.md + 2,
       background: ok ? '#16653422' : '#7f1d1d22',
-      border: `1px solid ${ok ? C.greenAcc + '44' : C.red + '44'}`,
+      border: `1px solid ${ok ? `${C.greenAcc}44` : `${C.red}44`}`,
     }}>
       {ok
-        ? <svg viewBox="0 0 24 24" fill="none" stroke={C.greenAcc} strokeWidth="2.5" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg>
-        : <svg viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2.5" width="13" height="13"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        ? <svg viewBox="0 0 24 24" fill="none" stroke={C.greenAcc} strokeWidth="2.5" width="13" height="13"><polyline points="20 6 9 17 4 12" /></svg>
+        : <svg viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2.5" width="13" height="13"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
       }
-      <span style={{ fontSize: 11, fontWeight: 600, color: ok ? C.greenAcc : '#f87171', lineHeight: 1.4 }}>
+      <span style={{ fontSize: FONT.sm, fontWeight: 600, color: ok ? C.greenAcc : '#f87171', lineHeight: 1.4 }}>
         {status.mensagem || status.erro}
       </span>
     </div>
@@ -261,13 +351,23 @@ export function SeletorDados({ selecionados, onChange }) {
   const todos = selecionados.length === OPCOES_SEED.length
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACE.md + 2 }}>
         <p style={secTitle}>Dados a instalar</p>
         <button
           type="button"
           onClick={() => onChange(todos ? [] : OPCOES_SEED.map(o => o.id))}
-          style={{ fontSize: 11, fontWeight: 600, color: C.blue, background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}
-        >{todos ? 'Desmarcar todos' : 'Selecionar todos'}</button>
+          style={{
+            fontSize: FONT.sm,
+            fontWeight: 600,
+            color: C.blue,
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: `2px ${SPACE.sm}px`,
+          }}
+        >
+          {todos ? 'Desmarcar todos' : 'Selecionar todos'}
+        </button>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 0 }}>
         {OPCOES_SEED.map(op => (
@@ -281,7 +381,7 @@ export function SeletorDados({ selecionados, onChange }) {
         ))}
       </div>
       {selecionados.length === 0 && (
-        <p style={{ fontSize: 11, color: C.orange, marginTop: 4 }}>
+        <p style={{ fontSize: FONT.sm, color: C.orange, marginTop: SPACE.xs }}>
           Nenhum dado selecionado — apenas a conta admin será criada.
         </p>
       )}

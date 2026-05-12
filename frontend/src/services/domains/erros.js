@@ -44,9 +44,12 @@ export const errosService = {
     return api('/erros/marcar-todos-lidos', { method: 'PATCH', body: '{}' })
   },
   async excluir(id)             { await api(`/erros/${id}`, { method: 'DELETE' }) },
-  async limpar({ tipo, apenas_lidos } = {}) {
+  async bulkDelete(ids)         { return api('/erros/bulk',        { method: 'DELETE', body: JSON.stringify({ ids }) }) },
+  async bulkStatus(ids, status) { return api('/erros/bulk-status', { method: 'PATCH',  body: JSON.stringify({ ids, status }) }) },
+  async limpar({ tipo, status, apenas_lidos } = {}) {
     const p = new URLSearchParams()
     if (tipo)         p.set('tipo', tipo)
+    if (status)       p.set('status', status)
     if (apenas_lidos) p.set('apenas_lidos', 'true')
     return api(`/erros${p.toString() ? '?' + p : ''}`, { method: 'DELETE' })
   },

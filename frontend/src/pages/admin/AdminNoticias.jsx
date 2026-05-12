@@ -16,7 +16,8 @@ import { useNoticias, useCategorias } from '../../hooks/useNoticias'
 import ConfirmModal from '../../components/ConfirmModal'
 import toast from 'react-hot-toast'
 import { formatarData } from '../../utils/formatters'
-import { T as C } from '../../themes/tokens'
+import { T as C, SPACE, RADIUS, FONT } from '../../themes/tokens'
+import { DSBadge, DSModal, DSBtn } from '../../components/admin/ui/DS'
 import AdminIcon from '../../components/admin/ui/AdminIcon'
 
 // Alias para compatibilidade com JSX já escrito abaixo
@@ -47,18 +48,17 @@ function slugify(t) {
 
 // ─── StatusBadge ──────────────────────────────────────────────
 const STATUS_CFG = {
-  rascunho:  { label:'Rascunho',  bg:'rgba(100,116,139,.15)', color:'#64748b', border:'rgba(100,116,139,.3)' },
-  revisao:   { label:'Revisão',   bg:'rgba(245,158,11,.13)',  color:'#b45309', border:'rgba(245,158,11,.35)' },
-  publicado: { label:'Publicado', bg:'rgba(34,197,94,.13)',   color:'#15803d', border:'rgba(34,197,94,.35)'  },
-  arquivado: { label:'Arquivado', bg:'rgba(239,68,68,.12)',   color:'#b91c1c', border:'rgba(239,68,68,.3)'   },
+  rascunho:  { label:'Rascunho',  bg:'rgba(100,116,139,.15)', color:C.subtle,  border:'rgba(100,116,139,.3)' },
+  revisao:   { label:'Revisão',   bg:C.amberBg,               color:C.amber,   border:C.amberBorder },
+  publicado: { label:'Publicado', bg:C.greenBg,               color:C.greenSolid, border:C.greenBorder },
+  arquivado: { label:'Arquivado', bg:C.redBg,                 color:C.red,     border:C.redBorder },
 }
 function StatusBadge({ status }) {
   const s = STATUS_CFG[status] || STATUS_CFG.rascunho
   return (
-    <span style={{display:'inline-flex',alignItems:'center',padding:'3px 9px',borderRadius:6,fontSize:11,fontWeight:700,
-      whiteSpace:'nowrap',background:s.bg,color:s.color,border:`1px solid ${s.border}`,letterSpacing:'.02em'}}>
+    <DSBadge style={{ background:s.bg, color:s.color, border:`1px solid ${s.border}` }}>
       {s.label}
-    </span>
+    </DSBadge>
   )
 }
 
@@ -83,9 +83,9 @@ function CategoriaBadge({ nome }) {
 
 // ─── Toggle config ────────────────────────────────────────────
 function getToggleConfig(status) {
-  if (status === 'publicado') return { label:'Despublicar', icon:Ico.eyeOff, novoStatus:'rascunho',  color:'#b45309', bg:'rgba(245,158,11,.12)', border:'rgba(245,158,11,.35)' }
-  if (status === 'arquivado') return { label:'Republicar',  icon:Ico.eye,    novoStatus:'publicado', color:'#0369a1', bg:'rgba(14,165,233,.12)', border:'rgba(14,165,233,.35)' }
-  return                             { label:'Publicar',    icon:Ico.eye,    novoStatus:'publicado', color:'#15803d', bg:'rgba(34,197,94,.12)',  border:'rgba(34,197,94,.35)'  }
+  if (status === 'publicado') return { label:'Despublicar', icon:Ico.eyeOff, novoStatus:'rascunho',  color:C.amber, bg:C.amberBg, border:C.amberBorder }
+  if (status === 'arquivado') return { label:'Republicar',  icon:Ico.eye,    novoStatus:'publicado', color:C.blue, bg:C.blueBg, border:C.blueBorder }
+  return                             { label:'Publicar',    icon:Ico.eye,    novoStatus:'publicado', color:C.greenSolid, bg:C.greenBg, border:C.greenBorder }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -108,22 +108,17 @@ function CategoriaModal({ categoria, onSalvar, onFechar, salvando }) {
   }
 
   return (
-    <>
-      <style>{`
-        .nc-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;animation:nc-in .15s ease}
-        @keyframes nc-in{from{opacity:0}to{opacity:1}}
-        .nc-modal{background:var(--adm-surface);border:1px solid var(--adm-border);border-radius:16px;width:100%;max-width:480px;padding:28px 28px 24px;box-shadow:0 24px 64px rgba(0,0,0,.45);animation:nc-up .18s ease}
-        @keyframes nc-up{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
-        @media(max-width:600px){.nc-overlay{align-items:flex-end;padding:0}.nc-modal{border-radius:20px 20px 0 0;max-width:100%;padding:24px 20px 32px}}
-      `}</style>
-      <div className="nc-overlay" role="dialog" aria-modal="true"
-        onMouseDown={e=>{if(e.target===e.currentTarget&&!salvando)onFechar()}}>
-        <div className="nc-modal">
-          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:22}}>
-            <div style={{fontSize:15,fontWeight:700,color:'var(--adm-text)'}}>{isNovo?'✦ Nova categoria':'Editar categoria'}</div>
-            <button onClick={()=>!salvando&&onFechar()} style={{background:'none',border:'none',cursor:'pointer',color:'var(--adm-muted)',padding:4,lineHeight:0}}>{Ico.close}</button>
-          </div>
-          <form onSubmit={handleSubmit} style={{display:'flex',flexDirection:'column',gap:18}}>
+    <DSModal open onClose={()=>!salvando&&onFechar()} title={isNovo?'✦ Nova categoria':'Editar categoria'} size="sm"
+      footer={
+        <>
+          <DSBtn type="submit" variant="primary" loading={salvando} onClick={handleSubmit}>
+            {isNovo?'Criar categoria':'Salvar alterações'}
+          </DSBtn>
+          <DSBtn onClick={()=>!salvando&&onFechar()} disabled={salvando}>Cancelar</DSBtn>
+        </>
+      }
+    >
+          <form onSubmit={handleSubmit} style={{display:'flex',flexDirection:'column',gap:SPACE.lg}}>
             <div>
               <label className="adm-label" htmlFor="nc-nome">Nome <span style={{color:'var(--adm-accent)'}}>*</span></label>
               <input id="nc-nome" className="adm-input" placeholder="Ex: Política" value={nome} onChange={e=>handleNome(e.target.value)} maxLength={100} autoFocus/>
@@ -141,7 +136,7 @@ function CategoriaModal({ categoria, onSalvar, onFechar, salvando }) {
                 <label className="adm-label" htmlFor="nc-desc" style={{marginBottom:0}}>
                   Descrição <span style={{fontWeight:400,color:'var(--adm-muted)',fontSize:11}}>(SEO)</span>
                 </label>
-                {cc>0&&<span style={{fontSize:11,fontWeight:600,color:charOver?'#ef4444':charWarn?'#f59e0b':'var(--adm-accent)'}}>{cc}/160</span>}
+                {cc>0&&<span style={{fontSize:11,fontWeight:600,color:charOver?C.red:charWarn?C.amber:'var(--adm-accent)'}}>{cc}/160</span>}
               </div>
               <textarea id="nc-desc" className="adm-input" rows={3}
                 placeholder="Breve descrição da categoria — aparece em buscadores."
@@ -151,16 +146,8 @@ function CategoriaModal({ categoria, onSalvar, onFechar, salvando }) {
                 {charOver?'⚠️ Acima de 160 caracteres':charWarn?'↑ Ideal: 120–160 caracteres':cc===0?'Meta description da página':'✓ Comprimento ideal'}
               </span>
             </div>
-            <div style={{display:'flex',gap:10,justifyContent:'flex-end',marginTop:4}}>
-              <button type="button" onClick={()=>!salvando&&onFechar()} className="adm-btn adm-btn-ghost">Cancelar</button>
-              <button type="submit" disabled={salvando} className="adm-btn adm-btn-primary">
-                {salvando?'Salvando…':isNovo?'Criar categoria':'Salvar alterações'}
-              </button>
-            </div>
           </form>
-        </div>
-      </div>
-    </>
+    </DSModal>
   )
 }
 
@@ -525,7 +512,7 @@ function AbaNoticia() {
           {FILTROS_STATUS.map(f=>(
             <button key={f.value} onClick={()=>aplicarStatus(f.value)}
               style={{
-                padding:'4px 12px',borderRadius:20,fontSize:12,fontWeight:600,cursor:'pointer',whiteSpace:'nowrap',
+                padding:`${SPACE.xs}px ${SPACE.lg}px`,borderRadius:RADIUS.pill,fontSize:FONT.base,fontWeight:600,cursor:'pointer',whiteSpace:'nowrap',
                 border:`1px solid ${filtroStatus===f.value?'var(--adm-accent)':'var(--adm-border)'}`,
                 background:filtroStatus===f.value?'var(--adm-accent)':'transparent',
                 color:filtroStatus===f.value?'#fff':'var(--adm-muted)',transition:'all .15s',

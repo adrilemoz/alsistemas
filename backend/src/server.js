@@ -72,6 +72,7 @@ import projetosRoutes   from './routes/projetos.js'             // Projetos Loca
 import githubRoutes     from './routes/github.js'               // GitHub Module (proxy seguro)
 // ── Sprint 4: Inteligência + Análise ───────────────────────────
 import analysisRoutes   from './routes/analysis.js'             // IA Assistant + Analysis Engine
+import mongoAdminRoutes from './routes/mongoAdmin.js'            // MongoDB Admin Panel
 import { tratarErros }  from './middleware/erros.js'
 
 const app  = express()
@@ -162,6 +163,7 @@ app.use('/api/projetos', projetosRoutes)                     // Projetos Locais
 app.use('/api/github',   githubRoutes)                       // GitHub Module (proxy seguro)
 // ── Sprint 4: Inteligência + Análise ───────────────────────────
 app.use('/api/analysis', analysisRoutes)                     // IA Assistant + Analysis Engine
+app.use('/api/admin/mongo', mongoAdminRoutes)                 // MongoDB Admin Panel
 
 // ─── #9 — Health check detalhado ─────────────────────────────
 app.use('/api/health', healthRoutes)

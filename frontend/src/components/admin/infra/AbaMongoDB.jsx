@@ -8,6 +8,7 @@ import {
   C, Ico, Spin, formatBytes,
   PageCard, SectionTitle, Badge, Btn, ModalConfirm,
 } from './InfraBase'
+import { DSModal, DSBtn } from '../ui/DS'
 
 export default function AbaMongoDB() {
   const [status,     setStatus]     = useState(null)
@@ -304,25 +305,22 @@ export default function AbaMongoDB() {
         </PageCard>
       </div>
 
-      {/* Modal de documento */}
-      {docVis && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 800, background: 'rgba(0,0,0,.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: 20, maxWidth: 640, width: '100%', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-              <h3 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: C.text }}>Documento — {colSel}</h3>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <Btn small variant="ghost" onClick={() => { navigator.clipboard.writeText(JSON.stringify(docVis, null, 2)); toast.success('JSON copiado!') }}>
-                  {Ico.copy} Copiar
-                </Btn>
-                <Btn small variant="ghost" onClick={() => setDocVis(null)}>{Ico.x}</Btn>
-              </div>
-            </div>
-            <pre style={{ overflowY: 'auto', flex: 1, margin: 0, padding: '12px 14px', background: C.bg, borderRadius: 8, fontSize: 12, color: C.subtle, lineHeight: 1.6 }}>
-              {JSON.stringify(docVis, null, 2)}
-            </pre>
-          </div>
-        </div>
-      )}
+      {/* ✅ DSModal substitui overlay position:fixed inline */}
+      <DSModal
+        open={!!docVis}
+        onClose={() => setDocVis(null)}
+        title={`Documento — ${colSel}`}
+        size="lg"
+        footer={
+          <DSBtn variant="ghost" onClick={() => { navigator.clipboard.writeText(JSON.stringify(docVis, null, 2)); toast.success('JSON copiado!') }}>
+            {Ico.copy} Copiar JSON
+          </DSBtn>
+        }
+      >
+        <pre style={{ overflowY: 'auto', margin: 0, padding: '12px 14px', background: C.bg, borderRadius: 8, fontSize: 12, color: C.subtle, lineHeight: 1.6, maxHeight: '60vh' }}>
+          {docVis ? JSON.stringify(docVis, null, 2) : ''}
+        </pre>
+      </DSModal>
     </div>
   )
 }

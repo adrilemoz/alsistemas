@@ -3,6 +3,7 @@ import { Bus, Plus, Trash2, Edit2, Save, X, PlusCircle, Clock } from 'lucide-rea
 import toast from 'react-hot-toast'
 import { onibusService } from '../../services/api'
 import ConfirmModal from '../../components/ConfirmModal'
+import { T as C, SPACE, RADIUS, FONT } from '../../themes/tokens'
 
 const TODOS_DIAS = ['seg', 'ter', 'qua', 'qui', 'sex', 'sab', 'dom']
 const DIAS_LABEL = { seg: 'Seg', ter: 'Ter', qua: 'Qua', qui: 'Qui', sex: 'Sex', sab: 'Sáb', dom: 'Dom' }
@@ -15,11 +16,11 @@ function HorarioForm({ horario, onChange, onRemove }) {
     <div style={{
       background: 'var(--adm-surface2)',
       border: '1px solid var(--adm-border)',
-      borderRadius: 10,
+      borderRadius: RADIUS.lg,
       padding: '14px',
-      marginBottom: 12,
+      marginBottom: SPACE.lg,
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: SPACE.lg, marginBottom: SPACE.lg }}>
         <div style={{ flex: 1 }}>
           <label className="adm-label" style={{ marginBottom: 4 }}>Horário</label>
           <input
@@ -40,9 +41,9 @@ function HorarioForm({ horario, onChange, onRemove }) {
         </button>
       </div>
 
-      <div style={{ marginBottom: 12 }}>
+      <div style={{ marginBottom: SPACE.lg }}>
         <label className="adm-label" style={{ marginBottom: 6 }}>Dias da semana</label>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: SPACE.sm }}>
           {TODOS_DIAS.map(d => (
             <button
               key={d}
@@ -55,8 +56,8 @@ function HorarioForm({ horario, onChange, onRemove }) {
               }}
               style={{
                 padding: '4px 10px',
-                borderRadius: 6,
-                fontSize: 11,
+                borderRadius: RADIUS.sm,
+                fontSize: FONT.sm,
                 fontWeight: 700,
                 border: '1px solid',
                 borderColor: horario.dias?.includes(d) ? 'var(--adm-accent)' : 'var(--adm-border)',
@@ -117,12 +118,12 @@ function LinhaForm({ linha, onSave, onCancel }) {
   }
 
   return (
-    <div className="adm-card" style={{ padding: 24, marginBottom: 24 }}>
-      <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--adm-text)', marginBottom: 20 }}>
+    <div className="adm-card" style={{ padding: SPACE.xl3, marginBottom: 24 }}>
+      <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--adm-text)', marginBottom: SPACE.xl2 }}>
         {linha ? 'Editar linha' : 'Nova linha'}
       </h3>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: SPACE.xl, marginBottom: 24 }}>
         <div>
           <label className="adm-label">Destino *</label>
           <input
@@ -154,7 +155,7 @@ function LinhaForm({ linha, onSave, onCancel }) {
         </div>
         <div>
           <label className="adm-label">Cor da linha</label>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 6 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: SPACE.md, marginTop: 6 }}>
             {CORES.map(c => (
               <button
                 key={c}
@@ -177,29 +178,29 @@ function LinhaForm({ linha, onSave, onCancel }) {
 
       {/* Seção de horários */}
       <div style={{ marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: SPACE.lg }}>
           <label className="adm-label" style={{ marginBottom: 0 }}>Horários de saída</label>
           <button
             onClick={addHorario}
             className="adm-btn adm-btn-secondary adm-btn-sm"
-            style={{ gap: 6 }}
+            style={{ gap: SPACE.sm }}
           >
             <PlusCircle size={14} /> Adicionar horário
           </button>
         </div>
         {(form.horarios || []).length === 0 && (
           <p style={{
-            fontSize: 13,
+            fontSize: FONT.md,
             color: 'var(--adm-muted)',
             textAlign: 'center',
             padding: '20px',
             border: '1px dashed var(--adm-border)',
-            borderRadius: 10,
+            borderRadius: RADIUS.lg,
           }}>
             Nenhum horário adicionado
           </p>
         )}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: SPACE.md }}>
           {(form.horarios || []).map((h, i) => (
             <HorarioForm
               key={i}
@@ -211,7 +212,7 @@ function LinhaForm({ linha, onSave, onCancel }) {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 12, borderTop: '1px solid var(--adm-border)', paddingTop: 20 }}>
+      <div style={{ display: 'flex', gap: SPACE.lg, borderTop: '1px solid var(--adm-border)', paddingTop: 20 }}>
         <button onClick={handleSave} className="adm-btn adm-btn-primary">
           <Save size={15} style={{ marginRight: 6 }} /> Salvar
         </button>
@@ -324,7 +325,7 @@ export default function AdminOnibus() {
           </div>
         ) : linhas.length === 0 ? (
           <div className="adm-empty">
-            <Bus size={32} style={{ opacity: 0.2, marginBottom: 8 }} />
+            <Bus size={32} style={{ opacity: 0.2, marginBottom: SPACE.md }} />
             <p>Nenhuma linha cadastrada ainda.</p>
           </div>
         ) : (
@@ -335,14 +336,14 @@ export default function AdminOnibus() {
                 style={{
                   background: 'var(--adm-surface2)',
                   border: '1px solid var(--adm-border)',
-                  borderRadius: 10,
+                  borderRadius: RADIUS.lg,
                   padding: '16px',
-                  marginBottom: 12,
+                  marginBottom: SPACE.lg,
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: SPACE.lg }}>
                   <div style={{
-                    width: 44, height: 44, borderRadius: 10,
+                    width: 44, height: 44, borderRadius: RADIUS.lg,
                     backgroundColor: (l.cor || '#1B5E3B') + '20',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     flexShrink: 0,
@@ -353,11 +354,11 @@ export default function AdminOnibus() {
                     <p style={{ fontWeight: 700, color: 'var(--adm-text)', marginBottom: 2 }}>
                       Iguatama → {l.destino}
                     </p>
-                    <p style={{ fontSize: 12, color: 'var(--adm-muted)' }}>
+                    <p style={{ fontSize: FONT.base, color: 'var(--adm-muted)' }}>
                       {l.empresa || 'Empresa não informada'} · {l.horarios?.length || 0} horários
                     </p>
                   </div>
-                  <div style={{ display: 'flex', gap: 4 }}>
+                  <div style={{ display: 'flex', gap: SPACE.xs }}>
                     <button
                       onClick={() => { setEditLinha(l); setEditando(l.id) }}
                       className="adm-btn adm-btn-ghost adm-btn-icon adm-btn-sm"
@@ -376,21 +377,21 @@ export default function AdminOnibus() {
                   </div>
                 </div>
                 {l.horarios?.length > 0 && (
-                  <div style={{ marginTop: 14, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  <div style={{ marginTop: 14, display: 'flex', flexWrap: 'wrap', gap: SPACE.md }}>
                     {l.horarios.map((h, i) => (
                       <span
                         key={i}
                         style={{
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: 4,
-                          fontSize: 11,
+                          gap: SPACE.xs,
+                          fontSize: FONT.sm,
                           fontWeight: 700,
                           background: 'var(--adm-surface)',
                           border: '1px solid var(--adm-border)',
                           color: 'var(--adm-text)',
                           padding: '3px 10px',
-                          borderRadius: 20,
+                          borderRadius: RADIUS.pill,
                         }}
                       >
                         <Clock size={10} /> {h.hora}

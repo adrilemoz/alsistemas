@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { fontesService } from '../../services/api'
 import ConfirmModal from '../../components/ConfirmModal'
 import toast from 'react-hot-toast'
+import { T as C, SPACE, RADIUS, FONT } from '../../themes/tokens'
 
 function FormInline({ inicial, onSalvar, onCancelar, salvando }) {
   const [nome, setNome] = useState(inicial?.nome||'')
@@ -24,7 +25,7 @@ function FormInline({ inicial, onSalvar, onCancelar, salvando }) {
         <input id="fonte-url" className="adm-input" type="text" placeholder="https://g1.globo.com"
           value={url} onChange={e => setUrl(e.target.value)}/>
       </div>
-      <div style={{ display:'flex', gap: 8, paddingBottom: 1 }} className="adm-form-inline-actions">
+      <div style={{ display:'flex', gap: SPACE.md, paddingBottom: 1 }} className="adm-form-inline-actions">
         <button type="submit" disabled={salvando} className="adm-btn adm-btn-primary adm-btn-sm">
           {salvando ? 'Salvando...' : 'Salvar'}
         </button>
@@ -90,7 +91,7 @@ export default function AdminFontes() {
       </div>
 
       {adicionando && (
-        <div className="adm-card" style={{ marginBottom: 16, padding: '16px 20px' }}>
+        <div className="adm-card" style={{ marginBottom: SPACE.xl, padding: '16px 20px' }}>
           <div className="adm-section-label" style={{ marginBottom: 14 }}>Nova fonte</div>
           <FormInline onSalvar={handleCriar} onCancelar={() => setAdicionando(false)} salvando={salvando}/>
         </div>
@@ -118,8 +119,8 @@ export default function AdminFontes() {
                     <>
                       <td>
                         {fonte.url
-                          ? <a href={fonte.url} target="_blank" rel="noopener noreferrer" style={{ color:'var(--adm-accent)', fontSize: 12 }}>{fonte.url}</a>
-                          : <span style={{ color:'var(--adm-muted)', fontSize: 12 }}>—</span>}
+                          ? <a href={fonte.url} target="_blank" rel="noopener noreferrer" style={{ color:'var(--adm-accent)', fontSize: FONT.base }}>{fonte.url}</a>
+                          : <span style={{ color:'var(--adm-muted)', fontSize: FONT.base }}>—</span>}
                       </td>
                       <td>
                         <div className="adm-td-actions">

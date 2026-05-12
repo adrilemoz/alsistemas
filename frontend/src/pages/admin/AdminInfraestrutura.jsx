@@ -10,6 +10,7 @@
  */
 import { useState, Suspense, lazy } from 'react'
 import { C, Ico, Spin } from '../../components/admin/infra/InfraBase'
+import { T as C, SPACE, RADIUS, FONT } from '../../themes/tokens'
 
 const AbaConfiguracoes = lazy(() => import('../../components/admin/infra/AbaConfiguracoes'))
 const AbaMongoDB       = lazy(() => import('../../components/admin/infra/AbaMongoDB'))
@@ -47,7 +48,7 @@ export default function AdminInfraestrutura() {
             className={`adm-tab-btn${abaAtiva === aba.id ? ' active' : ''}`}
             onClick={() => setAbaAtiva(aba.id)}
           >
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: SPACE.sm }}>
               {aba.icon} {aba.label}
             </span>
           </button>

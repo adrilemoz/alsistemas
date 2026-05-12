@@ -1,6 +1,7 @@
 import { useTheme } from '../../context/ThemeContext'
 import { TEMAS } from '../../themes'
 import toast from 'react-hot-toast'
+import { T as C, SPACE, RADIUS, FONT } from '../../themes/tokens'
 
 /* ── Mini-preview de cada tema ─────────────────────────────── */
 function TemaPreview({ tema }) {
@@ -18,18 +19,18 @@ function TemaPreview({ tema }) {
         {/* sidebar simulada */}
         <div style={{
           width: 28, alignSelf: 'stretch',
-          background: v['--adm-surface'], borderRadius: 4,
+          background: v['--adm-surface'], borderRadius: RADIUS.xs,
           display: 'flex', flexDirection: 'column',
-          gap: 4, padding: 4,
+          gap: SPACE.xs, padding: 4,
         }}>
           {[v['--adm-accent'], v['--adm-border2'], v['--adm-border2']].map((c, i) => (
             <div key={i} style={{ height: 4, borderRadius: 2, background: c }}/>
           ))}
         </div>
         {/* conteúdo */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: SPACE.xs }}>
           {/* stat cards */}
-          <div style={{ display: 'flex', gap: 4 }}>
+          <div style={{ display: 'flex', gap: SPACE.xs }}>
             {[0, 1].map(i => (
               <div key={i} className="adm-tema-preview-card"
                 style={{ background: v['--adm-surface'], border: `1px solid ${v['--adm-border']}` }}/>
@@ -38,7 +39,7 @@ function TemaPreview({ tema }) {
           {/* tabela */}
           <div style={{
             flex: 1, background: v['--adm-surface'],
-            borderRadius: 4, border: `1px solid ${v['--adm-border']}`,
+            borderRadius: RADIUS.xs, border: `1px solid ${v['--adm-border']}`,
           }}/>
           {/* accent bar */}
           <div style={{ height: 5, borderRadius: 3, background: v['--adm-accent'], width: '60%' }}/>
@@ -55,10 +56,10 @@ function PaletaSwatches({ vars }) {
     '--adm-text', '--adm-muted', '--adm-border',
   ]
   return (
-    <div style={{ display: 'flex', gap: 6, marginTop: 10, flexWrap: 'wrap' }}>
+    <div style={{ display: 'flex', gap: SPACE.sm, marginTop: 10, flexWrap: 'wrap' }}>
       {keys.map(k => (
         <div key={k} title={k} style={{
-          width: 20, height: 20, borderRadius: 4,
+          width: 20, height: 20, borderRadius: RADIUS.xs,
           background: vars[k],
           border: '1px solid rgba(0,0,0,.08)',
           flexShrink: 0,
@@ -90,7 +91,7 @@ export default function AdminTemas() {
       <div style={{
         background: 'rgba(var(--adm-accent-rgb,107,124,78),.08)',
         border: '1px solid rgba(var(--adm-accent-rgb,107,124,78),.2)',
-        borderRadius: 10, padding: '12px 16px',
+        borderRadius: RADIUS.lg, padding: '12px 16px',
         display: 'flex', alignItems: 'flex-start', gap: 10,
         marginBottom: 24,
       }}>
@@ -100,16 +101,16 @@ export default function AdminTemas() {
           <line x1="12" y1="8" x2="12" y2="12"/>
           <line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
-        <p style={{ fontSize: 13, color: 'var(--adm-muted)', lineHeight: 1.5, margin: 0 }}>
+        <p style={{ fontSize: FONT.md, color: 'var(--adm-muted)', lineHeight: 1.5, margin: 0 }}>
           O tema selecionado é salvo por navegador e aplicado automaticamente ao abrir o painel.
           Para adicionar novos temas, crie um arquivo em <code style={{
-            fontFamily: 'var(--adm-mono)', fontSize: 11,
+            fontFamily: 'var(--adm-mono)', fontSize: FONT.sm,
             background: 'rgba(var(--adm-accent-rgb,107,124,78),.1)',
-            padding: '1px 5px', borderRadius: 4,
+            padding: '1px 5px', borderRadius: RADIUS.xs,
           }}>frontend/src/themes/</code> e registre em <code style={{
-            fontFamily: 'var(--adm-mono)', fontSize: 11,
+            fontFamily: 'var(--adm-mono)', fontSize: FONT.sm,
             background: 'rgba(var(--adm-accent-rgb,107,124,78),.1)',
-            padding: '1px 5px', borderRadius: 4,
+            padding: '1px 5px', borderRadius: RADIUS.xs,
           }}>themes/index.js</code>.
         </p>
       </div>
@@ -155,11 +156,11 @@ export default function AdminTemas() {
 
       {/* Seção: como adicionar temas */}
       <div className="adm-card" style={{ marginTop: 28, padding: '20px 24px' }}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--adm-text)', marginBottom: 10 }}>
+        <div style={{ fontSize: FONT.lg - 1, fontWeight: 700, color: 'var(--adm-text)', marginBottom: 10 }}>
           🎨 Como adicionar um novo tema
         </div>
         <ol style={{
-          fontSize: 13, color: 'var(--adm-muted)', lineHeight: 1.9,
+          fontSize: FONT.md, color: 'var(--adm-muted)', lineHeight: 1.9,
           paddingLeft: 18, margin: 0,
         }}>
           <li>Crie <code style={codeStyle}>src/themes/meutema.js</code> exportando um objeto com <code style={codeStyle}>id</code>, <code style={codeStyle}>nome</code>, <code style={codeStyle}>descricao</code>, <code style={codeStyle}>icone</code> e <code style={codeStyle}>vars</code>.</li>
@@ -168,9 +169,9 @@ export default function AdminTemas() {
         </ol>
         <div style={{
           marginTop: 16, background: 'var(--adm-surface2)',
-          border: '1px solid var(--adm-border)', borderRadius: 8,
+          border: '1px solid var(--adm-border)', borderRadius: RADIUS.md,
           padding: '14px 16px', fontFamily: 'var(--adm-mono)',
-          fontSize: 12, color: 'var(--adm-text)', lineHeight: 1.7,
+          fontSize: FONT.base, color: 'var(--adm-text)', lineHeight: 1.7,
           whiteSpace: 'pre', overflowX: 'auto',
         }}>{`const meuTema = {
   id: 'meu-tema',
@@ -192,8 +193,8 @@ export default meuTema`}
 }
 
 const codeStyle = {
-  fontFamily: 'var(--adm-mono)', fontSize: 11,
+  fontFamily: 'var(--adm-mono)', fontSize: FONT.sm,
   background: 'rgba(var(--adm-accent-rgb,107,124,78),.1)',
-  padding: '1px 5px', borderRadius: 4,
+  padding: '1px 5px', borderRadius: RADIUS.xs,
   color: 'var(--adm-text)',
 }

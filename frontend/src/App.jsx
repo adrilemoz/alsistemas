@@ -26,7 +26,8 @@ const AdminErros          = lazy(() => import('./pages/admin/AdminErros'))
 const AdminUsuarios       = lazy(() => import('./pages/admin/AdminUsuarios'))
 const AdminBackup         = lazy(() => import('./pages/admin/AdminBackup'))
 const AdminSetup          = lazy(() => import('./pages/admin/AdminSetup'))
-const AdminInfraestrutura = lazy(() => import('./pages/admin/AdminInfraestrutura'))
+const AdminCloudinary      = lazy(() => import('./pages/admin/AdminCloudinary'))
+const AdminSistema         = lazy(() => import('./pages/admin/AdminSistema'))
 const AdminArquivos       = lazy(() => import('./pages/admin/AdminArquivos'))
 const AdminTemas          = lazy(() => import('./pages/admin/AdminTemas'))
 
@@ -49,6 +50,8 @@ const AdminGitHub      = lazy(() => import('./pages/admin/AdminGitHub'))
 const AdminProjetos    = lazy(() => import('./pages/admin/AdminProjetos'))
 // ── Sprint 4: Inteligência ─────────────────────────────────────
 const AdminAIAssistant = lazy(() => import('./pages/admin/AdminAIAssistant'))
+// ── Sprint 5: Dados ────────────────────────────────────────────
+const AdminMongo       = lazy(() => import('./pages/admin/AdminMongo'))
 
 // Wrapper de Suspense reutilizável
 function S({ children }) {
@@ -89,7 +92,8 @@ export default function App() {
         <Route path="erros"          element={<S><AdminErros /></S>} />
         <Route path="usuarios"       element={<S><AdminUsuarios /></S>} />
         <Route path="backup"         element={<S><AdminBackup /></S>} />
-        <Route path="infraestrutura" element={<S><AdminInfraestrutura /></S>} />
+        <Route path="cloudinary"    element={<S><AdminCloudinary /></S>} />
+        <Route path="sistema"       element={<S><AdminSistema /></S>} />
         <Route path="arquivos"       element={<S><AdminArquivos /></S>} />
         <Route path="temas"          element={<S><AdminTemas /></S>} />
 
@@ -111,6 +115,8 @@ export default function App() {
         <Route path="projetos"  element={<S><AdminProjetos /></S>} />
         {/* Sprint 4: Inteligência */}
         <Route path="ai-assistant" element={<S><AdminAIAssistant /></S>} />
+        {/* Sprint 5: Dados */}
+        <Route path="mongo"        element={<S><AdminMongo /></S>} />
       </Route>
 
       {/* 404 */}

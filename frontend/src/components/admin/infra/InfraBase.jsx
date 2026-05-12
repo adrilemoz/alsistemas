@@ -1,16 +1,24 @@
 /**
- * InfraBase.jsx — Primitivos de UI compartilhados pelas 4 abas do AdminInfraestrutura.
+ * InfraBase.jsx — Primitivos compartilhados pelas abas do AdminInfraestrutura.
  *
- * Exporta: C, Ico, Spin, formatBytes,
- *          PageCard, SectionTitle, Badge, Btn, Input,
- *          StatusDot, BarraProgresso, ModalConfirm
+ * MIGRADO: DS Sprint (Fase 4)
+ *   - PageCard    → DSCard (re-export para compatibilidade)
+ *   - Btn         → DSBtn  (re-export para compatibilidade)
+ *   - Badge       → DSBadge (re-export para compatibilidade)
+ *   - ModalConfirm → DSModal + DSBtn (re-export para compatibilidade)
+ *   - StatusDot, BarraProgresso, Input → mantidos (sem equivalente no DS)
+ *   - formatBytes, Ico, Spin, C → mantidos integralmente
+ *
+ * Os aliases de compatibilidade garantem zero breaking change nas 4 abas filhas.
  */
-import { useState }  from 'react'
-import { T as C }    from '../../../themes/tokens'
-import AdminIcon     from '../ui/AdminIcon'
+import { useState } from 'react'
+import { T as C, SPACE, RADIUS, FONT }  from '../../../themes/tokens'
+import AdminIcon                         from '../ui/AdminIcon'
+import { DSCard, DSBtn, DSBadge, DSModal } from '../ui/DS'
 
 export { C }
 
+// ── Ícones ─────────────────────────────────────────────────────
 export const Ico = {
   gear:    <AdminIcon name="gear"    size={16} />,
   db:      <AdminIcon name="db"      size={16} />,
@@ -47,113 +55,135 @@ export function formatBytes(bytes) {
   return `${bytes.toFixed(1)} ${units[i]}`
 }
 
+// ── Alias: PageCard → DSCard ────────────────────────────────────
 export function PageCard({ children, style }) {
-  return (
-    <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: '20px 18px', ...style }}>
-      {children}
-    </div>
-  )
+  return <DSCard style={{ padding: `${SPACE.xl2}px ${SPACE.lg + 2}px`, ...style }}>{children}</DSCard>
 }
 
+// ── Alias: SectionTitle → DSSectionTitle nativo ─────────────────
 export function SectionTitle({ children, icon }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: SPACE.md, marginBottom: SPACE.lg + 2 }}>
       <span style={{ color: C.blue }}>{icon}</span>
-      <h2 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: C.text }}>{children}</h2>
+      <h2 style={{ margin: 0, fontSize: FONT.lg, fontWeight: 700, color: C.text }}>{children}</h2>
     </div>
   )
 }
 
+// ── Alias: Badge → DSBadge ──────────────────────────────────────
 export function Badge({ color, children }) {
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 9px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: color + '22', color }}>
+    <DSBadge style={{ background: color + '22', color }}>
       {children}
-    </span>
+    </DSBadge>
   )
 }
 
+// ── Alias: Btn → DSBtn ──────────────────────────────────────────
 export function Btn({ onClick, disabled, loading, variant = 'primary', small, children, style }) {
-  const colors = {
-    primary: { bg: '#1d4ed8' },
-    success: { bg: '#166534' },
-    danger:  { bg: '#7f1d1d' },
-    ghost:   { bg: 'transparent', border: C.border },
+  const variantMap = {
+    primary: 'primary',
+    success: 'primary',
+    danger:  'danger',
+    ghost:   'ghost',
   }
-  const clr = colors[variant] || colors.primary
   return (
-    <button
+    <DSBtn
+      variant={variantMap[variant] || 'secondary'}
+      size={small ? 'sm' : undefined}
       onClick={onClick}
-      disabled={disabled || loading}
-      style={{
-        display: 'inline-flex', alignItems: 'center', gap: 6,
-        padding: small ? '6px 12px' : '9px 16px',
-        border: clr.border ? `1px solid ${clr.border}` : 'none',
-        borderRadius: 8, cursor: disabled || loading ? 'not-allowed' : 'pointer',
-        fontSize: small ? 12 : 13, fontWeight: 600,
-        background: clr.bg, color: disabled ? C.muted : C.text,
-        opacity: disabled || loading ? 0.6 : 1,
-        transition: 'opacity .15s, background .15s',
-        ...style,
-      }}
+      disabled={disabled}
+      loading={loading}
+      style={style}
     >
-      {loading ? <Spin size={13} /> : null}
       {children}
-    </button>
+    </DSBtn>
   )
 }
 
+// ── Input com toggle de senha ────────────────────────────────────
 export function Input({ label, value, onChange, type = 'text', placeholder, helper, showToggle, style }) {
   const [vis, setVis] = useState(false)
   const inputType = showToggle ? (vis ? 'text' : 'password') : type
   return (
-    <div style={{ marginBottom: 14, ...style }}>
+    <div style={{ marginBottom: SPACE.lg + 2, ...style }}>
       {label && (
-        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: C.subtle, marginBottom: 5, letterSpacing: '.04em', textTransform: 'uppercase' }}>
+        <label style={{
+          display: 'block', fontSize: FONT.sm, fontWeight: 700,
+          color: C.subtle, marginBottom: SPACE.sm,
+          letterSpacing: '.04em', textTransform: 'uppercase',
+        }}>
           {label}
         </label>
       )}
       <div style={{ position: 'relative' }}>
         <input
-          type={inputType} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-          style={{ width: '100%', padding: showToggle ? '9px 40px 9px 12px' : '9px 12px', borderRadius: 8, fontSize: 13, background: C.bg, border: `1.5px solid ${C.border}`, color: C.text, outline: 'none', boxSizing: 'border-box' }}
+          type={inputType} value={value}
+          onChange={e => onChange(e.target.value)} placeholder={placeholder}
+          style={{
+            width: '100%',
+            padding: showToggle ? `9px 40px 9px ${SPACE.lg}px` : `9px ${SPACE.lg}px`,
+            borderRadius: RADIUS.md, fontSize: FONT.md,
+            background: C.bg, border: `1.5px solid ${C.border}`,
+            color: C.text, outline: 'none', boxSizing: 'border-box',
+          }}
         />
         {showToggle && (
           <button type="button" onClick={() => setVis(!vis)}
-            style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: C.muted, display: 'flex' }}>
+            style={{
+              position: 'absolute', right: 10, top: '50%',
+              transform: 'translateY(-50%)',
+              background: 'none', border: 'none',
+              cursor: 'pointer', color: C.muted, display: 'flex',
+            }}>
             {vis ? Ico.eyeOff : Ico.eye}
           </button>
         )}
       </div>
-      {helper && <p style={{ fontSize: 11, color: C.muted, marginTop: 4 }}>{helper}</p>}
+      {helper && <p style={{ fontSize: FONT.sm, color: C.muted, marginTop: SPACE.xs }}>{helper}</p>}
     </div>
   )
 }
 
+// ── StatusDot ────────────────────────────────────────────────────
 export function StatusDot({ ok }) {
+  const cor = ok ? C.greenSolid : C.red
   return (
-    <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: ok ? C.green : C.red, boxShadow: ok ? `0 0 6px ${C.green}88` : `0 0 6px ${C.red}88` }}/>
+    <span style={{
+      display: 'inline-block', width: 8, height: 8, borderRadius: '50%',
+      background: cor, boxShadow: `0 0 6px ${cor}88`,
+    }} />
   )
 }
 
+// ── BarraProgresso ───────────────────────────────────────────────
 export function BarraProgresso({ pct, color }) {
   return (
-    <div style={{ height: 6, borderRadius: 3, background: C.border, overflow: 'hidden' }}>
-      <div style={{ width: `${Math.min(100, pct || 0)}%`, height: '100%', background: color, borderRadius: 3, transition: 'width .4s' }}/>
+    <div style={{ height: 6, borderRadius: RADIUS.xs, background: C.border, overflow: 'hidden' }}>
+      <div style={{
+        width: `${Math.min(100, pct || 0)}%`, height: '100%',
+        background: color, borderRadius: RADIUS.xs, transition: 'width .4s',
+      }} />
     </div>
   )
 }
 
+// ── Alias: ModalConfirm → DSModal ────────────────────────────────
 export function ModalConfirm({ titulo, descricao, loading, onConfirm, onCancel }) {
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 800, background: 'rgba(0,0,0,.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: 24, maxWidth: 380, width: '100%' }}>
-        <p style={{ fontSize: 15, fontWeight: 700, color: C.text, marginBottom: 8 }}>{titulo}</p>
-        <p style={{ fontSize: 13, color: C.muted, marginBottom: 20, lineHeight: 1.55 }}>{descricao}</p>
-        <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-          <Btn onClick={onCancel} variant="ghost" disabled={loading}>Cancelar</Btn>
-          <Btn onClick={onConfirm} variant="danger" loading={loading}>Confirmar exclusão</Btn>
-        </div>
-      </div>
-    </div>
+    <DSModal
+      open
+      onClose={onCancel}
+      title={titulo}
+      size="sm"
+      footer={
+        <>
+          <DSBtn variant="danger" loading={loading} onClick={onConfirm}>Confirmar exclusão</DSBtn>
+          <DSBtn onClick={onCancel} disabled={loading}>Cancelar</DSBtn>
+        </>
+      }
+    >
+      <p style={{ fontSize: FONT.md, color: C.muted, lineHeight: 1.55 }}>{descricao}</p>
+    </DSModal>
   )
 }

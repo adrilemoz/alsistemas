@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { T as C, SPACE, RADIUS, FONT } from '../../themes/tokens'
+import { DSBadge, DSBtn } from '../../components/admin/ui/DS'
 import { Calendar, Plus, Trash2, Edit2, Save, X, Clock, MapPin, ChevronLeft, ChevronRight, Tag } from 'lucide-react'
 import toast from 'react-hot-toast'
 import ConfirmModal from '../../components/ConfirmModal'
@@ -14,10 +16,8 @@ const TIPO_ENTRADA_LABELS = {
   pago: 'Pago',
   doacoes: 'Aceita doações',
 }
-const TIPO_ENTRADA_COLORS = {
-  gratuito: '#1B5E3B',
-  pago: '#C62828',
-  doacoes: '#E65100',
+function tipoEntradaCor(tipo) {
+  return tipo === 'pago' ? C.red : tipo === 'doacoes' ? C.orange : C.greenDk
 }
 
 function formatarDataBR(dataStr) {
@@ -83,7 +83,7 @@ function MiniCalendario({ selectedDate, onChange, eventosDatas = [] }) {
     <div style={{
       background: 'var(--adm-surface)',
       border: '1px solid var(--adm-border)',
-      borderRadius: 12,
+      borderRadius:RADIUS.xl,
       overflow: 'hidden',
       width: '100%',
     }}>
@@ -92,13 +92,13 @@ function MiniCalendario({ selectedDate, onChange, eventosDatas = [] }) {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '12px 16px',
         background: 'var(--adm-accent)',
-        color: '#000',
+        color: C.text,
       }}>
-        <button onClick={prevMes} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#000', padding: 4, borderRadius: 4 }}>
+        <button onClick={prevMes} style={{ background: 'none', border: 'none', cursor: 'pointer', color: C.text, padding: 4, borderRadius:RADIUS.xs }}>
           <ChevronLeft size={18} />
         </button>
-        <p style={{ fontWeight: 700, fontSize: 14, margin: 0 }}>{MESES[mes]} {ano}</p>
-        <button onClick={nextMes} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#000', padding: 4, borderRadius: 4 }}>
+        <p style={{ fontWeight: 700, fontSize:FONT.lg-1, margin: 0 }}>{MESES[mes]} {ano}</p>
+        <button onClick={nextMes} style={{ background: 'none', border: 'none', cursor: 'pointer', color: C.text, padding: 4, borderRadius:RADIUS.xs }}>
           <ChevronRight size={18} />
         </button>
       </div>
@@ -106,7 +106,7 @@ function MiniCalendario({ selectedDate, onChange, eventosDatas = [] }) {
       {/* Dias da semana */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', borderBottom: '1px solid var(--adm-border)' }}>
         {DIAS_SEMANA.map(d => (
-          <div key={d} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: 'var(--adm-muted)', padding: '8px 0' }}>{d}</div>
+          <div key={d} style={{ textAlign: 'center', fontSize:FONT.sm, fontWeight: 600, color: 'var(--adm-muted)', padding: '8px 0' }}>{d}</div>
         ))}
       </div>
 
@@ -119,8 +119,8 @@ function MiniCalendario({ selectedDate, onChange, eventosDatas = [] }) {
             style={{
               aspectRatio: '1 / 1',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 12, fontWeight: 600,
-              borderRadius: 8,
+              fontSize:FONT.base, fontWeight: 600,
+              borderRadius:RADIUS.md,
               border: 'none',
               background: isSelected(dia) ? 'var(--adm-accent)' : 'transparent',
               color: isSelected(dia) ? '#000' : isHoje(dia) ? 'var(--adm-accent)' : 'var(--adm-text)',
@@ -185,14 +185,14 @@ function EventoForm({ evento, eventosDatas, onSave, onCancel }) {
             eventosDatas={eventosDatas}
           />
           {form.data && (
-            <p style={{ marginTop: 12, fontSize: 13, color: 'var(--adm-accent)', fontWeight: 600, textAlign: 'center' }}>
+            <p style={{ marginTop: 12, fontSize:FONT.md, color: 'var(--adm-accent)', fontWeight: 600, textAlign: 'center' }}>
               📅 {formatarDataBR(form.data + 'T12:00:00')}
             </p>
           )}
         </div>
 
         {/* Campos */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap:SPACE.xl }}>
           <div className="adm-field">
             <label className="adm-label">Título *</label>
             <input type="text" className="adm-input" value={form.titulo} placeholder="Nome do evento"
@@ -205,14 +205,14 @@ function EventoForm({ evento, eventosDatas, onSave, onCancel }) {
               onChange={e => setForm(f => ({ ...f, descricao: e.target.value }))} rows={3} style={{ resize: 'vertical' }} />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap:SPACE.xl }}>
             <div className="adm-field">
-              <label className="adm-label" style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Clock size={12} /> Horário</label>
+              <label className="adm-label" style={{ display: 'flex', alignItems: 'center', gap:SPACE.xs }}><Clock size={12} /> Horário</label>
               <input type="time" className="adm-input" value={form.horario}
                 onChange={e => setForm(f => ({ ...f, horario: e.target.value }))} />
             </div>
             <div className="adm-field">
-              <label className="adm-label" style={{ display: 'flex', alignItems: 'center', gap: 4 }}><MapPin size={12} /> Local</label>
+              <label className="adm-label" style={{ display: 'flex', alignItems: 'center', gap:SPACE.xs }}><MapPin size={12} /> Local</label>
               <input type="text" className="adm-input" value={form.local} placeholder="Local do evento"
                 onChange={e => setForm(f => ({ ...f, local: e.target.value }))} />
             </div>
@@ -220,13 +220,13 @@ function EventoForm({ evento, eventosDatas, onSave, onCancel }) {
 
           {/* Tipo de entrada */}
           <div className="adm-field">
-            <label className="adm-label" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <label className="adm-label" style={{ display: 'flex', alignItems: 'center', gap:SPACE.xs }}>
               <Tag size={12} /> Tipo de entrada
             </label>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 6 }}>
+            <div style={{ display: 'flex', gap:SPACE.md, flexWrap: 'wrap', marginTop: 6 }}>
               {Object.entries(TIPO_ENTRADA_LABELS).map(([key, label]) => {
                 const ativo = (form.tipoEntrada || 'gratuito') === key
-                const cor = TIPO_ENTRADA_COLORS[key]
+                const cor = tipoEntradaCor(key)
                 return (
                   <button
                     key={key}
@@ -235,7 +235,7 @@ function EventoForm({ evento, eventosDatas, onSave, onCancel }) {
                     style={{
                       padding: '6px 14px',
                       borderRadius: 20,
-                      fontSize: 12,
+                      fontSize:FONT.base,
                       fontWeight: 700,
                       border: `2px solid ${ativo ? cor : 'var(--adm-border)'}`,
                       background: ativo ? cor + '18' : 'transparent',
@@ -253,7 +253,7 @@ function EventoForm({ evento, eventosDatas, onSave, onCancel }) {
 
           <div className="adm-field">
             <label className="adm-label">Cor do evento</label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 6 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap:SPACE.md, marginTop: 6 }}>
               {CORES.map(c => (
                 <button key={c} type="button"
                   onClick={() => setForm(f => ({ ...f, cor: c }))}
@@ -277,20 +277,20 @@ function EventoForm({ evento, eventosDatas, onSave, onCancel }) {
               marginTop: 8, padding: 12,
               background: 'var(--adm-surface2)',
               border: '1px solid var(--adm-border)',
-              borderRadius: 10,
+              borderRadius:RADIUS.lg,
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ width: 4, height: 40, borderRadius: 4, background: form.cor, flexShrink: 0 }} />
+                <div style={{ width: 4, height: 40, borderRadius:RADIUS.xs, background: form.cor, flexShrink: 0 }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontWeight: 700, color: 'var(--adm-text)', marginBottom: 2 }}>{form.titulo}</p>
-                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-                    {form.horario && <p style={{ fontSize: 12, color: 'var(--adm-muted)' }}>{form.horario}</p>}
+                  <div style={{ display: 'flex', gap:SPACE.md, flexWrap: 'wrap', alignItems: 'center' }}>
+                    {form.horario && <p style={{ fontSize:FONT.base, color: 'var(--adm-muted)' }}>{form.horario}</p>}
                     {form.tipoEntrada && (
                       <span style={{
                         fontSize: 10, fontWeight: 700,
                         padding: '2px 8px', borderRadius: 20,
-                        background: TIPO_ENTRADA_COLORS[form.tipoEntrada] + '20',
-                        color: TIPO_ENTRADA_COLORS[form.tipoEntrada],
+                        background: tipoEntradaCor(form.tipoEntrada) + '20',
+                        color: tipoEntradaCor(form.tipoEntrada),
                       }}>
                         {TIPO_ENTRADA_LABELS[form.tipoEntrada]}
                       </span>
@@ -311,7 +311,7 @@ function EventoForm({ evento, eventosDatas, onSave, onCancel }) {
         }
       `}</style>
 
-      <div style={{ display: 'flex', gap: 12, marginTop: 24, paddingTop: 20, borderTop: '1px solid var(--adm-border)', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap:SPACE.lg, marginTop: 24, paddingTop: 20, borderTop: '1px solid var(--adm-border)', flexWrap: 'wrap' }}>
         <button onClick={handleSave} className="adm-btn adm-btn-primary">
           <Save size={15} style={{ marginRight: 6 }} /> Salvar
         </button>
@@ -336,7 +336,7 @@ function EventoItem({ ev, onEdit, onDelete }) {
       display: 'flex', alignItems: 'stretch',
       background: 'var(--adm-surface2)',
       border: '1px solid var(--adm-border)',
-      borderRadius: 12,
+      borderRadius:RADIUS.xl,
       overflow: 'hidden',
       marginBottom: 12,
     }}>
@@ -354,33 +354,33 @@ function EventoItem({ ev, onEdit, onDelete }) {
         <p style={{
           fontWeight: 700, color: 'var(--adm-text)', marginBottom: 4,
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-          fontSize: 14,
+          fontSize:FONT.lg-1,
         }}>
           {ev.titulo}
         </p>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           {ev.horario && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--adm-muted)' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap:SPACE.xs, fontSize:FONT.sm, color: 'var(--adm-muted)' }}>
               <Clock size={10} /> {ev.horario}
             </span>
           )}
           {ev.local && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--adm-muted)' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap:SPACE.xs, fontSize:FONT.sm, color: 'var(--adm-muted)' }}>
               <MapPin size={10} /> {ev.local}
             </span>
           )}
           <span style={{
             fontSize: 10, fontWeight: 700,
             padding: '2px 8px', borderRadius: 20,
-            background: TIPO_ENTRADA_COLORS[tipoEntrada] + '20',
-            color: TIPO_ENTRADA_COLORS[tipoEntrada],
+            background: tipoEntradaCor(tipoEntrada) + '20',
+            color: tipoEntradaCor(tipoEntrada),
           }}>
             {TIPO_ENTRADA_LABELS[tipoEntrada]}
           </span>
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 4, padding: '0 10px', alignItems: 'center', flexShrink: 0 }}>
+      <div style={{ display: 'flex', gap:SPACE.xs, padding: '0 10px', alignItems: 'center', flexShrink: 0 }}>
         <button onClick={onEdit} className="adm-btn adm-btn-ghost adm-btn-icon adm-btn-sm" aria-label="Editar">
           <Edit2 size={15} />
         </button>
@@ -481,7 +481,7 @@ export default function AdminEventos() {
               {futuros.length > 0 && (
                 <div style={{ marginBottom: 16 }}>
                   <h3 style={{
-                    fontSize: 12, fontWeight: 700, color: 'var(--adm-muted)',
+                    fontSize:FONT.base, fontWeight: 700, color: 'var(--adm-muted)',
                     textTransform: 'uppercase', letterSpacing: 1, marginBottom: 14,
                   }}>
                     Próximos eventos ({futuros.length})
@@ -501,7 +501,7 @@ export default function AdminEventos() {
               {passados.length > 0 && (
                 <div>
                   <h3 style={{
-                    fontSize: 12, fontWeight: 700, color: 'var(--adm-muted)',
+                    fontSize:FONT.base, fontWeight: 700, color: 'var(--adm-muted)',
                     textTransform: 'uppercase', letterSpacing: 1, marginBottom: 14,
                   }}>
                     Eventos passados ({passados.length})

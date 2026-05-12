@@ -5,7 +5,7 @@ import { useUnsavedChanges } from '../../hooks/useUnsavedChanges'
 import ConfirmModal from '../../components/ConfirmModal'
 
 // ─── Paleta (padrão do admin) ─────────────────────────────────
-import { T as C } from '../../themes/tokens'
+import { T as C, SPACE, RADIUS, FONT } from '../../themes/tokens'
 import AdminIcon from '../../components/admin/ui/AdminIcon'
 
 // Alias para compatibilidade com JSX já escrito abaixo
@@ -45,13 +45,13 @@ function Campo({ campo, value, onChange }) {
   const charOk    = charCount === null || (charCount >= 120 && charCount <= 160)
 
   return (
-    <div style={{ marginBottom: 20 }}>
+    <div style={{ marginBottom: SPACE.xl2 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
         <label className="adm-label" htmlFor={id} style={{ fontWeight: 600, marginBottom: 0 }}>
           {campo.label}
         </label>
         {charCount !== null && (
-          <span style={{ fontSize: 11, color: charOk ? C.accent : C.yellow, fontWeight: 500 }}>
+          <span style={{ fontSize: FONT.sm, color: charOk ? C.accent : C.yellow, fontWeight: 500 }}>
             {charCount} / 160
           </span>
         )}
@@ -88,7 +88,7 @@ function Campo({ campo, value, onChange }) {
       )}
 
       {campo.hint && (
-        <span style={{ fontSize: 11, color: C.muted, display: 'block', marginTop: 6, lineHeight: 1.5 }}>
+        <span style={{ fontSize: FONT.sm, color: C.muted, display: 'block', marginTop: 6, lineHeight: 1.5 }}>
           {campo.hint}
         </span>
       )}
@@ -121,7 +121,7 @@ function AbaFavicon({ value, onChange }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
       <div style={{
-        width: 64, height: 64, borderRadius: 12, flexShrink: 0,
+        width: 64, height: 64, borderRadius: RADIUS.xl, flexShrink: 0,
         border: `2px solid ${C.border}`, background: C.surf2,
         display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
         boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
@@ -133,8 +133,8 @@ function AbaFavicon({ value, onChange }) {
       </div>
 
       <div style={{ flex: 1, minWidth: 240 }}>
-        <div className="adm-label" style={{ marginBottom: 8, fontWeight: 600 }}>URL do favicon</div>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div className="adm-label" style={{ marginBottom: SPACE.md, fontWeight: 600 }}>URL do favicon</div>
+        <div style={{ display: 'flex', gap: SPACE.md }}>
           <input type="text" className="adm-input" placeholder="https://seusite.com/favicon.ico"
             value={value || ''} onChange={e => onChange('site_favicon', e.target.value)}
             style={{ flex: 1 }} />
@@ -145,7 +145,7 @@ function AbaFavicon({ value, onChange }) {
             {uploading ? 'Enviando...' : 'Fazer Upload'}
           </button>
         </div>
-        <span style={{ fontSize: 11, color: C.muted, marginTop: 8, display: 'block', lineHeight: 1.5 }}>
+        <span style={{ fontSize: FONT.sm, color: C.muted, marginTop: 8, display: 'block', lineHeight: 1.5 }}>
           Recomendado: .ico, .png ou .svg de 32×32 px.
         </span>
       </div>
@@ -202,17 +202,17 @@ function AbaSitemap({ cfg, onChange }) {
       {/* URL do sitemap */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 10,
-        padding: '10px 14px', borderRadius: 8, marginBottom: 24,
+        padding: '10px 14px', borderRadius: RADIUS.md, marginBottom: 24,
         background: 'rgba(59,130,246,0.08)', border: `1px solid rgba(59,130,246,0.25)`,
       }}>
-        <span style={{ fontSize: 15, color: C.blue, flexShrink: 0 }}>{Ico.map}</span>
+        <span style={{ fontSize: FONT.lg, color: C.blue, flexShrink: 0 }}>{Ico.map}</span>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 11, color: C.muted, marginBottom: 2 }}>URL pública do sitemap</div>
-          <code style={{ fontSize: 12, color: C.blue, wordBreak: 'break-all' }}>{sitemapUrl}</code>
+          <div style={{ fontSize: FONT.sm, color: C.muted, marginBottom: 2 }}>URL pública do sitemap</div>
+          <code style={{ fontSize: FONT.base, color: C.blue, wordBreak: 'break-all' }}>{sitemapUrl}</code>
         </div>
         <a href={sitemapUrl} target="_blank" rel="noopener noreferrer"
           className="adm-btn adm-btn-secondary"
-          style={{ flexShrink: 0, fontSize: 12, padding: '5px 10px' }}>
+          style={{ flexShrink: 0, fontSize: FONT.base, padding: '5px 10px' }}>
           Abrir ↗
         </a>
       </div>
@@ -223,9 +223,9 @@ function AbaSitemap({ cfg, onChange }) {
 
       {/* Resumo */}
       <div style={{
-        marginTop: 8, padding: 14, borderRadius: 8,
+        marginTop: 8, padding: 14, borderRadius: RADIUS.md,
         background: C.surf2, border: `1px solid ${C.border}`,
-        fontSize: 12, color: C.muted, lineHeight: 1.8,
+        fontSize: FONT.base, color: C.muted, lineHeight: 1.8,
       }}>
         <div style={{ fontWeight: 600, color: C.text, marginBottom: 6 }}>📋 Configuração atual</div>
         <div>• Frequência: <strong style={{ color: C.text }}>{cfg.sitemap_changefreq || 'weekly'}</strong></div>
@@ -236,8 +236,8 @@ function AbaSitemap({ cfg, onChange }) {
 
       <div style={{
         marginTop: 14, padding: 12,
-        background: 'rgba(34,197,94,0.08)', borderRadius: 8,
-        fontSize: 12, color: C.green, border: `1px solid rgba(34,197,94,0.2)`,
+        background: 'rgba(34,197,94,0.08)', borderRadius: RADIUS.md,
+        fontSize: FONT.base, color: C.green, border: `1px solid rgba(34,197,94,0.2)`,
       }}>
         💡 Após salvar, submeta a URL no <strong>Google Search Console</strong> → Sitemaps para acelerar a indexação.
       </div>
@@ -253,32 +253,32 @@ function PreviewPanel({ cfg }) {
 
   return (
     <div style={{ position: 'sticky', top: 80 }}>
-      <div style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ fontSize: FONT.md, fontWeight: 700, color: C.text, marginBottom: SPACE.xl, display: 'flex', alignItems: 'center', gap: SPACE.md }}>
         <span>🔍 Pré-visualização</span>
-        <span style={{ fontSize: 10, color: C.muted, fontWeight: 400, marginLeft: 'auto' }}>Ao vivo</span>
+        <span style={{ fontSize: FONT.xs, color: C.muted, fontWeight: 400, marginLeft: 'auto' }}>Ao vivo</span>
       </div>
 
       {/* Card Google */}
       <div style={{
         background: C.surface, border: `1px solid ${C.border}`,
-        borderRadius: 12, padding: 16, marginBottom: 20,
+        borderRadius: RADIUS.xl, padding: SPACE.xl, marginBottom: SPACE.xl2,
         boxShadow: '0 2px 8px rgba(0,0,0,0.2)', wordBreak: 'break-word',
       }}>
-        <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ fontSize: FONT.sm, fontWeight: 600, color: C.muted, marginBottom: SPACE.lg, display: 'flex', alignItems: 'center', gap: SPACE.sm }}>
           <span>🌐 Google</span> <span style={{ opacity: 0.5 }}>— Busca</span>
         </div>
-        <div style={{ fontSize: 12, color: '#4ade80', marginBottom: 4, wordBreak: 'break-all' }}>{window.location.origin}</div>
+        <div style={{ fontSize: FONT.base, color: C.greenAcc, marginBottom: 4, wordBreak: 'break-all' }}>{window.location.origin}</div>
         <div style={{ fontSize: 16, fontWeight: 600, color: '#8ab4f8', marginBottom: 6, lineHeight: 1.3 }}>{titulo}</div>
-        <div style={{ fontSize: 13, color: C.muted, lineHeight: 1.5 }}>{descricao}</div>
+        <div style={{ fontSize: FONT.md, color: C.muted, lineHeight: 1.5 }}>{descricao}</div>
       </div>
 
       {/* Card Redes Sociais */}
       <div style={{
         background: C.surface, border: `1px solid ${C.border}`,
-        borderRadius: 12, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+        borderRadius: RADIUS.xl, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
       }}>
         <div style={{ padding: '12px 16px', borderBottom: `1px solid ${C.border}` }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: C.muted, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ fontSize: FONT.sm, fontWeight: 600, color: C.muted, display: 'flex', alignItems: 'center', gap: SPACE.sm }}>
             <span>📱 Redes Sociais</span> <span style={{ opacity: 0.5 }}>— Open Graph</span>
           </div>
         </div>
@@ -288,14 +288,14 @@ function PreviewPanel({ cfg }) {
               onError={e => { e.target.style.display = 'none' }} />
           </div>
         ) : (
-          <div style={{ height: 120, background: C.surf2, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.muted, fontSize: 12 }}>
+          <div style={{ height: 120, background: C.surf2, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.muted, fontSize: FONT.base }}>
             Nenhuma imagem definida
           </div>
         )}
         <div style={{ padding: '12px 16px', wordBreak: 'break-word' }}>
-          <div style={{ fontSize: 11, color: C.muted, marginBottom: 4 }}>{window.location.hostname.toUpperCase()}</div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: C.text, marginBottom: 4 }}>{titulo}</div>
-          <div style={{ fontSize: 12, color: C.muted, lineHeight: 1.4 }}>{descricao}</div>
+          <div style={{ fontSize: FONT.sm, color: C.muted, marginBottom: 4 }}>{window.location.hostname.toUpperCase()}</div>
+          <div style={{ fontSize: FONT.lg - 1, fontWeight: 600, color: C.text, marginBottom: 4 }}>{titulo}</div>
+          <div style={{ fontSize: FONT.base, color: C.muted, lineHeight: 1.4 }}>{descricao}</div>
         </div>
       </div>
     </div>
@@ -434,7 +434,7 @@ export default function AdminSEO() {
             {abaAtiva === 'indexacao' && (
               <>
                 {camposIndexacao.map(f => <Campo key={f.key} campo={f} value={cfgEdit[f.key]} onChange={onChange} />)}
-                <div style={{ marginTop: 8, padding: 12, background: 'rgba(239,68,68,0.1)', borderRadius: 8, fontSize: 12, color: C.red, border: `1px solid rgba(239,68,68,0.2)` }}>
+                <div style={{ marginTop: 8, padding: 12, background: 'rgba(239,68,68,0.1)', borderRadius: RADIUS.md, fontSize: FONT.base, color: C.red, border: `1px solid rgba(239,68,68,0.2)` }}>
                   ⚠️ "noindex" remove o site dos resultados de busca. Use apenas em ambiente de testes.
                 </div>
               </>

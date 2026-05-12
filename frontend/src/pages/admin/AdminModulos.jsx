@@ -1,3 +1,5 @@
+import { T as C, SPACE, RADIUS, FONT } from '../../themes/tokens'
+import { DSModal, DSBtn } from '../../components/admin/ui/DS'
 import { useState, useEffect, useMemo } from 'react'
 import {
   Save, Loader2, Plus, Trash2,
@@ -351,7 +353,7 @@ function SecaoNoticiasExternas() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
                 <span style={{ fontSize: 12, color: 'var(--adm-muted)' }}>{item.fonte_nome}</span>
                 {item.categoria_label && (
-                  <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 20, background: item.categoria_cor || '#1B5E3B', color: '#fff' }}>
+                  <span style={{ fontSize: FONT.sm, fontWeight: 700, padding: `2px ${SPACE.md}px`, borderRadius: RADIUS.pill, background: item.categoria_cor || '#1B5E3B', color: '#fff' }}>
                     {item.categoria_label}
                   </span>
                 )}
@@ -374,17 +376,12 @@ function SecaoNoticiasExternas() {
       </div>
 
       {/* Modal de Edição */}
-      {editando && (
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 300,
-          background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
-        }} onClick={e => { if (e.target === e.currentTarget) setEditando(null) }}>
-          <div className="adm-card" style={{ width: '100%', maxWidth: 560, maxHeight: '90vh', overflowY: 'auto' }}>
-            <div style={{ padding: 20, borderBottom: '1px solid var(--adm-border)' }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--adm-text)' }}>{editando === 'novo' ? 'Nova notícia externa' : 'Editar notícia'}</h3>
-            </div>
-            <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <DSModal open={!!editando} onClose={() => setEditando(null)}
+        title={editando === 'novo' ? 'Nova notícia externa' : 'Editar notícia'}
+        size="md"
+        footer={<><DSBtn variant="primary" onClick={salvar}>Salvar</DSBtn><DSBtn onClick={() => setEditando(null)}>Cancelar</DSBtn></>}
+      >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: SPACE.xl }}>
               <div className="adm-field">
                 <label className="adm-label">Título *</label>
                 <input className="adm-input" value={form.titulo || ''} onChange={e => setForm(f => ({ ...f, titulo: e.target.value }))} />
@@ -429,9 +426,7 @@ function SecaoNoticiasExternas() {
                 {salvando ? <Loader2 size={16} className="adm-spin" /> : <><Save size={16} style={{ marginRight: 6 }} /> Salvar</>}
               </button>
             </div>
-          </div>
-        </div>
-      )}
+      </DSModal>
     </div>
   )
 }

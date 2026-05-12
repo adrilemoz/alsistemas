@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { categoriasService } from '../../services/api'
 import ConfirmModal from '../../components/ConfirmModal'
 import toast from 'react-hot-toast'
+import { T as C, SPACE, RADIUS, FONT } from '../../themes/tokens'
 
 // ─── Helpers ──────────────────────────────────────────────────
 function slugify(t) {
@@ -56,7 +57,7 @@ function CategoriaModal({ categoria, onSalvar, onFechar, salvando }) {
       <style>{`
         .cat-overlay {
           position: fixed; inset: 0; background: rgba(0,0,0,.55);
-          z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px;
+          z-index: 1000; display: flex; align-items: center; justify-content: center; padding: SPACE.xlpx;
           animation: cat-fade-in .15s ease;
         }
         @keyframes cat-fade-in { from { opacity: 0 } to { opacity: 1 } }
@@ -69,7 +70,7 @@ function CategoriaModal({ categoria, onSalvar, onFechar, salvando }) {
         @keyframes cat-slide-up { from { transform: translateY(10px); opacity: 0 } to { transform: none; opacity: 1 } }
         @media (max-width: 600px) {
           .cat-overlay { align-items: flex-end; padding: 0; }
-          .cat-modal   { border-radius: 20px 20px 0 0; max-width: 100%; padding: 24px 20px 32px; }
+          .cat-modal   { border-radius: 20px 20px 0 0; max-width: 100%; padding: SPACE.xl3px 20px 32px; }
         }
       `}</style>
 
@@ -79,11 +80,11 @@ function CategoriaModal({ categoria, onSalvar, onFechar, salvando }) {
 
           {/* Cabeçalho */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22 }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--adm-text)' }}>
+            <div style={{ fontSize: FONT.lg, fontWeight: 700, color: 'var(--adm-text)' }}>
               {isNovo ? '✦ Nova categoria' : 'Editar categoria'}
             </div>
             <button onClick={() => !salvando && onFechar()}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--adm-muted)', padding: 4, borderRadius: 6, lineHeight: 0 }}>
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--adm-muted)', padding: 4, borderRadius: RADIUS.sm, lineHeight: 0 }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="16" height="16">
                 <path d="M18 6L6 18M6 6l12 12"/>
               </svg>
@@ -105,7 +106,7 @@ function CategoriaModal({ categoria, onSalvar, onFechar, salvando }) {
               <label className="adm-label" htmlFor="cat-slug">Slug <span style={{ color: 'var(--adm-accent)' }}>*</span></label>
               <input id="cat-slug" className="adm-input adm-input-mono" placeholder="politica"
                 value={slug} onChange={e => { setAutoSlug(false); setSlug(e.target.value) }} maxLength={100} />
-              <span style={{ fontSize: 11, color: 'var(--adm-muted)', marginTop: 4, display: 'block' }}>
+              <span style={{ fontSize: FONT.sm, color: 'var(--adm-muted)', marginTop: 4, display: 'block' }}>
                 Endereço: <code style={{ fontFamily: 'var(--adm-mono)' }}>/categoria/{slug || '…'}</code>
               </span>
             </div>
@@ -114,11 +115,11 @@ function CategoriaModal({ categoria, onSalvar, onFechar, salvando }) {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                 <label className="adm-label" htmlFor="cat-desc" style={{ marginBottom: 0 }}>
-                  Descrição <span style={{ fontWeight: 400, color: 'var(--adm-muted)', fontSize: 11 }}>(SEO)</span>
+                  Descrição <span style={{ fontWeight: 400, color: 'var(--adm-muted)', fontSize: FONT.sm }}>(SEO)</span>
                 </label>
                 {charCount > 0 && (
-                  <span style={{ fontSize: 11, fontWeight: 600,
-                    color: charOver ? '#ef4444' : charWarn ? '#f59e0b' : 'var(--adm-accent)' }}>
+                  <span style={{ fontSize: FONT.sm, fontWeight: 600,
+                    color: charOver ? C.red : charWarn ? C.amber : 'var(--adm-accent)' }}>
                     {charCount}/160
                   </span>
                 )}
@@ -127,7 +128,7 @@ function CategoriaModal({ categoria, onSalvar, onFechar, salvando }) {
                 placeholder="Breve descrição da categoria — aparece em buscadores e no topo da página de listagem."
                 value={descricao} onChange={e => setDescricao(e.target.value)} maxLength={200}
                 style={{ resize: 'vertical', minHeight: 72 }} />
-              <span style={{ fontSize: 11, color: 'var(--adm-muted)', marginTop: 4, display: 'block', lineHeight: 1.5 }}>
+              <span style={{ fontSize: FONT.sm, color: 'var(--adm-muted)', marginTop: 4, display: 'block', lineHeight: 1.5 }}>
                 {charOver
                   ? '⚠️ Acima de 160 caracteres — buscadores podem truncar'
                   : charWarn
@@ -211,7 +212,7 @@ export default function AdminCategorias() {
     <>
       <style>{`
         /* Botões de ação visíveis só no hover (desktop) */
-        .cat-actions { display: flex; align-items: center; gap: 4px; }
+        .cat-actions { display: flex; align-items: center; gap: SPACE.xspx; }
         @media (hover: hover) {
           .cat-actions { opacity: 0; transition: opacity .15s; }
           .adm-table tbody tr:hover .cat-actions { opacity: 1; }
@@ -295,7 +296,7 @@ export default function AdminCategorias() {
             <IcoTag />
             <p>Nenhuma categoria cadastrada.<br/>
               <button onClick={() => setModal({ categoria: null })}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--adm-accent)', fontWeight: 600, fontSize: 13, padding: 0, marginTop: 4 }}>
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--adm-accent)', fontWeight: 600, fontSize: FONT.md, padding: 0, marginTop: 4 }}>
                 Criar primeira categoria →
               </button>
             </p>
@@ -320,11 +321,11 @@ export default function AdminCategorias() {
                     <tr key={cat.id}>
                       <td style={{ fontWeight: 500 }}>{cat.nome}</td>
                       <td>
-                        <code style={{ fontFamily: 'var(--adm-mono)', fontSize: 11, color: 'var(--adm-muted)' }}>
+                        <code style={{ fontFamily: 'var(--adm-mono)', fontSize: FONT.sm, color: 'var(--adm-muted)' }}>
                           /{cat.slug}
                         </code>
                       </td>
-                      <td style={{ maxWidth: 260, color: 'var(--adm-muted)', fontSize: 12 }}>
+                      <td style={{ maxWidth: 260, color: 'var(--adm-muted)', fontSize: FONT.base }}>
                         {cat.descricao
                           ? <span style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cat.descricao}</span>
                           : <span style={{ opacity: .4, fontStyle: 'italic' }}>Sem descrição</span>
@@ -357,19 +358,19 @@ export default function AdminCategorias() {
                 <div key={cat.id} className="cat-card">
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--adm-text)', marginBottom: 3 }}>
+                      <div style={{ fontWeight: 600, fontSize: FONT.lg - 1, color: 'var(--adm-text)', marginBottom: 3 }}>
                         {cat.nome}
                       </div>
-                      <code style={{ fontSize: 11, color: 'var(--adm-muted)', fontFamily: 'var(--adm-mono)' }}>
+                      <code style={{ fontSize: FONT.sm, color: 'var(--adm-muted)', fontFamily: 'var(--adm-mono)' }}>
                         /{cat.slug}
                       </code>
                       {cat.descricao && (
-                        <div style={{ fontSize: 12, color: 'var(--adm-muted)', marginTop: 6, lineHeight: 1.5 }}>
+                        <div style={{ fontSize: FONT.base, color: 'var(--adm-muted)', marginTop: 6, lineHeight: 1.5 }}>
                           {cat.descricao}
                         </div>
                       )}
                     </div>
-                    <div style={{ display: 'flex', gap: 6, flexShrink: 0, paddingTop: 2 }}>
+                    <div style={{ display: 'flex', gap: SPACE.sm, flexShrink: 0, paddingTop: 2 }}>
                       <button onClick={() => setModal({ categoria: cat })}
                         aria-label={`Editar ${cat.nome}`}
                         className="adm-btn adm-btn-ghost adm-btn-icon adm-btn-sm">

@@ -3,6 +3,7 @@ import { newsletterService } from '../../services/api'
 import { formatarData } from '../../utils/formatters'
 import ConfirmModal from '../../components/ConfirmModal'
 import toast from 'react-hot-toast'
+import { T as C, SPACE, RADIUS, FONT } from '../../themes/tokens'
 
 export default function AdminNewsletter() {
   const [assinantes,   setAssinantes]   = useState([])
@@ -74,7 +75,7 @@ export default function AdminNewsletter() {
       </div>
 
       {/* Stats */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap: 12, marginBottom: 20, maxWidth: 480 }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap: SPACE.lg, marginBottom: SPACE.xl2, maxWidth: 480 }}>
         {[{label:'Total',valor:total,color:'var(--adm-text)'},{label:'Ativos',valor:ativos,color:'var(--adm-accent)'},{label:'Inativos',valor:inativos,color:'var(--adm-muted)'}].map(({label,valor,color}) => (
           <div key={label} className="adm-stat-card" style={{ textAlign:'center', padding: '14px 16px' }}>
             <div className="adm-stat-label">{label}</div>
@@ -89,7 +90,7 @@ export default function AdminNewsletter() {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             <input type="search" placeholder="Filtrar por email..." value={busca} onChange={e => setBusca(e.target.value)} aria-label="Filtrar"/>
           </div>
-          <div style={{ display:'flex', gap: 2, background:'var(--adm-surface2)', border:'1px solid var(--adm-border)', borderRadius: 6, padding: 3 }}>
+          <div style={{ display:'flex', gap: 2, background:'var(--adm-surface2)', border:'1px solid var(--adm-border)', borderRadius: RADIUS.sm, padding: 3 }}>
             {['todos','ativos','inativos'].map(v => (
               <button key={v} onClick={() => setFiltroAtivo(v)} aria-pressed={filtroAtivo===v}
                 className={`adm-btn adm-btn-sm${filtroAtivo===v ? ' adm-btn-primary' : ' adm-btn-ghost'}`}
@@ -107,9 +108,9 @@ export default function AdminNewsletter() {
               {filtrados.map(a => (
                 <tr key={a.id}>
                   <td style={{ fontWeight: 500 }}>{a.nome || '—'}</td>
-                  <td style={{ fontFamily:'var(--adm-mono)', fontSize: 12, color:'var(--adm-muted)' }}>{a.email}</td>
+                  <td style={{ fontFamily:'var(--adm-mono)', fontSize: FONT.base, color:'var(--adm-muted)' }}>{a.email}</td>
                   <td><span className={`adm-badge ${a.ativo ? 'adm-badge-green' : 'adm-badge-gray'}`}>{a.ativo?'Ativo':'Inativo'}</span></td>
-                  <td style={{ color:'var(--adm-muted)', fontSize: 12, whiteSpace:'nowrap' }}>{formatarData(a.inscrito_em)}</td>
+                  <td style={{ color:'var(--adm-muted)', fontSize: FONT.base, whiteSpace:'nowrap' }}>{formatarData(a.inscrito_em)}</td>
                   <td>
                     <div className="adm-td-actions">
                       <button onClick={() => toggleStatus(a)} aria-label={a.ativo?`Desativar ${a.email}`:`Reativar ${a.email}`}

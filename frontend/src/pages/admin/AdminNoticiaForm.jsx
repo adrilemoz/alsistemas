@@ -1,3 +1,5 @@
+import { T as C, SPACE, RADIUS, FONT } from '../../themes/tokens'
+import { DSModal, DSBtn, DSBadge } from '../../components/admin/ui/DS'
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { noticiasService, categoriasService, fontesService } from '../../services/api'
@@ -13,10 +15,10 @@ function slugify(t) {
 
 // #20 — Config visual de cada status
 const STATUS_CFG = {
-  rascunho:  { label: 'Rascunho',  bg: 'rgba(100,116,139,.15)', color: '#64748b', border: 'rgba(100,116,139,.3)'  },
-  revisao:   { label: 'Revisão',   bg: 'rgba(245,158,11,.13)',  color: '#b45309', border: 'rgba(245,158,11,.35)'  },
-  publicado: { label: 'Publicado', bg: 'rgba(34,197,94,.13)',   color: '#15803d', border: 'rgba(34,197,94,.35)'   },
-  arquivado: { label: 'Arquivado', bg: 'rgba(239,68,68,.12)',   color: '#b91c1c', border: 'rgba(239,68,68,.3)'    },
+  rascunho:  { label: 'Rascunho',  bg: 'rgba(100,116,139,.15)', color: C.subtle, border: 'rgba(100,116,139,.3)'  },
+  revisao:   { label: 'Revisão',   bg: C.amberBg, color: C.amber, border: C.amberBorder  },
+  publicado: { label: 'Publicado', bg: C.greenBg, color: C.greenSolid, border: C.greenBorder   },
+  arquivado: { label: 'Arquivado', bg: C.redBg, color: C.red, border: C.redBorder    },
 }
 
 // #20 — Transições possíveis a partir de cada estado
@@ -285,7 +287,7 @@ export default function AdminNoticiaForm() {
         }}>
           <div style={{
             background:'var(--adm-surface)', border:'1px solid var(--adm-border)',
-            borderRadius:14, padding:24, width:'100%', maxWidth:360,
+            
             boxShadow:'var(--adm-shadow-md)',
           }}>
             {/* Ícone de check */}
@@ -336,7 +338,7 @@ export default function AdminNoticiaForm() {
         >
           <div style={{
             background:'var(--adm-surface)', border:'1px solid var(--adm-border)',
-            borderRadius:14, padding:24, width:'100%', maxWidth:360,
+            
             boxShadow:'var(--adm-shadow-md)',
           }}>
             <div style={{ fontSize:15, fontWeight:700, color:'var(--adm-text)', marginBottom:8 }}>Sair sem salvar?</div>

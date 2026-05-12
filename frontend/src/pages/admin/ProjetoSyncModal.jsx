@@ -17,7 +17,7 @@
  *   onSynced  {Function} — callback após sync bem-sucedido
  */
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { T as C }                                from '../../themes/tokens'
+import { T as C, SPACE, RADIUS, FONT }           from '../../themes/tokens'
 import AdminIcon                                 from '../../components/admin/ui/AdminIcon'
 import { useProjetosSync }                       from '../../modules/projetos/useProjetosSync.js'
 import { useProjetosSyncStream }                 from '../../modules/projetos/useProjetosSyncStream.js'
@@ -41,9 +41,9 @@ function relTime(iso) {
 
 /* ── Badge de status de sync ────────────────────────────────── */
 const SYNC_META = {
-  atualizado:   { label: 'Em sincronia',  cor: '#22c55e', icon: 'check'  },
-  desatualizado:{ label: 'Desatualizado', cor: '#f59e0b', icon: 'alert'  },
-  desconhecido: { label: 'Desconhecido',  cor: '#64748b', icon: 'info'   },
+  atualizado:   { label: 'Em sincronia',  cor: C.greenSolid, icon: 'check'  },
+  desatualizado:{ label: 'Desatualizado', cor: C.amber, icon: 'alert'  },
+  desconhecido: { label: 'Desconhecido',  cor: C.subtle, icon: 'info'   },
 }
 
 function SyncBadge({ statusSync }) {
@@ -51,7 +51,7 @@ function SyncBadge({ statusSync }) {
   return (
     <span style={{
       display:'inline-flex', alignItems:'center', gap:5,
-      fontSize:10, fontWeight:700, color: meta.cor,
+      fontSize:FONT.xs, fontWeight:700, color: meta.cor,
       background:`${meta.cor}18`, border:`1px solid ${meta.cor}30`,
       borderRadius:20, padding:'3px 10px',
     }}>
@@ -63,9 +63,9 @@ function SyncBadge({ statusSync }) {
 
 function InfoRow({ label, value }) {
   return (
-    <div style={{ display:'flex', gap:8, alignItems:'baseline' }}>
-      <span style={{ fontSize:11, color:C.muted, flexShrink:0, width:130 }}>{label}</span>
-      <span style={{ fontSize:11, color:C.text }}>{value || '—'}</span>
+    <div style={{ display:'flex', gap:SPACE.md, alignItems:'baseline' }}>
+      <span style={{ fontSize:FONT.sm, color:C.muted, flexShrink:0, width:130 }}>{label}</span>
+      <span style={{ fontSize:FONT.sm, color:C.text }}>{value || '—'}</span>
     </div>
   )
 }
@@ -85,18 +85,18 @@ function RepoItem({ repo, selecionado, onSelect }) {
       }}
     >
       <div>
-        <div style={{ fontSize:12, fontWeight:600, color: ativo ? C.blue : C.text }}>
+        <div style={{ fontSize:FONT.base, fontWeight:600, color: ativo ? C.blue : C.text }}>
           {repo.nomeCompleto}
         </div>
         {repo.descricao && (
-          <div style={{ fontSize:10, color:C.muted, marginTop:2 }}>
+          <div style={{ fontSize:FONT.xs, color:C.muted, marginTop:2 }}>
             {repo.descricao.slice(0, 80)}{repo.descricao.length > 80 ? '…' : ''}
           </div>
         )}
       </div>
-      <div style={{ display:'flex', alignItems:'center', gap:10, flexShrink:0, marginLeft:10 }}>
+      <div style={{ display:'flex', alignItems:'center', gap:SPACE.lg - 2, flexShrink:0, marginLeft:10 }}>
         {repo.linguagem && (
-          <span style={{ fontSize:10, color:C.muted }}>{repo.linguagem}</span>
+          <span style={{ fontSize:FONT.xs, color:C.muted }}>{repo.linguagem}</span>
         )}
         {ativo && <AdminIcon name="check" size={12} style={{ color:C.blue }} />}
       </div>
@@ -132,24 +132,24 @@ const ETAPA_LABEL = {
 /* ── Cores de narração por nível ────────────────────────────── */
 const NIVEL_COR = {
   info:    C.muted,
-  warn:    '#f59e0b',
-  error:   '#dc2626',
-  success: '#22c55e',
+  warn:    C.amber,
+  error:   C.red,
+  success: C.greenSolid,
 }
 
 /* ── Metadados de status para o painel de sync ─────────────── */
 const STATUS_SYNC_META = {
   running:      { cor: C.blue,    icon: 'spinSm',  label: 'Sincronizando…'           },
-  success:      { cor: '#22c55e', icon: 'checkLg', label: 'Sincronização concluída'  },
-  error:        { cor: '#dc2626', icon: 'alert',   label: 'Erro na sincronização'    },
-  inconsistent: { cor: '#f59e0b', icon: 'warn',    label: 'Inconsistência detectada' },
+  success:      { cor: C.greenSolid, icon: 'checkLg', label: 'Sincronização concluída'  },
+  error:        { cor: C.red, icon: 'alert',   label: 'Erro na sincronização'    },
+  inconsistent: { cor: C.amber, icon: 'warn',    label: 'Inconsistência detectada' },
 }
 
 /* ── Metadados de status para o painel de commit ───────────── */
 const STATUS_COMMIT_META = {
   running: { cor: C.blue,    icon: 'spinSm',  label: 'Enviando para o GitHub…'      },
-  success: { cor: '#22c55e', icon: 'checkLg', label: 'Commit realizado com sucesso' },
-  error:   { cor: '#dc2626', icon: 'alert',   label: 'Erro no commit'               },
+  success: { cor: C.greenSolid, icon: 'checkLg', label: 'Commit realizado com sucesso' },
+  error:   { cor: C.red, icon: 'alert',   label: 'Erro no commit'               },
 }
 
 /* ════════════════════════════════════════════════════════════════
@@ -185,14 +185,14 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
         background: C.border,
         borderRadius:2,
         overflow:'hidden',
-        marginBottom:16,
+        marginBottom:SPACE.xl,
       }}>
         <div style={{
           height:'100%',
           width:`${progresso}%`,
-          background: status === 'error'        ? '#dc2626'
-                    : status === 'inconsistent' ? '#f59e0b'
-                    : status === 'success'      ? '#22c55e'
+          background: status === 'error'        ? C.red
+                    : status === 'inconsistent' ? C.amber
+                    : status === 'success'      ? C.greenSolid
                     : C.blue,
           borderRadius:2,
           transition:'width .4s ease',
@@ -202,23 +202,23 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
       {/* ── Etapa atual + status geral ─────────────────────── */}
       <div style={{
         display:'flex', alignItems:'center', justifyContent:'space-between',
-        marginBottom:12,
+        marginBottom:SPACE.lg,
       }}>
-        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:SPACE.md }}>
           <AdminIcon
             name={isRunning ? 'spinSm' : finalMeta.icon}
             size={14}
             style={{ color: finalMeta.cor }}
           />
-          <span style={{ fontSize:12, fontWeight:700, color: finalMeta.cor }}>
+          <span style={{ fontSize:FONT.base, fontWeight:700, color: finalMeta.cor }}>
             {finalMeta.label}
           </span>
         </div>
         {etapaAtual && (
           <span style={{
-            fontSize:10, color:C.muted,
+            fontSize:FONT.xs, color:C.muted,
             background:C.surf2, border:`1px solid ${C.border}`,
-            borderRadius:4, padding:'2px 8px',
+            borderRadius:RADIUS.xs, padding:'2px 8px',
           }}>
             {ETAPA_LABEL[etapaAtual] || etapaAtual}
           </span>
@@ -254,7 +254,7 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
         `}</style>
 
         {eventosLog.length === 0 && (
-          <span style={{ fontSize:11, color:C.muted, fontStyle:'italic' }}>
+          <span style={{ fontSize:FONT.sm, color:C.muted, fontStyle:'italic' }}>
             Aguardando início…
           </span>
         )}
@@ -268,15 +268,15 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
             <div
               key={ev.id || i}
               style={{
-                display:'flex', alignItems:'flex-start', gap:8,
-                fontSize:11, lineHeight:'18px',
+                display:'flex', alignItems:'flex-start', gap:SPACE.md,
+                fontSize:FONT.sm, lineHeight:'18px',
                 color: NIVEL_COR[ev.nivel] || C.muted,
               }}
             >
-              <span style={{ color:'#334155', flexShrink:0, userSelect:'none' }}>
+              <span style={{ color:C.subtle, flexShrink:0, userSelect:'none' }}>
                 {timestamp}
               </span>
-              <span style={{ color:'#334155', flexShrink:0, userSelect:'none' }}>
+              <span style={{ color:C.subtle, flexShrink:0, userSelect:'none' }}>
                 {ev.nivel === 'error'    ? '✗'
                  : ev.nivel === 'warn'   ? '⚠'
                  : ev.nivel === 'success'? '✓'
@@ -295,7 +295,7 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
           <div style={{
             marginTop:8, paddingTop:8,
             borderTop:`1px solid ${C.border}`,
-            fontSize:10, color: finalMeta.cor, fontWeight:700,
+            fontSize:FONT.xs, color: finalMeta.cor, fontWeight:700,
             letterSpacing:'.05em', textTransform:'uppercase',
           }}>
             {status === 'success'      && (modo === 'commit' ? '─── COMMIT REALIZADO COM SUCESSO ───' : '─── PROCESSO CONCLUÍDO COM SUCESSO ───')}
@@ -312,17 +312,17 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
           background:`#f59e0b10`, border:`1px solid #f59e0b40`,
           borderRadius:9, padding:'12px 14px',
         }}>
-          <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:6 }}>
-            <AdminIcon name="warn" size={13} style={{ color:'#f59e0b' }} />
-            <span style={{ fontSize:12, fontWeight:700, color:'#f59e0b' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:SPACE.sm, marginBottom:6 }}>
+            <AdminIcon name="warn" size={13} style={{ color:C.amber }} />
+            <span style={{ fontSize:FONT.base, fontWeight:700, color:C.amber }}>
               SYNC_INCONSISTENT
             </span>
           </div>
-          <p style={{ fontSize:11, color:C.text, margin:0, lineHeight:'16px' }}>
+          <p style={{ fontSize:FONT.sm, color:C.text, margin:0, lineHeight:'16px' }}>
             {relatorio.msg}
           </p>
           {relatorio.relatorio?.inconsistencia && (
-            <p style={{ fontSize:10, color:C.muted, margin:'6px 0 0', fontFamily:'monospace' }}>
+            <p style={{ fontSize:FONT.xs, color:C.muted, margin:'6px 0 0', fontFamily:'monospace' }}>
               {relatorio.relatorio.inconsistencia}
             </p>
           )}
@@ -336,13 +336,13 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
           background:'#22c55e10', border:'1px solid #22c55e30',
           borderRadius:9, padding:'12px 14px',
         }}>
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:8 }}>
-            <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-              <AdminIcon name="checkLg" size={13} style={{ color:'#22c55e' }} />
-              <span style={{ fontSize:12, fontWeight:700, color:'#22c55e' }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:SPACE.md }}>
+            <div style={{ display:'flex', alignItems:'center', gap:SPACE.sm }}>
+              <AdminIcon name="checkLg" size={13} style={{ color:C.greenSolid }} />
+              <span style={{ fontSize:FONT.base, fontWeight:700, color:C.greenSolid }}>
                 Commit {relatorio.relatorio.commitShaCurto}
               </span>
-              <span style={{ fontSize:11, color:C.muted }}>
+              <span style={{ fontSize:FONT.sm, color:C.muted }}>
                 → {relatorio.relatorio.branch}
               </span>
             </div>
@@ -352,9 +352,9 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
               rel="noopener noreferrer"
               style={{
                 display:'inline-flex', alignItems:'center', gap:5,
-                fontSize:11, fontWeight:600, color:'#22c55e',
+                fontSize:FONT.sm, fontWeight:600, color:C.greenSolid,
                 background:'#22c55e18', border:'1px solid #22c55e40',
-                borderRadius:6, padding:'4px 10px',
+                borderRadius:RADIUS.sm, padding:'4px 10px',
                 textDecoration:'none',
               }}
             >
@@ -364,7 +364,7 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
           </div>
           {relatorio.relatorio.mensagem && (
             <p style={{
-              fontSize:11, color:C.muted, margin:'8px 0 0',
+              fontSize:FONT.sm, color:C.muted, margin:'8px 0 0',
               fontFamily:'monospace', wordBreak:'break-word',
             }}>
               "{relatorio.relatorio.mensagem}"
@@ -392,13 +392,13 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
           >
             <div style={{ display:'flex', alignItems:'center', gap:7 }}>
               <AdminIcon name="index" size={12} style={{ color:C.muted }} />
-              <span style={{ fontSize:11, fontWeight:600, color:C.text }}>
+              <span style={{ fontSize:FONT.sm, fontWeight:600, color:C.text }}>
                 {modo === 'commit' ? 'Arquivos enviados' : 'Arquivos afetados'}
               </span>
               <span style={{
-                fontSize:10, fontWeight:700,
+                fontSize:FONT.xs, fontWeight:700,
                 background:`${C.blue}20`, color:C.blue,
-                borderRadius:10, padding:'1px 7px',
+                borderRadius:RADIUS.lg, padding:'1px 7px',
               }}>
                 {arquivos.length}
               </span>
@@ -420,7 +420,7 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
                 <div
                   key={i}
                   style={{
-                    fontSize:10, color:C.muted, lineHeight:'18px',
+                    fontSize:FONT.xs, color:C.muted, lineHeight:'18px',
                     fontFamily:'monospace',
                     borderBottom: i < arquivos.length - 1 ? `1px solid ${C.border}22` : 'none',
                     padding:'1px 0',
@@ -438,7 +438,7 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
       {modo === 'sync' && (status === 'success' || status === 'error' || status === 'inconsistent') && relatorio?.relatorio && (
         <div style={{
           marginTop:10,
-          display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:6,
+          display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:SPACE.sm,
         }}>
           {relatorio.relatorio.totalArquivos !== undefined && (
             <div style={{
@@ -449,7 +449,7 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
               <div style={{ fontSize:18, fontWeight:700, color:C.text }}>
                 {relatorio.relatorio.totalArquivos}
               </div>
-              <div style={{ fontSize:10, color:C.muted }}>arquivos</div>
+              <div style={{ fontSize:FONT.xs, color:C.muted }}>arquivos</div>
             </div>
           )}
           {relatorio.relatorio.tamanhoZipBytes !== undefined && (
@@ -460,9 +460,9 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
             }}>
               <div style={{ fontSize:18, fontWeight:700, color:C.text }}>
                 {(relatorio.relatorio.tamanhoZipBytes / 1024).toFixed(0)}
-                <span style={{ fontSize:12 }}> KB</span>
+                <span style={{ fontSize:FONT.base }}> KB</span>
               </div>
-              <div style={{ fontSize:10, color:C.muted }}>baixados</div>
+              <div style={{ fontSize:FONT.xs, color:C.muted }}>baixados</div>
             </div>
           )}
           {relatorio.relatorio.erros?.length > 0 && (
@@ -470,7 +470,7 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
               gridColumn:'span 2',
               background:`${C.amber}10`, border:`1px solid ${C.amber}30`,
               borderRadius:7, padding:'7px 12px',
-              fontSize:10, color:C.amber,
+              fontSize:FONT.xs, color:C.amber,
             }}>
               ⚠ {relatorio.relatorio.erros.length} entrada(s) bloqueada(s) por segurança
             </div>
@@ -482,7 +482,7 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
       {modo === 'commit' && (status === 'success' || status === 'error') && relatorio?.relatorio && (
         <div style={{
           marginTop:10,
-          display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:6,
+          display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:SPACE.sm,
         }}>
           {relatorio.relatorio.totalArquivos !== undefined && (
             <div style={{
@@ -493,7 +493,7 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
               <div style={{ fontSize:18, fontWeight:700, color:C.text }}>
                 {relatorio.relatorio.totalArquivos}
               </div>
-              <div style={{ fontSize:10, color:C.muted }}>arquivos enviados</div>
+              <div style={{ fontSize:FONT.xs, color:C.muted }}>arquivos enviados</div>
             </div>
           )}
           {relatorio.relatorio.totalBytes !== undefined && (
@@ -504,9 +504,9 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
             }}>
               <div style={{ fontSize:18, fontWeight:700, color:C.text }}>
                 {(relatorio.relatorio.totalBytes / 1024).toFixed(0)}
-                <span style={{ fontSize:12 }}> KB</span>
+                <span style={{ fontSize:FONT.base }}> KB</span>
               </div>
-              <div style={{ fontSize:10, color:C.muted }}>tamanho total</div>
+              <div style={{ fontSize:FONT.xs, color:C.muted }}>tamanho total</div>
             </div>
           )}
           {relatorio.relatorio.ignorados > 0 && (
@@ -514,7 +514,7 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
               gridColumn:'span 2',
               background:`${C.amber}10`, border:`1px solid ${C.amber}30`,
               borderRadius:7, padding:'7px 12px',
-              fontSize:10, color:C.amber,
+              fontSize:FONT.xs, color:C.amber,
             }}>
               ⚠ {relatorio.relatorio.ignorados} arquivo(s) ignorado(s) (acima de 10MB ou inelegível)
             </div>
@@ -524,7 +524,7 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
               gridColumn:'span 2',
               background:`${C.red}08`, border:`1px solid ${C.red}25`,
               borderRadius:7, padding:'7px 12px',
-              fontSize:10, color:C.red,
+              fontSize:FONT.xs, color:C.red,
             }}>
               ✗ {relatorio.relatorio.arquivosErro.length} arquivo(s) falharam ao ser enviados
             </div>
@@ -534,13 +534,13 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
 
       {/* ── Ações pós-processo ──────────────────────────────── */}
       {!isRunning && (
-        <div style={{ display:'flex', gap:8, marginTop:14 }}>
+        <div style={{ display:'flex', gap:SPACE.md, marginTop:14 }}>
           {(status === 'error' || status === 'inconsistent') && (
             <button
               onClick={onReiniciar}
               style={{
-                flex:1, display:'flex', alignItems:'center', justifyContent:'center', gap:6,
-                fontSize:12, fontWeight:600, color:'#fff',
+                flex:1, display:'flex', alignItems:'center', justifyContent:'center', gap:SPACE.sm,
+                fontSize:FONT.base, fontWeight:600, color:'#fff',
                 background:C.blue, border:`1px solid ${C.blue}`,
                 borderRadius:7, padding:'9px 14px', cursor:'pointer',
               }}
@@ -553,12 +553,12 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
           {/* Sucesso — sync */}
           {status === 'success' && modo === 'sync' && (
             <div style={{
-              flex:1, display:'flex', alignItems:'center', justifyContent:'center', gap:6,
-              fontSize:12, fontWeight:600, color:'#22c55e',
+              flex:1, display:'flex', alignItems:'center', justifyContent:'center', gap:SPACE.sm,
+              fontSize:FONT.base, fontWeight:600, color:C.greenSolid,
               background:'#22c55e12', border:'1px solid #22c55e30',
               borderRadius:7, padding:'9px 14px',
             }}>
-              <AdminIcon name="checkLg" size={13} style={{ color:'#22c55e' }} />
+              <AdminIcon name="checkLg" size={13} style={{ color:C.greenSolid }} />
               Projeto sincronizado com sucesso!
             </div>
           )}
@@ -566,8 +566,8 @@ function PainelNarracao({ stream, onReiniciar, onFechar, nomeProjeto, modo = 'sy
           <button
             onClick={onFechar}
             style={{
-              display:'flex', alignItems:'center', justifyContent:'center', gap:6,
-              fontSize:12, fontWeight:600, color:C.text,
+              display:'flex', alignItems:'center', justifyContent:'center', gap:SPACE.sm,
+              fontSize:FONT.base, fontWeight:600, color:C.text,
               background:C.surf2, border:`1px solid ${C.border}`,
               borderRadius:7, padding:'9px 14px', cursor:'pointer',
               flex: status === 'success' ? '0 0 auto' : 1,
@@ -741,7 +741,7 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
     >
       <div style={{
         background:C.surface, border:`1px solid ${C.border}`,
-        borderRadius:14, width:'100%', maxWidth:580,
+        borderRadius:RADIUS.xl2, width:'100%', maxWidth:580,
         maxHeight:'92vh', display:'flex', flexDirection:'column',
         overflow:'hidden',
         boxShadow:'0 25px 60px rgba(0,0,0,.5)',
@@ -752,13 +752,13 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
           display:'flex', alignItems:'center', justifyContent:'space-between',
           padding:'15px 20px', borderBottom:`1px solid ${C.border}`, flexShrink:0,
         }}>
-          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:SPACE.lg - 2 }}>
             <GitHubIcon size={17} />
             <div>
-              <div style={{ fontSize:13, fontWeight:700, color:C.text }}>
+              <div style={{ fontSize:FONT.md, fontWeight:700, color:C.text }}>
                 {tituloModal}
               </div>
-              <div style={{ fontSize:10, color:C.muted, marginTop:1 }}>
+              <div style={{ fontSize:FONT.xs, color:C.muted, marginTop:1 }}>
                 {projeto.nome}
                 {aoVivo && (
                   <span style={{ color:C.blue, marginLeft:6 }}>● ao vivo</span>
@@ -767,7 +767,7 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
             </div>
           </div>
 
-          <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:SPACE.sm }}>
             {/* Botão Voltar */}
             {tela !== 'status' && !streamAtivo && (
               <button
@@ -779,9 +779,9 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
                 }}
                 style={{
                   display:'flex', alignItems:'center', gap:5,
-                  fontSize:11, color:C.muted,
+                  fontSize:FONT.sm, color:C.muted,
                   background:'none', border:`1px solid ${C.border}`,
-                  borderRadius:6, padding:'5px 10px', cursor:'pointer',
+                  borderRadius:RADIUS.sm, padding:'5px 10px', cursor:'pointer',
                 }}
               >
                 <AdminIcon name="chevL" size={11} />
@@ -798,7 +798,7 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
                 background:'none', border:'none',
                 cursor: streamAtivo ? 'not-allowed' : 'pointer',
                 color: streamAtivo ? C.border : C.muted,
-                padding:4, borderRadius:4, transition:'color .15s',
+                padding:4, borderRadius:RADIUS.xs, transition:'color .15s',
               }}
             >
               <AdminIcon name="x" size={16} />
@@ -831,17 +831,17 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
                   {/* Info do repositório vinculado */}
                   {syncStatus?.vinculado && (
                     <div style={{
-                      display:'flex', alignItems:'center', gap:8,
+                      display:'flex', alignItems:'center', gap:SPACE.md,
                       background:C.surf2, border:`1px solid ${C.border}`,
-                      borderRadius:8, padding:'9px 12px',
+                      borderRadius:RADIUS.md, padding:'9px 12px',
                     }}>
                       <GitHubIcon size={12} />
-                      <span style={{ fontSize:12, fontWeight:600, color:C.text }}>
+                      <span style={{ fontSize:FONT.base, fontWeight:600, color:C.text }}>
                         {syncStatus.nomeCompleto || `${syncStatus.owner}/${syncStatus.repo}`}
                       </span>
-                      <span style={{ fontSize:11, color:C.muted }}>
+                      <span style={{ fontSize:FONT.sm, color:C.muted }}>
                         → branch:{' '}
-                        <code style={{ fontFamily:'monospace', fontSize:10 }}>
+                        <code style={{ fontFamily:'monospace', fontSize:FONT.xs }}>
                           {commitBranch || syncStatus.branch || 'main'}
                         </code>
                       </span>
@@ -850,24 +850,24 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
 
                   {/* Aviso sobre o comportamento do commit */}
                   <div style={{
-                    display:'flex', alignItems:'flex-start', gap:8,
+                    display:'flex', alignItems:'flex-start', gap:SPACE.md,
                     background:`${C.amber}10`, border:`1px solid ${C.amber}30`,
-                    borderRadius:8, padding:'10px 12px',
+                    borderRadius:RADIUS.md, padding:'10px 12px',
                   }}>
                     <AdminIcon name="warn" size={13} style={{ color:C.amber, flexShrink:0, marginTop:1 }} />
-                    <span style={{ fontSize:11, color:C.amber, lineHeight:'16px' }}>
+                    <span style={{ fontSize:FONT.sm, color:C.amber, lineHeight:'16px' }}>
                       Esta operação envia <strong>todos os arquivos locais</strong> do projeto para o
                       GitHub usando a Git Data API. As pastas{' '}
-                      <code style={{ fontFamily:'monospace', fontSize:10 }}>node_modules</code>,{' '}
-                      <code style={{ fontFamily:'monospace', fontSize:10 }}>dist</code>,{' '}
-                      <code style={{ fontFamily:'monospace', fontSize:10 }}>.env</code> e similares
+                      <code style={{ fontFamily:'monospace', fontSize:FONT.xs }}>node_modules</code>,{' '}
+                      <code style={{ fontFamily:'monospace', fontSize:FONT.xs }}>dist</code>,{' '}
+                      <code style={{ fontFamily:'monospace', fontSize:FONT.xs }}>.env</code> e similares
                       são excluídas automaticamente.
                     </span>
                   </div>
 
                   {/* Mensagem do commit */}
-                  <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-                    <label style={{ fontSize:11, fontWeight:700, color:C.muted, letterSpacing:'.04em' }}>
+                  <div style={{ display:'flex', flexDirection:'column', gap:SPACE.sm }}>
+                    <label style={{ fontSize:FONT.sm, fontWeight:700, color:C.muted, letterSpacing:'.04em' }}>
                       MENSAGEM DO COMMIT *
                     </label>
                     <textarea
@@ -879,20 +879,20 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
                         width:'100%', boxSizing:'border-box',
                         background:C.surf2, border:`1px solid ${commitMsg.trim() ? C.blue : C.border}`,
                         borderRadius:7, padding:'9px 12px',
-                        fontSize:12, color:C.text,
+                        fontSize:FONT.base, color:C.text,
                         fontFamily:'monospace',
                         resize:'vertical', outline:'none',
                         transition:'border-color .15s',
                       }}
                     />
-                    <div style={{ fontSize:10, color:C.muted, textAlign:'right' }}>
+                    <div style={{ fontSize:FONT.xs, color:C.muted, textAlign:'right' }}>
                       {commitMsg.length}/4096
                     </div>
                   </div>
 
                   {/* Branch de destino (opcional) */}
-                  <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-                    <label style={{ fontSize:11, fontWeight:700, color:C.muted, letterSpacing:'.04em' }}>
+                  <div style={{ display:'flex', flexDirection:'column', gap:SPACE.sm }}>
+                    <label style={{ fontSize:FONT.sm, fontWeight:700, color:C.muted, letterSpacing:'.04em' }}>
                       BRANCH DE DESTINO <span style={{ fontWeight:400 }}>(opcional)</span>
                     </label>
                     <input
@@ -904,19 +904,19 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
                         width:'100%', boxSizing:'border-box',
                         background:C.surf2, border:`1px solid ${C.border}`,
                         borderRadius:7, padding:'9px 12px',
-                        fontSize:12, color:C.text, outline:'none',
+                        fontSize:FONT.base, color:C.text, outline:'none',
                         fontFamily:'monospace',
                       }}
                     />
-                    <div style={{ fontSize:10, color:C.muted }}>
+                    <div style={{ fontSize:FONT.xs, color:C.muted }}>
                       Deixe vazio para usar o branch padrão
                       {syncStatus?.branch ? ` (${syncStatus.branch})` : ''}
                     </div>
                   </div>
 
                   {/* Autor (opcional) */}
-                  <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-                    <label style={{ fontSize:11, fontWeight:700, color:C.muted, letterSpacing:'.04em' }}>
+                  <div style={{ display:'flex', flexDirection:'column', gap:SPACE.sm }}>
+                    <label style={{ fontSize:FONT.sm, fontWeight:700, color:C.muted, letterSpacing:'.04em' }}>
                       AUTOR <span style={{ fontWeight:400 }}>(opcional)</span>
                     </label>
                     <input
@@ -928,11 +928,11 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
                         width:'100%', boxSizing:'border-box',
                         background:C.surf2, border:`1px solid ${C.border}`,
                         borderRadius:7, padding:'9px 12px',
-                        fontSize:12, color:C.text, outline:'none',
+                        fontSize:FONT.base, color:C.text, outline:'none',
                         fontFamily:'monospace',
                       }}
                     />
-                    <div style={{ fontSize:10, color:C.muted }}>
+                    <div style={{ fontSize:FONT.xs, color:C.muted }}>
                       Padrão: variável <code style={{ fontFamily:'monospace' }}>GIT_AUTOR_NOME / GIT_AUTOR_EMAIL</code> do servidor
                     </div>
                   </div>
@@ -942,13 +942,13 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
                     onClick={handleIniciarCommit}
                     disabled={!commitMsg.trim()}
                     style={{
-                      display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+                      display:'flex', alignItems:'center', justifyContent:'center', gap:SPACE.md,
                       width:'100%', padding:'11px 16px',
-                      fontSize:13, fontWeight:700, color:'#fff',
+                      fontSize:FONT.md, fontWeight:700, color:'#fff',
                       background: commitMsg.trim()
                         ? `linear-gradient(135deg, #16a34a, #15803d)`
                         : C.surf2,
-                      border: `1px solid ${commitMsg.trim() ? '#16a34a' : C.border}`,
+                      border: `1px solid ${commitMsg.trim() ? C.greenSolid : C.border}`,
                       borderRadius:9, cursor: commitMsg.trim() ? 'pointer' : 'not-allowed',
                       opacity: commitMsg.trim() ? 1 : .5,
                       transition:'all .15s',
@@ -980,7 +980,7 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
 
               {/* Carregando */}
               {loadingSync && (
-                <div style={{ textAlign:'center', padding:'30px 0', color:C.muted, fontSize:12 }}>
+                <div style={{ textAlign:'center', padding:'30px 0', color:C.muted, fontSize:FONT.base }}>
                   <AdminIcon name="spinSm" size={16} />
                   <span style={{ marginLeft:8 }}>Verificando status…</span>
                 </div>
@@ -990,12 +990,12 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
               {erroSync && !loadingSync && (
                 <div style={{
                   background:`${C.red}10`, border:`1px solid ${C.red}30`,
-                  borderRadius:8, padding:'12px 14px', fontSize:12, color:C.red,
+                  borderRadius:RADIUS.md, padding:'12px 14px', fontSize:FONT.base, color:C.red,
                 }}>
                   {erroSync}
                   <button
                     onClick={carregarStatus}
-                    style={{ marginLeft:12, fontSize:11, color:C.blue, background:'none', border:'none', cursor:'pointer' }}
+                    style={{ marginLeft:12, fontSize:FONT.sm, color:C.blue, background:'none', border:'none', cursor:'pointer' }}
                   >
                     Tentar novamente
                   </button>
@@ -1006,25 +1006,25 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
               {!loadingSync && syncStatus && !syncStatus.vinculado && (
                 <div style={{
                   textAlign:'center', padding:'30px 20px',
-                  background:C.surf2, borderRadius:10, border:`1px solid ${C.border}`,
+                  background:C.surf2, borderRadius:RADIUS.lg, border:`1px solid ${C.border}`,
                 }}>
-                  <div style={{ color:C.muted, marginBottom:12 }}>
+                  <div style={{ color:C.muted, marginBottom:SPACE.lg }}>
                     <svg width={32} height={32} viewBox="0 0 24 24" fill="none"
                       stroke="currentColor" strokeWidth="1.5">
                       <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/>
                     </svg>
                   </div>
-                  <div style={{ fontSize:13, fontWeight:700, color:C.text, marginBottom:6 }}>
+                  <div style={{ fontSize:FONT.md, fontWeight:700, color:C.text, marginBottom:6 }}>
                     Sem repositório vinculado
                   </div>
-                  <div style={{ fontSize:11, color:C.muted, marginBottom:16 }}>
+                  <div style={{ fontSize:FONT.sm, color:C.muted, marginBottom:SPACE.xl }}>
                     Vincule este projeto a um repositório GitHub para habilitar a sincronização e o commit.
                   </div>
                   <button
                     onClick={() => setTela('vincular')}
                     style={{
-                      display:'inline-flex', alignItems:'center', gap:6,
-                      fontSize:12, fontWeight:600, color:'#fff',
+                      display:'inline-flex', alignItems:'center', gap:SPACE.sm,
+                      fontSize:FONT.base, fontWeight:600, color:'#fff',
                       background:C.blue, border:'none', borderRadius:7,
                       padding:'8px 16px', cursor:'pointer',
                     }}
@@ -1041,17 +1041,17 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
 
                   {/* Card do repositório */}
                   <div style={{
-                    background:C.surf2, borderRadius:10, border:`1px solid ${C.border}`,
+                    background:C.surf2, borderRadius:RADIUS.lg, border:`1px solid ${C.border}`,
                     padding:'14px 16px',
                   }}>
                     <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
-                      <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:SPACE.md }}>
                         <GitHubIcon size={13} />
                         <a
                           href={syncStatus.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          style={{ fontSize:13, fontWeight:700, color:C.blue, textDecoration:'none' }}
+                          style={{ fontSize:FONT.md, fontWeight:700, color:C.blue, textDecoration:'none' }}
                         >
                           {syncStatus.nomeCompleto || `${syncStatus.owner}/${syncStatus.repo}`}
                         </a>
@@ -1076,7 +1076,7 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
                   {syncStatus.erro && (
                     <div style={{
                       background:`${C.amber}10`, border:`1px solid ${C.amber}30`,
-                      borderRadius:8, padding:'10px 12px', fontSize:11, color:C.amber,
+                      borderRadius:RADIUS.md, padding:'10px 12px', fontSize:FONT.sm, color:C.amber,
                     }}>
                       ⚠ Não foi possível verificar o GitHub: {syncStatus.erro}
                     </div>
@@ -1086,7 +1086,7 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
                   {syncStatus.statusSync === 'desatualizado' && !syncStatus.erro && (
                     <div style={{
                       background:`${C.amber}10`, border:`1px solid ${C.amber}30`,
-                      borderRadius:8, padding:'10px 12px', fontSize:11, color:C.amber,
+                      borderRadius:RADIUS.md, padding:'10px 12px', fontSize:FONT.sm, color:C.amber,
                     }}>
                       O repositório no GitHub possui commits mais recentes que o projeto local.
                       Clique em <strong>Sincronizar agora</strong> para atualizar.
@@ -1097,9 +1097,9 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
                   <button
                     onClick={handleIniciarSync}
                     style={{
-                      display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+                      display:'flex', alignItems:'center', justifyContent:'center', gap:SPACE.md,
                       width:'100%', padding:'11px 16px',
-                      fontSize:13, fontWeight:700, color:'#fff',
+                      fontSize:FONT.md, fontWeight:700, color:'#fff',
                       background:`linear-gradient(135deg, ${C.blue}, #1d4ed8)`,
                       border:'none', borderRadius:9, cursor:'pointer',
                       boxShadow:`0 4px 14px ${C.blue}40`,
@@ -1108,7 +1108,7 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
                   >
                     <AdminIcon name="cloudDown" size={14} />
                     Sincronizar agora
-                    <span style={{ fontSize:10, opacity:.8, fontWeight:400 }}>
+                    <span style={{ fontSize:FONT.xs, opacity:.8, fontWeight:400 }}>
                       GitHub → local
                     </span>
                   </button>
@@ -1117,9 +1117,9 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
                   <button
                     onClick={handleAbrirCommit}
                     style={{
-                      display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+                      display:'flex', alignItems:'center', justifyContent:'center', gap:SPACE.md,
                       width:'100%', padding:'11px 16px',
-                      fontSize:13, fontWeight:700, color:'#fff',
+                      fontSize:FONT.md, fontWeight:700, color:'#fff',
                       background:`linear-gradient(135deg, #16a34a, #15803d)`,
                       border:'none', borderRadius:9, cursor:'pointer',
                       boxShadow:'0 4px 14px #16a34a40',
@@ -1128,18 +1128,18 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
                   >
                     <AdminIcon name="cloudUp" size={14} />
                     Commit & Push
-                    <span style={{ fontSize:10, opacity:.8, fontWeight:400 }}>
+                    <span style={{ fontSize:FONT.xs, opacity:.8, fontWeight:400 }}>
                       local → GitHub
                     </span>
                   </button>
 
                   {/* Ações secundárias */}
-                  <div style={{ display:'flex', gap:8 }}>
+                  <div style={{ display:'flex', gap:SPACE.md }}>
                     <button
                       onClick={() => setTela('vincular')}
                       style={{
-                        flex:1, display:'flex', alignItems:'center', justifyContent:'center', gap:6,
-                        fontSize:11, fontWeight:600, color:C.text,
+                        flex:1, display:'flex', alignItems:'center', justifyContent:'center', gap:SPACE.sm,
+                        fontSize:FONT.sm, fontWeight:600, color:C.text,
                         background:C.surf2, border:`1px solid ${C.border}`,
                         borderRadius:7, padding:'8px 12px', cursor:'pointer',
                       }}
@@ -1152,8 +1152,8 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
                       disabled={loadingSync}
                       title="Atualizar status"
                       style={{
-                        display:'flex', alignItems:'center', gap:4,
-                        fontSize:11, fontWeight:600, color:C.muted,
+                        display:'flex', alignItems:'center', gap:SPACE.xs,
+                        fontSize:FONT.sm, fontWeight:600, color:C.muted,
                         background:'none', border:`1px solid ${C.border}`,
                         borderRadius:7, padding:'8px 11px', cursor:'pointer',
                       }}
@@ -1168,7 +1168,7 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
                       onClick={() => setConfirmarDesv(true)}
                       style={{
                         background:'none', border:'none', cursor:'pointer',
-                        fontSize:11, color:C.muted, textAlign:'left',
+                        fontSize:FONT.sm, color:C.muted, textAlign:'left',
                         textDecoration:'underline', padding:'2px 0',
                       }}
                     >
@@ -1177,17 +1177,17 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
                   ) : (
                     <div style={{
                       background:`${C.red}08`, border:`1px solid ${C.red}25`,
-                      borderRadius:8, padding:'10px 12px',
-                      display:'flex', alignItems:'center', justifyContent:'space-between', gap:8,
+                      borderRadius:RADIUS.md, padding:'10px 12px',
+                      display:'flex', alignItems:'center', justifyContent:'space-between', gap:SPACE.md,
                     }}>
-                      <span style={{ fontSize:11, color:C.text }}>
+                      <span style={{ fontSize:FONT.sm, color:C.text }}>
                         Remover vínculo com <strong>{syncStatus.nomeCompleto}</strong>?
                       </span>
-                      <div style={{ display:'flex', gap:6, flexShrink:0 }}>
+                      <div style={{ display:'flex', gap:SPACE.sm, flexShrink:0 }}>
                         <button
                           onClick={() => setConfirmarDesv(false)}
                           style={{
-                            fontSize:11, color:C.muted, background:'none',
+                            fontSize:FONT.sm, color:C.muted, background:'none',
                             border:`1px solid ${C.border}`, borderRadius:5,
                             padding:'4px 10px', cursor:'pointer',
                           }}
@@ -1198,7 +1198,7 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
                           onClick={handleDesvincular}
                           disabled={loadingLink}
                           style={{
-                            fontSize:11, fontWeight:600, color:'#fff',
+                            fontSize:FONT.sm, fontWeight:600, color:'#fff',
                             background:C.red, border:'none',
                             borderRadius:5, padding:'4px 10px', cursor:'pointer',
                           }}
@@ -1216,7 +1216,7 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
           {/* ════ TELA: VINCULAR ════════════════════════════════ */}
           {tela === 'vincular' && (
             <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
-              <div style={{ fontSize:12, color:C.muted }}>
+              <div style={{ fontSize:FONT.base, color:C.muted }}>
                 Selecione o repositório GitHub que corresponde ao projeto{' '}
                 <strong style={{ color:C.text }}>{projeto.nome}</strong>.
               </div>
@@ -1230,24 +1230,24 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
                   width:'100%', boxSizing:'border-box',
                   background:C.surf2, border:`1px solid ${C.border}`,
                   borderRadius:7, padding:'8px 12px',
-                  fontSize:12, color:C.text, outline:'none',
+                  fontSize:FONT.base, color:C.text, outline:'none',
                 }}
               />
 
               <div style={{
-                display:'flex', flexDirection:'column', gap:6,
+                display:'flex', flexDirection:'column', gap:SPACE.sm,
                 maxHeight:300, overflowY:'auto',
               }}>
                 {loadingRepos && (
-                  <div style={{ textAlign:'center', padding:'20px', color:C.muted, fontSize:12 }}>
+                  <div style={{ textAlign:'center', padding:'20px', color:C.muted, fontSize:FONT.base }}>
                     <AdminIcon name="spinSm" size={14} /> Carregando repositórios…
                   </div>
                 )}
                 {erroRepos && !loadingRepos && (
-                  <div style={{ fontSize:12, color:C.red, padding:'10px 0' }}>{erroRepos}</div>
+                  <div style={{ fontSize:FONT.base, color:C.red, padding:'10px 0' }}>{erroRepos}</div>
                 )}
                 {!loadingRepos && !erroRepos && reposFiltrados.length === 0 && (
-                  <div style={{ fontSize:12, color:C.muted, padding:'10px 0' }}>
+                  <div style={{ fontSize:FONT.base, color:C.muted, padding:'10px 0' }}>
                     Nenhum repositório encontrado.
                   </div>
                 )}
@@ -1264,17 +1264,17 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
               {erroLink && (
                 <div style={{
                   background:`${C.red}10`, border:`1px solid ${C.red}30`,
-                  borderRadius:8, padding:'10px 12px', fontSize:11, color:C.red,
+                  borderRadius:RADIUS.md, padding:'10px 12px', fontSize:FONT.sm, color:C.red,
                 }}>
                   {erroLink}
                 </div>
               )}
 
-              <div style={{ display:'flex', gap:8 }}>
+              <div style={{ display:'flex', gap:SPACE.md }}>
                 <button
                   onClick={() => setTela('status')}
                   style={{
-                    fontSize:12, fontWeight:600, color:C.text,
+                    fontSize:FONT.base, fontWeight:600, color:C.text,
                     background:C.surf2, border:`1px solid ${C.border}`,
                     borderRadius:7, padding:'9px 14px', cursor:'pointer',
                   }}
@@ -1285,8 +1285,8 @@ export default function ProjetoSyncModal({ projeto, onClose, onSynced }) {
                   onClick={handleVincular}
                   disabled={!repoSelecionado || loadingLink}
                   style={{
-                    flex:1, display:'flex', alignItems:'center', justifyContent:'center', gap:6,
-                    fontSize:12, fontWeight:600, color:'#fff',
+                    flex:1, display:'flex', alignItems:'center', justifyContent:'center', gap:SPACE.sm,
+                    fontSize:FONT.base, fontWeight:600, color:'#fff',
                     background: !repoSelecionado || loadingLink ? C.surf2 : C.blue,
                     border:`1px solid ${!repoSelecionado || loadingLink ? C.border : C.blue}`,
                     borderRadius:7, padding:'9px 14px',
