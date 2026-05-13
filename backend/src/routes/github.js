@@ -46,6 +46,46 @@ function validarNome(str) {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   CRIAR REPOSITÓRIO — Sprint 10
+   Cria um novo repositório na conta autenticada (user ou org).
+
+   POST /api/github/repos/criar
+   Body: { nome, descricao?, privado?, org? }
+═══════════════════════════════════════════════════════════ */
+router.post('/repos/criar', autenticar, async (req, res) => {
+  const { nome, descricao = '', privado = true, org } = req.body
+  if (!nome || !/^[a-zA-Z0-9._-]{1,100}$/.test(nome))
+    return res.status(400).json({ erro: 'Nome de repositório inválido.' })
+
+  try {
+    const endpoint = org ? `/orgs/${org}/repos` : '/user/repos'
+    const repo = await githubFetch(endpoint, {
+      method: 'POST',
+      body: JSON.stringify({
+        name:         nome,
+        description:  descricao,
+        private:      privado,
+        auto_init:    false,  // não cria README — o commit-stream vai inicializar
+      }),
+    })
+    res.json({
+      ok:           true,
+      nomeCompleto: repo.full_name,
+      owner:        repo.owner.login,
+      repo:         repo.name,
+      url:          repo.html_url,
+      privado:      repo.private,
+    })
+  } catch (err) {
+    const status = err.status || 500
+    const msg = status === 422
+      ? `Já existe um repositório com o nome "${nome}" nessa conta.`
+      : err.message
+    res.status(status).json({ erro: msg })
+  }
+})
+
+/* ═══════════════════════════════════════════════════════════
    ROTAS ORIGINAIS (preservadas)
 ═══════════════════════════════════════════════════════════ */
 
@@ -163,9 +203,7 @@ router.get('/repos/:owner/:repo/commits', autenticar, async (req, res) => {
   try {
     const commits = await githubFetch(`/repos/${owner}/${repo}/commits?per_page=${per_page}&page=${page}`)
     const lista = commits.map(c => ({
-      sha:     c.sha.slice(0, 7),  // exibição
-      shaFull: c.sha,              // download / referência completa
-      mensagem: c.commit.message.split('\n')[0],
+      sha: c.sha.slice(0, 7), mensagem: c.commit.message.split('\n')[0],
       autor: c.commit.author.name, data: c.commit.author.date,
       url: c.html_url, avatar: c.author?.avatar_url || null,
     }))

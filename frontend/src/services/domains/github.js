@@ -70,17 +70,18 @@ export const githubService = {
   downloadArtifactUrl: (artifactId, owner, repo, nome = '') =>
     `${BASE_URL}/github/artifacts/${artifactId}/download?owner=${owner}&repo=${repo}&nome=${encodeURIComponent(nome)}`,
 
+  /** Cria um novo repositório na conta autenticada */
+  criarRepo: (nome, descricao = '', privado = true, org = null) =>
+    api('/github/repos/criar', {
+      method: 'POST',
+      body: JSON.stringify({ nome, descricao, privado, org }),
+    }),
+
   /* ── Sprint 5: Salvar repositório na pasta Projetos ────── */
   salvarProjeto: (owner, repo, nomeProjeto, substituir = false) =>
     api(`/github/repos/${owner}/${repo}/salvar-projeto`, {
       method: 'POST',
       body: JSON.stringify({ nomeProjeto, substituir }),
     }),
-
-  /* ── Download ZIP direto para o browser (proxy autenticado) */
-  downloadZipUrl: (owner, repo, branch = '') => {
-    const q = branch ? `?branch=${encodeURIComponent(branch)}` : ''
-    return `${BASE_URL}/github/repos/${owner}/${repo}/download-zip${q}`
-  },
 }
 

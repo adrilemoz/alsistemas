@@ -19,8 +19,9 @@ import {
   DSPageHeader,
   DSBtn, DSBadge, DSEmptyState,
 } from '../../components/admin/ui/DS'
-import AdminIcon   from '../../components/admin/ui/AdminIcon'
-import ProjetoSyncModal from './ProjetoSyncModal.jsx'
+import AdminIcon         from '../../components/admin/ui/AdminIcon'
+import ProjetoSyncModal  from './ProjetoSyncModal.jsx'
+import ProjetoPublicarModal from './ProjetoPublicarModal.jsx'
 
 /* ── Cores por status ────────────────────────────────────────── */
 const STATUS_META = {
@@ -201,34 +202,13 @@ function ProjetoCard({ projeto, onOpenSync }) {
             </a>
           )}
 
-          {/* Botão GitHub Sync — ícone + label assertivos */}
-          <button
-            onClick={() => onOpenSync(projeto)}
-            title="Abrir GitHub Sync"
-            style={{
-              display: 'flex', alignItems: 'center', gap: 5,
-              padding: '5px 10px', borderRadius: RADIUS.sm,
-              border: `1px solid ${C.border}`,
-              background: C.surface2,
-              cursor: 'pointer', transition: 'all .15s',
-              flexShrink: 0,
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.borderColor = '#6e40c9'
-              e.currentTarget.style.background  = '#6e40c918'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.borderColor = C.border
-              e.currentTarget.style.background  = C.surface2
-            }}
-          >
-            <svg width={15} height={15} viewBox="0 0 24 24" fill="#6e40c9">
+          {/* ✅ DSBtn substitui <button style={{ background:'none', border:`1px solid ${C.border}`, ... }}> */}
+          <DSBtn size="sm" variant="ghost" onClick={() => onOpenSync(projeto)} title="Sincronizar com GitHub">
+            <svg width={11} height={11} viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
             </svg>
-            <span style={{ fontSize: FONT.xs, fontWeight: 700, color: '#6e40c9', letterSpacing: '.02em' }}>
-              Commit
-            </span>
-          </button>
+            <span style={{ fontSize: 10, fontWeight: 600 }}>Sync</span>
+          </DSBtn>
 
           {/* ✅ DSBtn substitui <button style={{ background:'none', border:'none', ... }}> */}
           <DSBtn size="icon" variant="ghost" onClick={() => setExpandido(v => !v)}
@@ -291,21 +271,10 @@ function ProjetoCard({ projeto, onOpenSync }) {
                   <span style={{ marginLeft: 8 }}>· sync {relTime(syncStatus.ultimaSincronizacao)}</span>
                 )}
               </div>
-              <button
-                onClick={() => onOpenSync(projeto)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 5,
-                  fontSize: FONT.xs, fontWeight: 700, color: '#6e40c9',
-                  background: '#6e40c918', border: `1px solid #6e40c940`,
-                  borderRadius: RADIUS.xs, padding: '3px 8px', cursor: 'pointer',
-                  flexShrink: 0,
-                }}
-              >
-                <svg width={11} height={11} viewBox="0 0 24 24" fill="#6e40c9">
-                  <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
-                </svg>
-                Commit
-              </button>
+              {/* ✅ DSBtn substitui <button style={{ fontSize:FONT.xs, fontWeight:700, color:C.blue, ... }}> */}
+              <DSBtn size="sm" variant="ghost" onClick={() => onOpenSync(projeto)}>
+                Gerenciar
+              </DSBtn>
             </div>
           )}
         </div>
@@ -374,7 +343,8 @@ export default function AdminProjetos() {
     filtroStatus, setFiltroStatus, contagens,
   } = useProjetos()
 
-  const [projetoSync, setProjetoSync] = useState(null)
+  const [projetoSync,   setProjetoSync]   = useState(null)
+  const [showPublicar,  setShowPublicar]  = useState(false)
   const [busca,       setBusca]       = useState('')
   const [ordemCampo,  setOrdemCampo]  = useState('status')
   const [ordemAsc,    setOrdemAsc]    = useState(true)
@@ -436,6 +406,15 @@ export default function AdminProjetos() {
               </span>
             )}
             {/* ✅ DSBtn substitui <button style={{ display:'flex', alignItems:'center', ... }}> */}
+            <DSBtn variant="primary" onClick={() => setShowPublicar(true)}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                width="13" height="13">
+                <polyline points="16 16 12 12 8 16"/>
+                <line x1="12" y1="12" x2="12" y2="21"/>
+                <path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/>
+              </svg>
+              Publicar projeto
+            </DSBtn>
             <DSBtn variant="secondary" onClick={recarregar} disabled={loading}>
               <AdminIcon name="refresh" size={12} />
               Atualizar
@@ -569,6 +548,13 @@ export default function AdminProjetos() {
           projeto={projetoSync}
           onClose={() => setProjetoSync(null)}
           onSynced={recarregar}
+        />
+      )}
+
+      {showPublicar && (
+        <ProjetoPublicarModal
+          onClose={() => setShowPublicar(false)}
+          onConcluido={recarregar}
         />
       )}
     </div>

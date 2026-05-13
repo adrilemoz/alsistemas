@@ -53,8 +53,22 @@ import crypto           from 'crypto'
 import { autenticar }   from '../middleware/auth.js'
 import Projeto          from '../models/Projeto.js'
 import { githubFetch }  from '../utils/githubClient.js'
+import multer           from 'multer'
 
-const router = Router()
+const router  = Router()
+const upload  = multer({
+  storage: multer.memoryStorage(),
+  limits:  { fileSize: 200 * 1024 * 1024 }, // 200 MB
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype === 'application/zip' ||
+        file.mimetype === 'application/x-zip-compressed' ||
+        file.originalname.toLowerCase().endsWith('.zip')) {
+      cb(null, true)
+    } else {
+      cb(new Error('Apenas arquivos .zip são aceitos.'))
+    }
+  },
+})
 
 // ─── Diretório base dos projetos ──────────────────────────────────────────────
 const PROJETOS_DIR = process.env.PROJETOS_PATH
@@ -141,6 +155,110 @@ function lerProjeto(nome, dirPath) {
     package:         pkg,
   }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   UPLOAD DE PROJETO — Sprint 10
+   Recebe um ZIP do browser, extrai na pasta Projetos do servidor.
+   Proteção anti-Zip Slip: nenhum path fora de PROJETOS_DIR.
+
+   POST /api/projetos/upload
+   Content-Type: multipart/form-data
+   Campos:
+     zip          — arquivo .zip (obrigatório)
+     nomeProjeto  — nome da pasta destino (padrão: nome do arquivo)
+     substituir   — "true" para sobrescrever se já existir
+══════════════════════════════════════════════════════════════ */
+router.post('/upload', autenticar, upload.single('zip'), async (req, res) => {
+  if (!req.file)
+    return res.status(400).json({ erro: 'Nenhum arquivo ZIP enviado.' })
+
+  // ── Sanitizar nome do projeto ────────────────────────────
+  let nomeProjeto = (req.body.nomeProjeto || req.file.originalname.replace(/\.zip$/i, '') || 'projeto')
+    .toString().trim()
+  if (!/^[a-zA-Z0-9._-]{1,60}$/.test(nomeProjeto))
+    return res.status(400).json({ erro: 'Nome inválido. Use letras, números, ., - ou _ (máx. 60 chars).' })
+
+  const substituir = req.body.substituir === 'true'
+  const destDir    = path.join(PROJETOS_DIR, nomeProjeto)
+
+  if (fs.existsSync(destDir) && !substituir)
+    return res.status(409).json({
+      erro: `Já existe um projeto chamado "${nomeProjeto}". Marque "Substituir" para sobrescrever.`,
+    })
+
+  try {
+    // ── Garantir que PROJETOS_DIR existe ──────────────────
+    if (!fs.existsSync(PROJETOS_DIR))
+      fs.mkdirSync(PROJETOS_DIR, { recursive: true })
+
+    if (fs.existsSync(destDir) && substituir)
+      fs.rmSync(destDir, { recursive: true, force: true })
+
+    fs.mkdirSync(destDir, { recursive: true })
+
+    // ── Extrair ZIP do buffer ─────────────────────────────
+    const { default: unzipper } = await import('unzipper')
+    const { Readable }          = await import('stream')
+
+    let   prefixo           = null
+    let   arquivosExtraidos = 0
+    const erros             = []
+
+    await new Promise((resolve, reject) => {
+      Readable.from(req.file.buffer)
+        .pipe(unzipper.Parse())
+        .on('entry', entry => {
+          const entryPath = entry.path
+
+          // Detectar e remover prefixo de nível raiz (ex: repo-main/)
+          if (prefixo === null) {
+            const firstSlash = entryPath.indexOf('/')
+            prefixo = firstSlash !== -1 && !entryPath.includes('..') && entryPath.indexOf('/') > 0
+              ? entryPath.slice(0, firstSlash + 1)
+              : ''
+          }
+
+          const relPath = prefixo && entryPath.startsWith(prefixo)
+            ? entryPath.slice(prefixo.length)
+            : entryPath
+
+          // Proteção anti-Zip Slip
+          if (!relPath || relPath.startsWith('..') || path.isAbsolute(relPath)) {
+            entry.autodrain(); return
+          }
+          const destPath = path.join(destDir, relPath)
+          if (!destPath.startsWith(destDir + path.sep) && destPath !== destDir) {
+            entry.autodrain(); return
+          }
+
+          if (entry.type === 'Directory') {
+            fs.mkdirSync(destPath, { recursive: true })
+            entry.autodrain()
+          } else {
+            fs.mkdirSync(path.dirname(destPath), { recursive: true })
+            const out = fs.createWriteStream(destPath)
+            entry.pipe(out)
+              .on('finish', () => { arquivosExtraidos++ })
+              .on('error',  e  => erros.push(e.message))
+          }
+        })
+        .on('finish', resolve)
+        .on('error',  reject)
+    })
+
+    res.json({
+      ok:              true,
+      nomeProjeto,
+      arquivos:        arquivosExtraidos,
+      avisos:          erros.length ? erros.slice(0, 5) : undefined,
+      mensagem:        `Projeto "${nomeProjeto}" enviado com sucesso (${arquivosExtraidos} arquivos).`,
+    })
+  } catch (err) {
+    // Limpa pasta parcial em caso de falha
+    try { if (fs.existsSync(destDir)) fs.rmSync(destDir, { recursive: true, force: true }) } catch {}
+    res.status(500).json({ erro: err.message || 'Erro ao extrair o arquivo ZIP.' })
+  }
+})
 
 /* ══════════════════════════════════════════════════════════════
    ROTAS ORIGINAIS — Sprint 3 (inalteradas)

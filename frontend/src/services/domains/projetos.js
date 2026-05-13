@@ -17,6 +17,10 @@ export const projetosService = {
 
   /* ── GitHub Sync (Sprint 7) ───────────────────────────────── */
 
+  /** Envia um ZIP do browser e extrai na pasta Projetos do servidor */
+  upload: (formData) =>
+    api('/projetos/upload', { method: 'POST', body: formData, headers: {} }),
+
   /**
    * Vincula um projeto local a um repositório GitHub.
    * O backend verifica se o repo existe antes de salvar.
