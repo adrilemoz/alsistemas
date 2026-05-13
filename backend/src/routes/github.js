@@ -30,7 +30,7 @@ import AuditLog         from '../models/AuditLog.js'
 import GitHubMeta       from '../models/GitHubMeta.js'
 import fs               from 'fs'
 import path             from 'path'
-import { githubFetch }  from '../utils/githubClient.js'  // Sprint 6-B: utilitário centralizado
+import { githubFetch, GITHUB_API }  from '../utils/githubClient.js'  // Sprint 6-B: utilitário centralizado
 
 const router = Router()
 
@@ -163,7 +163,9 @@ router.get('/repos/:owner/:repo/commits', autenticar, async (req, res) => {
   try {
     const commits = await githubFetch(`/repos/${owner}/${repo}/commits?per_page=${per_page}&page=${page}`)
     const lista = commits.map(c => ({
-      sha: c.sha.slice(0, 7), mensagem: c.commit.message.split('\n')[0],
+      sha:     c.sha.slice(0, 7),  // exibição
+      shaFull: c.sha,              // download / referência completa
+      mensagem: c.commit.message.split('\n')[0],
       autor: c.commit.author.name, data: c.commit.author.date,
       url: c.html_url, avatar: c.author?.avatar_url || null,
     }))

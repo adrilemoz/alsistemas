@@ -8,7 +8,7 @@
  * Adicionado no Sprint 6-B para eliminar duplicação entre rotas.
  */
 
-const GITHUB_API = 'https://api.github.com'
+export const GITHUB_API = 'https://api.github.com'
 
 /**
  * Faz uma requisição autenticada à GitHub API.

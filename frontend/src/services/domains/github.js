@@ -76,5 +76,11 @@ export const githubService = {
       method: 'POST',
       body: JSON.stringify({ nomeProjeto, substituir }),
     }),
+
+  /* ── Download ZIP direto para o browser (proxy autenticado) */
+  downloadZipUrl: (owner, repo, branch = '') => {
+    const q = branch ? `?branch=${encodeURIComponent(branch)}` : ''
+    return `${BASE_URL}/github/repos/${owner}/${repo}/download-zip${q}`
+  },
 }
 
