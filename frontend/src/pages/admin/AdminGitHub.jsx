@@ -19,7 +19,7 @@
  * Funcionalidades preservadas integralmente.
  * Token GitHub NUNCA exposto — toda comunicação via proxy backend.
  */
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useGitHubRepos }   from '../../modules/github/useGitHubRepos.js'
 import { githubService }    from '../../services/domains/github.js'
 import { T as C, SPACE, RADIUS, FONT } from '../../themes/tokens'
@@ -205,6 +205,8 @@ function PainelDetalhes({ repo, onFechar, toastShow }) {
   const [salvarEtapa, setSalvarEtapa] = useState(null)
   const [salvarErro, setSalvarErro] = useState(null)
   const [salvarNomeResultado, setSalvarNomeResultado] = useState(null)
+  const [salvarElapsed, setSalvarElapsed] = useState(0)
+  const salvarTimerRef = useRef(null)
 
   const [owner, repoNome] = (repo.nomeCompleto || `?/${repo.nome}`).split('/')
 
@@ -271,23 +273,33 @@ function PainelDetalhes({ repo, onFechar, toastShow }) {
 
   function abrirModalSalvar() {
     setNomeProjeto(repoNome); setSubstituir(false)
-    setSalvarEtapa(null); setSalvarErro(null); setSalvarNomeResultado(null)
+    setSalvarEtapa(null); setSalvarErro(null)
+    setSalvarNomeResultado(null); setSalvarElapsed(0)
     setShowSalvar(true)
   }
 
   async function executarSalvarProjeto() {
     const nome = nomeProjeto.trim()
     if (!nome) return
-    setSalvarEtapa('baixando'); setSalvarErro(null)
+    setSalvarEtapa('baixando'); setSalvarErro(null); setSalvarElapsed(0)
+    // cronômetro por segundo
+    const inicio = Date.now()
+    salvarTimerRef.current = setInterval(() => {
+      setSalvarElapsed(Math.floor((Date.now() - inicio) / 1000))
+    }, 1000)
     try {
       const timer = setTimeout(() => setSalvarEtapa('extraindo'), 3500)
       const resultado = await githubService.salvarProjeto(owner, repoNome, nome, substituir)
       clearTimeout(timer)
+      clearInterval(salvarTimerRef.current)
+      setSalvarElapsed(Math.floor((Date.now() - inicio) / 1000))
       setSalvarEtapa('ok'); setSalvarNomeResultado(resultado.nomeProjeto)
-    } catch (e) { setSalvarEtapa('erro'); setSalvarErro(e.message || 'Erro ao salvar projeto.') }
+    } catch (e) {
+      clearInterval(salvarTimerRef.current)
+      setSalvarEtapa('erro'); setSalvarErro(e.message || 'Erro ao salvar projeto.')
+    }
   }
 
-  const NOMES_ETAPA = { baixando: '⬇ Baixando código-fonte...', extraindo: '📦 Extraindo arquivos...', ok: '✅ Projeto salvo com sucesso!', erro: '❌ Erro ao salvar' }
   const ABAS = [
     { id: 'visao',     label: 'Visão Geral' },
     { id: 'meta',      label: 'Metadados'   },
@@ -338,96 +350,386 @@ function PainelDetalhes({ repo, onFechar, toastShow }) {
         {/* Modal: Salvar em Projetos */}
         <DSModal
           open={showSalvar}
-          onClose={() => { if (!salvarEtapa || salvarEtapa === 'ok' || salvarEtapa === 'erro') setShowSalvar(false) }}
-          title="📥 Salvar em Projetos"
+          onClose={() => {
+            if (!salvarEtapa || salvarEtapa === 'ok' || salvarEtapa === 'erro') {
+              clearInterval(salvarTimerRef.current)
+              setShowSalvar(false)
+              setSalvarEtapa(null)
+            }
+          }}
+          title={
+            <span style={{ display: 'flex', alignItems: 'center', gap: SPACE.sm }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                width="17" height="17">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Salvar em Projetos
+            </span>
+          }
           size="sm"
           footer={
             salvarEtapa === 'ok' || salvarEtapa === 'erro'
               ? <>
-                  {salvarEtapa === 'erro' && <DSBtn onClick={() => setSalvarEtapa(null)}>Tentar novamente</DSBtn>}
-                  <DSBtn onClick={() => { setShowSalvar(false); setSalvarEtapa(null) }}>Fechar</DSBtn>
+                  {salvarEtapa === 'erro' && (
+                    <DSBtn onClick={() => { setSalvarEtapa(null); setSalvarElapsed(0) }}>
+                      Tentar novamente
+                    </DSBtn>
+                  )}
+                  <DSBtn onClick={() => { clearInterval(salvarTimerRef.current); setShowSalvar(false); setSalvarEtapa(null) }}>
+                    Fechar
+                  </DSBtn>
                 </>
               : <>
-                  <DSBtn variant="primary" onClick={executarSalvarProjeto}
-                    disabled={!nomeProjeto.trim() || !!salvarEtapa} loading={!!salvarEtapa}>
-                    📥 Salvar
+                  <DSBtn
+                    variant="primary"
+                    onClick={executarSalvarProjeto}
+                    disabled={!nomeProjeto.trim() || !!salvarEtapa}
+                    loading={!!salvarEtapa}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                      width="13" height="13">
+                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    {salvarEtapa ? 'Salvando…' : 'Salvar'}
                   </DSBtn>
-                  <DSBtn onClick={() => setShowSalvar(false)} disabled={!!salvarEtapa}>Cancelar</DSBtn>
+                  <DSBtn onClick={() => setShowSalvar(false)} disabled={!!salvarEtapa}>
+                    Cancelar
+                  </DSBtn>
                 </>
           }
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: SPACE.xl }}>
-            <div style={{ fontSize: FONT.sm, color: C.muted }}>
-              Baixa o código-fonte de{' '}
-              <code style={{ fontSize: FONT.xs, background: C.surface, padding: `1px ${SPACE.xs}px`, borderRadius: RADIUS.xs }}>
-                {repo.nomeCompleto}
-              </code>
-              {' '}e extrai na pasta Projetos do servidor.
-            </div>
 
-            {salvarEtapa && (
-              <div style={{
-                background: salvarEtapa === 'erro' ? C.redBg : `${C.accent}12`,
-                border: `1px solid ${salvarEtapa === 'erro' ? C.redBorder : `${C.accent}40`}`,
-                borderRadius: RADIUS.md, padding: `${SPACE.lg}px`,
-                display: 'flex', alignItems: 'flex-start', gap: SPACE.md + 2,
-              }}>
-                {(salvarEtapa === 'baixando' || salvarEtapa === 'extraindo') && (
-                  <svg style={{ flexShrink: 0, marginTop: 1, animation: 'adm-spin 1s linear infinite' }}
-                    viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="2.5" width="16" height="16">
-                    <path d="M21 12a9 9 0 11-18 0"/>
-                  </svg>
-                )}
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: FONT.md, fontWeight: 700, color: salvarEtapa === 'erro' ? C.red : C.text }}>
-                    {NOMES_ETAPA[salvarEtapa]}
-                  </div>
-                  {salvarEtapa === 'ok' && salvarNomeResultado && (
-                    <div style={{ fontSize: FONT.sm, color: C.muted, marginTop: SPACE.xs, lineHeight: 1.5 }}>
-                      Disponível em{' '}
-                      <code style={{ background: C.surface, padding: `1px ${SPACE.xs}px`, borderRadius: RADIUS.xs, fontSize: FONT.xs }}>
-                        projetos/{salvarNomeResultado}/
-                      </code>
-                      {' — '}
-                      <a href="/admin/projetos" style={{ color: C.accent, fontWeight: 700, textDecoration: 'none' }}>Ver em Projetos →</a>
-                    </div>
-                  )}
-                  {salvarEtapa === 'erro' && salvarErro && (
-                    <div style={{ fontSize: FONT.sm, color: C.muted, marginTop: SPACE.xs, lineHeight: 1.5 }}>{salvarErro}</div>
-                  )}
-                </div>
-              </div>
-            )}
-
+            {/* ── Formulário (antes de iniciar) ───────────── */}
             {!salvarEtapa && (
               <>
+                {/* Origem */}
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: SPACE.md,
+                  background: C.surface2, border: `1px solid ${C.border}`,
+                  borderRadius: RADIUS.md, padding: `${SPACE.sm}px ${SPACE.md}px`,
+                }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke={C.muted} strokeWidth="2"
+                    width="14" height="14" style={{ flexShrink: 0 }}>
+                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/>
+                  </svg>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: FONT.xs, color: C.muted, fontWeight: 600,
+                      textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 2 }}>
+                      Repositório de origem
+                    </div>
+                    <div style={{ fontSize: FONT.base, fontWeight: 700, color: C.text,
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {repo.nomeCompleto}
+                    </div>
+                    {repo.branch && (
+                      <div style={{ fontSize: FONT.xs, color: C.muted, marginTop: 1 }}>
+                        branch: <code style={{ fontFamily: 'monospace' }}>{repo.branch || 'main'}</code>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* O que vai acontecer */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: SPACE.sm }}>
-                  <label style={{ fontSize: FONT.sm, fontWeight: 700, color: C.muted, letterSpacing: '.04em', textTransform: 'uppercase' }}>
+                  {[
+                    { ico: '⬇', label: 'Baixar o ZIP do código-fonte do GitHub' },
+                    { ico: '📦', label: 'Extrair os arquivos na pasta do servidor' },
+                    { ico: '✅', label: 'Disponibilizar em Projetos Locais' },
+                  ].map(({ ico, label }, i) => (
+                    <div key={i} style={{
+                      display: 'flex', alignItems: 'center', gap: SPACE.md,
+                      fontSize: FONT.sm, color: C.muted,
+                    }}>
+                      <span style={{ fontSize: 13, lineHeight: 1, flexShrink: 0 }}>{ico}</span>
+                      {label}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Nome do projeto */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: SPACE.sm }}>
+                  <label style={{
+                    fontSize: FONT.xs, fontWeight: 700, color: C.muted,
+                    letterSpacing: '.04em', textTransform: 'uppercase',
+                  }}>
                     Nome do projeto
                   </label>
                   <input
                     value={nomeProjeto}
                     onChange={e => setNomeProjeto(e.target.value.replace(/[^a-zA-Z0-9._-]/g, '').slice(0, 60))}
-                    placeholder={repoNome} autoFocus
+                    placeholder={repoNome}
+                    autoFocus
                     style={inp()}
                     onKeyDown={e => { if (e.key === 'Enter' && nomeProjeto.trim()) executarSalvarProjeto() }}
                   />
                   <div style={{ fontSize: FONT.xs, color: C.muted }}>
                     Será criado em{' '}
-                    <code style={{ background: C.surface, padding: `1px ${SPACE.xs}px`, borderRadius: RADIUS.xs, fontSize: FONT.xs - 1 }}>
+                    <code style={{
+                      background: C.surface, padding: `1px ${SPACE.xs}px`,
+                      borderRadius: RADIUS.xs, fontSize: FONT.xs,
+                    }}>
                       projetos/{nomeProjeto.trim() || repoNome}/
                     </code>
                   </div>
                 </div>
-                <label style={{ display: 'flex', alignItems: 'flex-start', gap: SPACE.md + 2, cursor: 'pointer' }}>
+
+                {/* Substituir */}
+                <label style={{ display: 'flex', alignItems: 'flex-start', gap: SPACE.md, cursor: 'pointer' }}>
                   <input type="checkbox" checked={substituir} onChange={e => setSubstituir(e.target.checked)}
                     style={{ width: 14, height: 14, marginTop: 2, accentColor: C.accent, flexShrink: 0 }} />
                   <div>
-                    <div style={{ fontSize: FONT.base, fontWeight: 600, color: C.text }}>Substituir se já existir</div>
-                    <div style={{ fontSize: FONT.xs, color: C.muted, marginTop: 2 }}>Remove a pasta existente antes de extrair o novo conteúdo</div>
+                    <div style={{ fontSize: FONT.base, fontWeight: 600, color: C.text }}>
+                      Substituir se já existir
+                    </div>
+                    <div style={{ fontSize: FONT.xs, color: C.muted, marginTop: 2 }}>
+                      Remove a pasta existente antes de extrair o novo conteúdo
+                    </div>
                   </div>
                 </label>
               </>
+            )}
+
+            {/* ── Progresso em andamento ───────────────────── */}
+            {(salvarEtapa === 'baixando' || salvarEtapa === 'extraindo') && (() => {
+              const etapas = [
+                {
+                  id: 'baixando',
+                  ico: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                      width="15" height="15">
+                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                  ),
+                  titulo: 'Baixando código-fonte',
+                  desc: `Conectando ao GitHub e fazendo download do ZIP de ${repo.nomeCompleto}`,
+                },
+                {
+                  id: 'extraindo',
+                  ico: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                      width="15" height="15">
+                      <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+                    </svg>
+                  ),
+                  titulo: 'Extraindo arquivos',
+                  desc: `Descompactando e gravando em projetos/${nomeProjeto.trim() || repoNome}/`,
+                },
+              ]
+              const etapaIdx = etapas.findIndex(e => e.id === salvarEtapa)
+
+              return (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: SPACE.md }}>
+                  {/* Etapas */}
+                  {etapas.map((et, i) => {
+                    const concluida = i < etapaIdx
+                    const ativa     = i === etapaIdx
+
+                    return (
+                      <div key={et.id} style={{
+                        display: 'flex', alignItems: 'flex-start', gap: SPACE.md,
+                        opacity: i > etapaIdx ? 0.35 : 1,
+                        transition: 'opacity .3s',
+                      }}>
+                        {/* Ícone de estado */}
+                        <div style={{
+                          width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          background: concluida ? `${C.greenSolid}20`
+                                    : ativa     ? `${C.blue}18`
+                                    : C.surface2,
+                          border: `2px solid ${concluida ? C.greenSolid
+                                              : ativa     ? C.blue
+                                              : C.border}`,
+                          transition: 'all .3s',
+                        }}>
+                          {concluida ? (
+                            <svg viewBox="0 0 24 24" fill="none" stroke={C.greenSolid}
+                              strokeWidth="2.5" width="13" height="13">
+                              <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                          ) : ativa ? (
+                            <svg style={{ animation: 'adm-spin 1s linear infinite' }}
+                              viewBox="0 0 24 24" fill="none" stroke={C.blue}
+                              strokeWidth="2.5" width="13" height="13">
+                              <path d="M21 12a9 9 0 11-18 0"/>
+                            </svg>
+                          ) : (
+                            <span style={{ width: 6, height: 6, borderRadius: '50%',
+                              background: C.border, display: 'block' }} />
+                          )}
+                        </div>
+
+                        {/* Texto */}
+                        <div style={{ flex: 1, paddingTop: 4 }}>
+                          <div style={{
+                            fontSize: FONT.base, fontWeight: ativa ? 700 : 500,
+                            color: ativa ? C.text : concluida ? C.muted : C.muted,
+                          }}>
+                            {et.titulo}
+                            {concluida && (
+                              <span style={{ fontSize: FONT.xs, color: C.greenSolid,
+                                marginLeft: SPACE.sm, fontWeight: 600 }}>
+                                concluído
+                              </span>
+                            )}
+                          </div>
+                          {ativa && (
+                            <div style={{ fontSize: FONT.sm, color: C.muted, marginTop: 3, lineHeight: 1.5 }}>
+                              {et.desc}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+
+                  {/* Barra de progresso animada */}
+                  <div style={{
+                    height: 4, background: C.surface2,
+                    borderRadius: RADIUS.xs, overflow: 'hidden', marginTop: SPACE.xs,
+                  }}>
+                    <div style={{
+                      height: '100%',
+                      width: salvarEtapa === 'baixando' ? '45%' : '85%',
+                      background: `linear-gradient(90deg, ${C.blue}, ${C.accent})`,
+                      borderRadius: RADIUS.xs,
+                      transition: 'width 1.2s cubic-bezier(.4,0,.2,1)',
+                    }} />
+                  </div>
+
+                  {/* Tempo decorrido */}
+                  <div style={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    fontSize: FONT.xs, color: C.muted,
+                  }}>
+                    <span>
+                      {salvarEtapa === 'baixando' ? 'Aguarde — pode levar alguns segundos' : 'Quase lá…'}
+                    </span>
+                    <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>
+                      {salvarElapsed}s
+                    </span>
+                  </div>
+                </div>
+              )
+            })()}
+
+            {/* ── Sucesso ──────────────────────────────────── */}
+            {salvarEtapa === 'ok' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: SPACE.lg }}>
+                {/* Ícone central */}
+                <div style={{ textAlign: 'center', padding: `${SPACE.md}px 0` }}>
+                  <div style={{
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    width: 52, height: 52, borderRadius: '50%',
+                    background: `${C.greenSolid}18`,
+                    border: `2px solid ${C.greenSolid}40`,
+                    marginBottom: SPACE.md,
+                  }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke={C.greenSolid}
+                      strokeWidth="2.5" width="24" height="24">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
+                  <div style={{ fontSize: FONT.lg, fontWeight: 800, color: C.text, marginBottom: 4 }}>
+                    Projeto salvo!
+                  </div>
+                  <div style={{ fontSize: FONT.sm, color: C.muted }}>
+                    Concluído em {salvarElapsed}s
+                  </div>
+                </div>
+
+                {/* Detalhes do resultado */}
+                <div style={{
+                  background: `${C.greenSolid}0c`,
+                  border: `1px solid ${C.greenSolid}30`,
+                  borderRadius: RADIUS.md,
+                  overflow: 'hidden',
+                }}>
+                  {[
+                    { label: 'Repositório', value: repo.nomeCompleto },
+                    { label: 'Pasta criada', value: `projetos/${salvarNomeResultado}/` },
+                  ].map(({ label, value }) => (
+                    <div key={label} style={{
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                      padding: `${SPACE.sm}px ${SPACE.md}px`,
+                      borderBottom: `1px solid ${C.greenSolid}20`,
+                      fontSize: FONT.sm,
+                    }}>
+                      <span style={{ color: C.muted, fontWeight: 500 }}>{label}</span>
+                      <code style={{
+                        fontSize: FONT.xs, color: C.text, fontFamily: 'monospace',
+                        background: C.surface, padding: `1px ${SPACE.xs}px`,
+                        borderRadius: RADIUS.xs, maxWidth: '55%',
+                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      }}>
+                        {value}
+                      </code>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Ação rápida */}
+                <a href="/admin/projetos" style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  gap: SPACE.sm, textDecoration: 'none',
+                  fontSize: FONT.base, fontWeight: 700, color: C.accent,
+                  border: `1px solid ${C.accent}40`, borderRadius: RADIUS.md,
+                  padding: `${SPACE.sm}px ${SPACE.md}px`,
+                  background: `${C.accent}0c`,
+                }}>
+                  Ver em Projetos Locais →
+                </a>
+              </div>
+            )}
+
+            {/* ── Erro ────────────────────────────────────── */}
+            {salvarEtapa === 'erro' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: SPACE.lg }}>
+                <div style={{ textAlign: 'center', padding: `${SPACE.md}px 0` }}>
+                  <div style={{
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    width: 52, height: 52, borderRadius: '50%',
+                    background: `${C.red}12`, border: `2px solid ${C.red}30`,
+                    marginBottom: SPACE.md,
+                  }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke={C.red}
+                      strokeWidth="2.5" width="22" height="22">
+                      <line x1="18" y1="6" x2="6" y2="18"/>
+                      <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                  </div>
+                  <div style={{ fontSize: FONT.lg, fontWeight: 800, color: C.text, marginBottom: 4 }}>
+                    Falha ao salvar
+                  </div>
+                  <div style={{ fontSize: FONT.sm, color: C.muted }}>
+                    Após {salvarElapsed}s
+                  </div>
+                </div>
+
+                <div style={{
+                  background: `${C.red}0c`, border: `1px solid ${C.red}30`,
+                  borderRadius: RADIUS.md, padding: `${SPACE.md}px ${SPACE.lg}px`,
+                  fontSize: FONT.sm, color: C.red, lineHeight: 1.6,
+                }}>
+                  {salvarErro || 'Erro desconhecido. Tente novamente.'}
+                </div>
+
+                <div style={{
+                  fontSize: FONT.xs, color: C.muted,
+                  background: C.surface2, borderRadius: RADIUS.sm,
+                  padding: `${SPACE.sm}px ${SPACE.md}px`, lineHeight: 1.6,
+                }}>
+                  Verifique se o servidor tem acesso ao GitHub e se a pasta{' '}
+                  <code style={{ fontFamily: 'monospace' }}>projetos/</code> existe e tem permissão de escrita.
+                </div>
+              </div>
             )}
           </div>
         </DSModal>
@@ -623,7 +925,7 @@ function AbaReleases({ releases, showRelease, setShowRelease, novaRelease, setNo
       </DSSectionTitle>
 
       {showRelease && (
-        <div style={{ background: C.surf2, border: `1px solid ${C.border}`, borderRadius: RADIUS.lg, padding: SPACE.xl, marginBottom: SPACE.xl }}>
+        <div style={{ background: C.surface2, border: `1px solid ${C.border}`, borderRadius: RADIUS.lg, padding: SPACE.xl, marginBottom: SPACE.xl }}>
           <div style={{ fontSize: FONT.base, fontWeight: 800, color: C.text, marginBottom: SPACE.lg }}>Nova Release</div>
           <div style={{ display: 'grid', gap: SPACE.md + 2 }}>
             <input value={novaRelease.tag}      onChange={e => upd('tag', e.target.value)}      placeholder="Tag (ex: v1.0.0) *" style={inp()} />
@@ -670,7 +972,7 @@ function AbaReleases({ releases, showRelease, setShowRelease, novaRelease, setNo
                 <div style={{ marginTop: SPACE.md, display: 'flex', gap: SPACE.sm, flexWrap: 'wrap' }}>
                   {r.assets.map(a => (
                     <a key={a.id} href={a.url} style={{
-                      fontSize: FONT.xs, color: C.text, background: C.surf2,
+                      fontSize: FONT.xs, color: C.text, background: C.surface2,
                       border: `1px solid ${C.border}`, borderRadius: RADIUS.xs + 1,
                       padding: `3px ${SPACE.md}px`, textDecoration: 'none',
                       display: 'inline-flex', alignItems: 'center', gap: SPACE.xs,
@@ -1131,7 +1433,7 @@ function AbaWorkflows({ workflows, owner, repo, toastShow }) {
                                         display: 'inline-flex', alignItems: 'center', gap: SPACE.sm,
                                         fontSize: FONT.sm, fontWeight: 700,
                                         color: isApk ? '#fff' : C.text,
-                                        background: isApk ? C.greenSolid : C.surf2,
+                                        background: isApk ? C.greenSolid : C.surface2,
                                         border: `1px solid ${isApk ? C.greenSolid : C.border}`,
                                         borderRadius: RADIUS.sm, padding: `${SPACE.xs + 1}px ${SPACE.lg}px`,
                                         textDecoration: 'none', whiteSpace: 'nowrap',
