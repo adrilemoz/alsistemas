@@ -253,6 +253,13 @@ router.post('/upload', autenticar, upload.single('zip'), async (req, res) => {
       avisos:          erros.length ? erros.slice(0, 5) : undefined,
       mensagem:        `Projeto "${nomeProjeto}" enviado com sucesso (${arquivosExtraidos} arquivos).`,
     })
+
+    // Registra o timestamp de sincronização no banco (se o projeto já existir vinculado)
+    Projeto.findOneAndUpdate(
+      { nome: nomeProjeto },
+      { $set: { 'metadados.ultimaSincronizacao': new Date() } },
+      { upsert: false }
+    ).catch(() => null)
   } catch (err) {
     // Limpa pasta parcial em caso de falha
     try { if (fs.existsSync(destDir)) fs.rmSync(destDir, { recursive: true, force: true }) } catch {}
@@ -453,10 +460,19 @@ router.get('/:nome/sync-status', autenticar, async (req, res) => {
 
     let statusSync = 'desconhecido'
     if (dataLocalModificacao) {
-      const margemMs = 60 * 1000
-      statusSync = dataPushGitHub > new Date(dataLocalModificacao.getTime() + margemMs)
-        ? 'desatualizado'
-        : 'atualizado'
+      const margemMs       = 60 * 1000
+      const ultimaSync     = doc?.metadados?.ultimaSincronizacao
+        ? new Date(doc.metadados.ultimaSincronizacao)
+        : null
+
+      // Se há registro de sincronização manual mais recente que o último push → atualizado
+      if (ultimaSync && ultimaSync >= dataPushGitHub) {
+        statusSync = 'atualizado'
+      } else {
+        statusSync = dataPushGitHub > new Date(dataLocalModificacao.getTime() + margemMs)
+          ? 'desatualizado'
+          : 'atualizado'
+      }
     }
 
     return res.json({

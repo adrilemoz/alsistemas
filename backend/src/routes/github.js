@@ -688,6 +688,71 @@ router.get('/artifacts/:artifactId/download', autenticar, async (req, res) => {
 })
 
 /* ═══════════════════════════════════════════════════════════
+   DOWNLOAD ZIP — Proxy autenticado, stream direto ao browser
+   Evita expor o GITHUB_TOKEN no frontend.
+
+   GET /api/github/repos/:owner/:repo/download-zip
+   Query: branch (opcional — usa default_branch se omitido)
+═══════════════════════════════════════════════════════════ */
+router.get('/repos/:owner/:repo/download-zip', autenticar, async (req, res) => {
+  const { owner, repo }     = req.params
+  const { branch: qBranch } = req.query
+
+  if (!validarNome(owner) || !validarNome(repo))
+    return res.status(400).json({ erro: 'Nome de repositório inválido.' })
+
+  const token = process.env.GITHUB_TOKEN
+  if (!token) return res.status(503).json({ erro: 'GITHUB_TOKEN não configurado.' })
+
+  try {
+    let branch = qBranch
+    if (!branch) {
+      try {
+        const repoData = await githubFetch(`/repos/${owner}/${repo}`)
+        branch = repoData.default_branch || 'main'
+      } catch { branch = 'main' }
+    }
+
+    const zipResp = await fetch(
+      `${GITHUB_API}/repos/${owner}/${repo}/zipball/${branch}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+        redirect: 'follow',
+        signal: AbortSignal.timeout(90_000),
+      }
+    )
+
+    if (!zipResp.ok) {
+      const body = await zipResp.text().catch(() => '')
+      const msg  = zipResp.status === 404
+        ? `Repositório "${owner}/${repo}" não encontrado ou sem acesso.`
+        : zipResp.status === 403
+          ? 'Acesso negado. Verifique os escopos do GITHUB_TOKEN.'
+          : `GitHub retornou ${zipResp.status}: ${body.slice(0, 200)}`
+      return res.status(zipResp.status).json({ erro: msg })
+    }
+
+    const fileName = `${repo}-${branch}.zip`
+    res.setHeader('Content-Type', 'application/zip')
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`)
+
+    const cl = zipResp.headers.get('content-length')
+    if (cl) res.setHeader('Content-Length', cl)
+
+    const { Readable } = await import('stream')
+    Readable.fromWeb(zipResp.body).pipe(res)
+
+  } catch (err) {
+    if (!res.headersSent)
+      res.status(500).json({ erro: err.message })
+  }
+})
+
+/* ═══════════════════════════════════════════════════════════
    SALVAR PROJETO — Sprint 5
    Baixa o zipball do branch padrão do repositório e extrai
    em PROJETOS_DIR/{nomeProjeto}/, com proteção contra Zip Slip.

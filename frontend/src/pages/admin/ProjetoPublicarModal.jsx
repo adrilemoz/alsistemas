@@ -164,11 +164,10 @@ function Passo1({ onConcluido }) {
     await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
       xhrRef.current = xhr
-      xhr.open('POST', `${import.meta.env.VITE_API_URL || ''}/api/projetos/upload`)
+      xhr.open('POST', `${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/projetos/upload`)
 
-      // Token de auth
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token')
-      if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`)
+      // Auth via cookie HttpOnly — mesmo padrão do resto do app (credentials: 'include')
+      xhr.withCredentials = true
 
       xhr.upload.addEventListener('progress', e => {
         if (e.lengthComputable) setProgresso(Math.round(e.loaded / e.total * 90))
@@ -176,13 +175,18 @@ function Passo1({ onConcluido }) {
 
       xhr.onload = () => {
         setProgresso(100)
+        const text = xhr.responseText || ''
         try {
-          const data = JSON.parse(xhr.responseText)
-          if (xhr.status >= 400) reject(new Error(data.erro || 'Erro no servidor'))
+          const data = JSON.parse(text)
+          if (xhr.status >= 400) reject(new Error(data.erro || `Erro ${xhr.status}`))
           else resolve(data)
-        } catch { reject(new Error('Resposta inválida do servidor')) }
+        } catch {
+          reject(new Error(text.slice(0, 200) || `Erro ${xhr.status}`))
+        }
       }
-      xhr.onerror = () => reject(new Error('Falha de conexão'))
+      xhr.onerror   = () => reject(new Error('Falha de conexão com o servidor'))
+      xhr.ontimeout = () => reject(new Error('Tempo limite esgotado'))
+      xhr.timeout   = 120_000
       xhr.send(fd)
     })
       .then(data => onConcluido(data.nomeProjeto, data.arquivos))
@@ -425,10 +429,9 @@ function Passo3({ nomeProjeto, owner, repo, msgCommit, onConcluido }) {
       message: msgCommit,
       autor:   '',
     })
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token') || ''
-    const url   = `${import.meta.env.VITE_API_URL || ''}/api/projetos/${encodeURIComponent(nomeProjeto)}/commit-stream?${q}`
-
-    const es = new EventSource(url + `&token=${encodeURIComponent(token)}`)
+    const base = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+    const url  = `${base}/projetos/${encodeURIComponent(nomeProjeto)}/commit-stream?${q}`
+    const es   = new EventSource(url, { withCredentials: true })
 
     es.onmessage = e => {
       try {

@@ -330,6 +330,29 @@ function PainelDetalhes({ repo, onFechar, toastShow }) {
             {meta?.alias && <div style={{ fontSize: FONT.sm, color: C.muted, marginTop: 2 }}>alias: {meta.alias}</div>}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: SPACE.md, flexShrink: 0 }}>
+            <a
+              href={githubService.downloadZipUrl(owner, repoNome, repo?.default_branch)}
+              download
+              title={`Baixar código-fonte de ${owner}/${repoNome} como ZIP`}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: SPACE.xs,
+                fontSize: FONT.sm, fontWeight: 600, color: C.muted,
+                background: C.surface2, border: `1px solid ${C.border}`,
+                borderRadius: RADIUS.sm, padding: '5px 10px',
+                textDecoration: 'none', transition: 'all .15s',
+                flexShrink: 0,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = C.accent; e.currentTarget.style.color = C.text }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.muted }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                width="13" height="13">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              ZIP
+            </a>
             <DSBtn variant="primary" size="sm" onClick={abrirModalSalvar}>📥 Salvar em Projetos</DSBtn>
             <DSBtn variant="ghost" size="icon" onClick={() => onFechar()}>✕</DSBtn>
           </div>
