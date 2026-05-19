@@ -156,7 +156,7 @@ function AbaFavicon({ value, onChange }) {
 // ─── Aba: Sitemap ─────────────────────────────────────────────
 function AbaSitemap({ cfg, onChange }) {
   // Deriva a URL base do backend a partir da variável de ambiente
-  const apiBase   = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+  const apiBase   = import.meta.env.VITE_API_URL || 'https://alsistemas.onrender.com/api'
   const backendUrl = apiBase.replace(/\/api\/?$/, '')
   const sitemapUrl = `${backendUrl}/sitemap.xml`
 

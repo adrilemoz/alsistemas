@@ -164,7 +164,7 @@ function Passo1({ onConcluido }) {
     await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
       xhrRef.current = xhr
-      xhr.open('POST', `${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/projetos/upload`)
+      xhr.open('POST', `${import.meta.env.VITE_API_URL || 'https://alsistemas.onrender.com/api'}/projetos/upload`)
 
       // Auth via cookie HttpOnly — mesmo padrão do resto do app (credentials: 'include')
       xhr.withCredentials = true
@@ -429,7 +429,7 @@ function Passo3({ nomeProjeto, owner, repo, msgCommit, onConcluido }) {
       message: msgCommit,
       autor:   '',
     })
-    const base = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+    const base = import.meta.env.VITE_API_URL || 'https://alsistemas.onrender.com/api'
     const url  = `${base}/projetos/${encodeURIComponent(nomeProjeto)}/commit-stream?${q}`
     const es   = new EventSource(url, { withCredentials: true })
 

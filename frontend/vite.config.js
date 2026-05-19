@@ -29,8 +29,8 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true,
-    // ─── Proxy local: redireciona /api → backend Termux ───────
-    // Evita problemas de CORS em dev sem precisar de extensão no browser.
+    // ─── Proxy local (apenas dev): redireciona /api → backend local ──
+    // Em produção (Vercel) o VITE_API_URL aponta direto para o Render.
     proxy: {
       '/api': {
         target: 'http://localhost:3001',
