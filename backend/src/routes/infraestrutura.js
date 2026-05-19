@@ -400,41 +400,140 @@ router.delete('/mongodb/colecoes/:nome/indices/:nomeIndice', async (req, res, ne
   } catch (err) { next(err) }
 })
 
-// ─── Métricas do sistema (CPU, memória, uptime) ───────────────
+// ─── Métricas completas do sistema ────────────────────────────
 import os from 'os'
+import v8 from 'v8'
 
-router.get('/sistema/metricas', async (req, res, next) => {
+function formatarUptime(seg) {
+  const d = Math.floor(seg / 86400)
+  const h = Math.floor((seg % 86400) / 3600)
+  const m = Math.floor((seg % 3600) / 60)
+  const s = Math.floor(seg % 60)
+  if (d > 0) return `${d}d ${h}h ${m}m`
+  if (h > 0) return `${h}h ${m}m ${s}s`
+  return `${m}m ${s}s`
+}
+
+function filtrarInterfaces(ifaces) {
+  const resultado = []
+  for (const [nome, lista] of Object.entries(ifaces)) {
+    if (/^lo/i.test(nome)) continue // ignora loopback
+    for (const iface of lista) {
+      if (iface.internal) continue
+      resultado.push({
+        nome,
+        familia: iface.family,
+        endereco: iface.address,
+        mascara: iface.netmask,
+        mac: iface.mac,
+      })
+    }
+  }
+  return resultado
+}
+
+router.get('/sistema/metricas', async (_req, res, next) => {
   try {
-    const cpus = os.cpus()
-    const loadAvg = os.loadavg()
-    const totalMem = os.totalmem()
-    const freeMem = os.freemem()
-    const memUsage = process.memoryUsage()
-    const uptime = process.uptime()
+    const cpus      = os.cpus()
+    const loadAvg   = os.loadavg()
+    const totalMem  = os.totalmem()
+    const freeMem   = os.freemem()
+    const memUsage  = process.memoryUsage()
+    const cpuUsage  = process.cpuUsage()
+    const uptime    = process.uptime()
+    const uptimeSo  = os.uptime()
+    const heapStats = v8.getHeapStatistics()
+    const ifaces    = os.networkInterfaces() || {}
+
+    // Tenta ler versão do package.json
+    let versaoApp = '—'
+    try {
+      const { createRequire } = await import('module')
+      const req = createRequire(import.meta.url)
+      versaoApp = req('../../package.json').version || '—'
+    } catch { /* ok */ }
 
     res.json({
+      // ── CPU ────────────────────────────────────────────────
       cpu: {
-        cores: cpus.length,
-        loadAvg1min: loadAvg[0],
-        loadAvg5min: loadAvg[1],
+        cores:        cpus.length,
+        modelo:       cpus[0]?.model?.trim() || '—',
+        velocidadeMhz: cpus[0]?.speed ?? 0,
+        loadAvg1min:  loadAvg[0],
+        loadAvg5min:  loadAvg[1],
         loadAvg15min: loadAvg[2],
+        usoUsuarioMs: Math.round(cpuUsage.user   / 1000),
+        usoSistemaMs: Math.round(cpuUsage.system / 1000),
       },
+
+      // ── Memória RAM ────────────────────────────────────────
       memoria: {
-        total: totalMem,
-        livre: freeMem,
+        total:         totalMem,
+        livre:         freeMem,
+        usada:         totalMem - freeMem,
         usoPercentual: ((totalMem - freeMem) / totalMem) * 100,
-        rss: memUsage.rss,
-        heapTotal: memUsage.heapTotal,
-        heapUsed: memUsage.heapUsed,
+        rss:           memUsage.rss,
+        heapTotal:     memUsage.heapTotal,
+        heapUsed:      memUsage.heapUsed,
+        externo:       memUsage.external,
+        arrayBuffers:  memUsage.arrayBuffers,
       },
+
+      // ── V8 Heap ────────────────────────────────────────────
+      v8: {
+        heapSizeLimit:      heapStats.heap_size_limit,
+        totalHeapSize:      heapStats.total_heap_size,
+        usedHeapSize:       heapStats.used_heap_size,
+        totalAvailable:     heapStats.total_available_size,
+        totalPhysical:      heapStats.total_physical_size,
+        mallocedMemory:     heapStats.malloced_memory,
+        peakMallocedMemory: heapStats.peak_malloced_memory,
+        usoPercentual:      (heapStats.used_heap_size / heapStats.heap_size_limit) * 100,
+      },
+
+      // ── Sistema Operacional ────────────────────────────────
+      sistema: {
+        hostname:      os.hostname(),
+        so:            os.type(),
+        versaoSo:      os.release(),
+        plataforma:    os.platform(),
+        arquitetura:   os.arch(),
+        endianness:    os.endianness(),
+        uptimeSegundos: uptimeSo,
+        uptimeFormatado: formatarUptime(uptimeSo),
+        tmpdir:        os.tmpdir(),
+      },
+
+      // ── Processo Node.js ───────────────────────────────────
       processo: {
-        uptimeSegundos: uptime,
-        uptimeFormatado: new Date(uptime * 1000).toISOString().substr(11, 8),
-        versaoNode: process.version,
-        pid: process.pid,
-        plataforma: os.platform(),
-        arquitetura: os.arch(),
+        uptimeSegundos:  uptime,
+        uptimeFormatado: formatarUptime(uptime),
+        versaoNode:      process.version,
+        versaoApp,
+        pid:             process.pid,
+        ppid:            process.ppid,
+        cwd:             process.cwd(),
+        execPath:        process.execPath,
+        titulo:          process.title,
+        handles:         process._getActiveHandles?.()?.length ?? '—',
+        requests:        process._getActiveRequests?.()?.length ?? '—',
       },
+
+      // ── Variáveis de ambiente (apenas não-sensíveis) ───────
+      ambiente: {
+        nodeEnv:      process.env.NODE_ENV      || '—',
+        porta:        process.env.PORT          || '—',
+        tz:           process.env.TZ            || Intl.DateTimeFormat().resolvedOptions().timeZone || '—',
+        aiProvider:   process.env.AI_PROVIDER   || '—',
+        groqModel:    process.env.GROQ_MODEL    || '—',
+        logLevel:     process.env.LOG_LEVEL     || '—',
+      },
+
+      // ── Interfaces de rede ─────────────────────────────────
+      rede: {
+        interfaces: filtrarInterfaces(ifaces),
+      },
+
       timestamp: new Date().toISOString(),
     })
   } catch (err) { next(err) }
