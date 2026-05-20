@@ -50,7 +50,7 @@ const LABEL_COMPONENTE = {
   under_maintenance:    'Manutenção',
 }
 
-const IMPACTO_COR = { none: C?.green, minor: '#f59e0b', major: '#f97316', critical: '#ef4444' }
+const IMPACTO_COR = { none: C.green, minor: '#f59e0b', major: '#f97316', critical: '#ef4444' }
 
 function ago(dateStr) {
   if (!dateStr) return '—'
@@ -78,18 +78,18 @@ function ComponentList({ componentes = [] }) {
   const SHOW = 6
   const visíveis = expandido ? componentes : componentes.slice(0, SHOW)
 
-  if (!componentes.length) return <p style={{ fontSize: 12, color: C?.muted }}>Nenhum componente reportado.</p>
+  if (!componentes.length) return <p style={{ fontSize: 12, color: C.muted }}>Nenhum componente reportado.</p>
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
       {visíveis.map((c, i) => (
         <div key={i} style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '5px 8px', borderRadius: 6, background: C?.surface,
-          border: `1px solid ${c.ok ? C?.border : COR_COMPONENTE[c.status] + '44'}`,
+          padding: '5px 8px', borderRadius: 6, background: C.surface,
+          border: `1px solid ${c.ok ? C.border : COR_COMPONENTE[c.status] + '44'}`,
           fontSize: 12,
         }}>
-          <span style={{ color: C?.text }}>{c.nome}</span>
+          <span style={{ color: C.text }}>{c.nome}</span>
           <span style={{ color: COR_COMPONENTE[c.status] || '#6b7280', fontWeight: 600, fontSize: 11 }}>
             ● {LABEL_COMPONENTE[c.status] || c.status}
           </span>
@@ -97,7 +97,7 @@ function ComponentList({ componentes = [] }) {
       ))}
       {componentes.length > SHOW && (
         <button onClick={() => setExpandido(v => !v)} style={{
-          fontSize: 11, color: C?.muted, background: 'none', border: 'none',
+          fontSize: 11, color: C.muted, background: 'none', border: 'none',
           cursor: 'pointer', textAlign: 'left', padding: '2px 0',
         }}>
           {expandido ? '▲ Mostrar menos' : `▼ +${componentes.length - SHOW} componentes`}
@@ -121,13 +121,13 @@ function IncidentList({ incidentes = [] }) {
           border: `1px solid ${IMPACTO_COR[inc.impacto] || '#6b7280'}44`,
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-            <b style={{ fontSize: 12, color: C?.text }}>{inc.nome}</b>
+            <b style={{ fontSize: 12, color: C.text }}>{inc.nome}</b>
             <Badge cor={IMPACTO_COR[inc.impacto] || '#6b7280'} label={inc.impacto?.toUpperCase()} />
           </div>
           {inc.atualizacao && (
-            <p style={{ fontSize: 11, color: C?.muted, margin: 0 }}>{inc.atualizacao}</p>
+            <p style={{ fontSize: 11, color: C.muted, margin: 0 }}>{inc.atualizacao}</p>
           )}
-          <p style={{ fontSize: 10, color: C?.muted, marginTop: 4 }}>
+          <p style={{ fontSize: 10, color: C.muted, marginTop: 4 }}>
             {inc.status} · {ago(inc.criado)}
           </p>
         </div>
@@ -138,13 +138,13 @@ function IncidentList({ incidentes = [] }) {
 
 // ── Deploy list (Render) ──────────────────────────────────────
 function DeployListRender({ deploys = [] }) {
-  if (!deploys.length) return <p style={{ fontSize: 12, color: C?.muted }}>Nenhum deploy encontrado.</p>
+  if (!deploys.length) return <p style={{ fontSize: 12, color: C.muted }}>Nenhum deploy encontrado.</p>
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
       {deploys.map((d, i) => (
         <div key={i} style={{
           padding: '6px 10px', borderRadius: 6, fontSize: 11,
-          background: C?.surface, border: `1px solid ${COR_DEPLOY_RENDER[d.status] || '#6b7280'}44`,
+          background: C.surface, border: `1px solid ${COR_DEPLOY_RENDER[d.status] || '#6b7280'}44`,
           display: 'flex', gap: 8, alignItems: 'flex-start',
         }}>
           <span style={{ color: COR_DEPLOY_RENDER[d.status] || '#6b7280', fontWeight: 700, flexShrink: 0 }}>
@@ -152,11 +152,11 @@ function DeployListRender({ deploys = [] }) {
           </span>
           <div style={{ flex: 1, minWidth: 0 }}>
             {d.commit && (
-              <div style={{ color: C?.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ color: C.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 <code style={{ color: '#60a5fa' }}>{d.commit.hash}</code> {d.commit.mensagem}
               </div>
             )}
-            <span style={{ color: C?.muted }}>{ago(d.criado)}</span>
+            <span style={{ color: C.muted }}>{ago(d.criado)}</span>
           </div>
         </div>
       ))}
@@ -166,13 +166,13 @@ function DeployListRender({ deploys = [] }) {
 
 // ── Deploy list (Vercel) ──────────────────────────────────────
 function DeployListVercel({ deploys = [] }) {
-  if (!deploys.length) return <p style={{ fontSize: 12, color: C?.muted }}>Nenhum deploy encontrado.</p>
+  if (!deploys.length) return <p style={{ fontSize: 12, color: C.muted }}>Nenhum deploy encontrado.</p>
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
       {deploys.map((d, i) => (
         <div key={i} style={{
           padding: '6px 10px', borderRadius: 6, fontSize: 11,
-          background: C?.surface, border: `1px solid ${COR_DEPLOY_VERCEL[d.estado] || '#6b7280'}44`,
+          background: C.surface, border: `1px solid ${COR_DEPLOY_VERCEL[d.estado] || '#6b7280'}44`,
           display: 'flex', gap: 8, alignItems: 'flex-start',
         }}>
           <span style={{ color: COR_DEPLOY_VERCEL[d.estado] || '#6b7280', fontWeight: 700, flexShrink: 0 }}>
@@ -180,12 +180,12 @@ function DeployListVercel({ deploys = [] }) {
           </span>
           <div style={{ flex: 1, minWidth: 0 }}>
             {d.commit && (
-              <div style={{ color: C?.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ color: C.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {d.hash && <code style={{ color: '#60a5fa' }}>{d.hash} </code>}
                 {d.commit}
               </div>
             )}
-            <div style={{ color: C?.muted, display: 'flex', gap: 8 }}>
+            <div style={{ color: C.muted, display: 'flex', gap: 8 }}>
               <span>{d.ambiente}</span>
               {d.branch && <span>← {d.branch}</span>}
               <span>{ago(d.criado)}</span>
@@ -231,12 +231,12 @@ function ServicosRender({ servicos = [] }) {
         <div key={s.id}>
           <div style={{
             padding: '8px 10px', borderRadius: 8, cursor: 'pointer',
-            background: C?.surface, border: `1px solid ${COR_ESTADO[s.estado] || '#6b7280'}44`,
+            background: C.surface, border: `1px solid ${COR_ESTADO[s.estado] || '#6b7280'}44`,
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           }} onClick={() => carregarDeploys(s.id)}>
             <div>
               <b style={{ fontSize: 13 }}>{s.nome}</b>
-              <div style={{ fontSize: 11, color: C?.muted }}>
+              <div style={{ fontSize: 11, color: C.muted }}>
                 {s.tipo} {s.regiao ? `· ${s.regiao}` : ''} {s.branch ? `· ${s.branch}` : ''}
               </div>
               {s.url && <div style={{ fontSize: 11, color: '#60a5fa' }}>{s.url}</div>}
@@ -245,12 +245,12 @@ function ServicosRender({ servicos = [] }) {
               <span style={{ color: COR_ESTADO[s.estado] || '#6b7280', fontSize: 11, fontWeight: 700 }}>
                 ● {s.estado}
               </span>
-              {loadingId === s.id ? <Spin size={12} /> : <span style={{ color: C?.muted, fontSize: 10 }}>▼</span>}
+              {loadingId === s.id ? <Spin size={12} /> : <span style={{ color: C.muted, fontSize: 10 }}>▼</span>}
             </div>
           </div>
           {selecionado === s.id && (
             <div style={{ padding: '8px 4px' }}>
-              <p style={{ fontSize: 11, color: C?.muted, marginBottom: 6 }}>Últimos deploys:</p>
+              <p style={{ fontSize: 11, color: C.muted, marginBottom: 6 }}>Últimos deploys:</p>
               <DeployListRender deploys={deploys[s.id] || []} />
             </div>
           )}
@@ -283,24 +283,24 @@ function ProjetosVercel({ projetos = [] }) {
         <div key={p.id}>
           <div style={{
             padding: '8px 10px', borderRadius: 8, cursor: 'pointer',
-            background: C?.surface, border: `1px solid ${C?.border}`,
+            background: C.surface, border: `1px solid ${C.border}`,
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           }} onClick={() => carregarDeploys(p.id)}>
             <div>
               <b style={{ fontSize: 13 }}>{p.nome}</b>
-              <div style={{ fontSize: 11, color: C?.muted }}>
+              <div style={{ fontSize: 11, color: C.muted }}>
                 {p.framework}
                 {p.git ? ` · ${p.git.tipo}: ${p.git.repositorio}` : ''}
               </div>
               {p.dominio && <div style={{ fontSize: 11, color: '#60a5fa' }}>{p.dominio}</div>}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              {loadingId === p.id ? <Spin size={12} /> : <span style={{ color: C?.muted, fontSize: 10 }}>▼</span>}
+              {loadingId === p.id ? <Spin size={12} /> : <span style={{ color: C.muted, fontSize: 10 }}>▼</span>}
             </div>
           </div>
           {selecionado === p.id && (
             <div style={{ padding: '8px 4px' }}>
-              <p style={{ fontSize: 11, color: C?.muted, marginBottom: 6 }}>Últimos deploys:</p>
+              <p style={{ fontSize: 11, color: C.muted, marginBottom: 6 }}>Últimos deploys:</p>
               <DeployListVercel deploys={deploys[p.id] || []} />
             </div>
           )}
@@ -316,7 +316,7 @@ function PlatformCard({ nome, dados, cor, logoChar }) {
   if (!dados) return (
     <PageCard>
       <SectionTitle>{logoChar} {nome}</SectionTitle>
-      <p style={{ fontSize: 13, color: C?.muted }}>Não foi possível obter status.</p>
+      <p style={{ fontSize: 13, color: C.muted }}>Não foi possível obter status.</p>
     </PageCard>
   )
 
@@ -345,12 +345,12 @@ function PlatformCard({ nome, dados, cor, logoChar }) {
       </div>
 
       {/* Sub-tabs */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 12, borderBottom: `1px solid ${C?.border}`, paddingBottom: 8 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12, borderBottom: `1px solid ${C.border}`, paddingBottom: 8 }}>
         {['status', 'incidentes'].map(t => (
           <button key={t} onClick={() => setAbaLocal(t)} style={{
             fontSize: 11, padding: '3px 10px', borderRadius: 20, cursor: 'pointer', border: 'none',
-            background: abaLocal === t ? cor : C?.border,
-            color: abaLocal === t ? '#fff' : C?.muted,
+            background: abaLocal === t ? cor : C.border,
+            color: abaLocal === t ? '#fff' : C.muted,
             fontWeight: abaLocal === t ? 700 : 400,
           }}>
             {t === 'incidentes' ? `Incidentes${nIncidentes ? ` (${nIncidentes})` : ''}` : 'Componentes'}
@@ -362,7 +362,7 @@ function PlatformCard({ nome, dados, cor, logoChar }) {
       {abaLocal === 'incidentes' && <IncidentList  incidentes={dados.incidentes}  />}
 
       {dados.atualizado && (
-        <p style={{ fontSize: 10, color: C?.muted, marginTop: 10, textAlign: 'right' }}>
+        <p style={{ fontSize: 10, color: C.muted, marginTop: 10, textAlign: 'right' }}>
           Atualizado: {new Date(dados.atualizado).toLocaleString('pt-BR')}
         </p>
       )}
@@ -446,16 +446,16 @@ export default function AbaPlataformas() {
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '8px 14px', borderRadius: 10, flexWrap: 'wrap', gap: 10,
-        background: C?.surface, border: `1px solid ${C?.border}`, fontSize: 12,
+        background: C.surface, border: `1px solid ${C.border}`, fontSize: 12,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: C?.muted }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: C.muted }}>
           {Ico.refresh}
           <span>Auto-refresh:</span>
           {INTERVALOS.map(op => (
             <button key={op.ms} onClick={() => setIntervalo(op.ms)} style={{
               padding: '2px 10px', borderRadius: 20, cursor: 'pointer', fontSize: 11, border: 'none',
-              background: intervalo === op.ms ? '#3b82f6' : C?.border,
-              color: intervalo === op.ms ? '#fff' : C?.text,
+              background: intervalo === op.ms ? '#3b82f6' : C.border,
+              color: intervalo === op.ms ? '#fff' : C.text,
               fontWeight: intervalo === op.ms ? 700 : 400,
             }}>{op.label}</button>
           ))}
@@ -470,7 +470,7 @@ export default function AbaPlataformas() {
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
           {ultimoCheck && (
-            <span style={{ fontSize: 11, color: C?.muted }}>
+            <span style={{ fontSize: 11, color: C.muted }}>
               Verificado: {ultimoCheck.toLocaleTimeString('pt-BR')}
             </span>
           )}
@@ -495,8 +495,8 @@ export default function AbaPlataformas() {
             <p style={{ color: '#f87171', marginBottom: 8 }}>
               ⚠ {erroApiKeys.render}
             </p>
-            <p style={{ color: C?.muted, fontSize: 12 }}>
-              Para habilitar: adicione <code style={{ background: C?.border, padding: '1px 5px', borderRadius: 4 }}>RENDER_API_KEY</code> nas
+            <p style={{ color: C.muted, fontSize: 12 }}>
+              Para habilitar: adicione <code style={{ background: C.border, padding: '1px 5px', borderRadius: 4 }}>RENDER_API_KEY</code> nas
               variáveis de ambiente do seu serviço no Render.<br />
               Obtenha a chave em: <a href="https://dashboard.render.com/u/settings#api-keys"
                 target="_blank" rel="noreferrer" style={{ color: '#60a5fa' }}>
@@ -519,8 +519,8 @@ export default function AbaPlataformas() {
             <p style={{ color: '#f87171', marginBottom: 8 }}>
               ⚠ {erroApiKeys.vercel}
             </p>
-            <p style={{ color: C?.muted, fontSize: 12 }}>
-              Para habilitar: adicione <code style={{ background: C?.border, padding: '1px 5px', borderRadius: 4 }}>VERCEL_TOKEN</code> nas
+            <p style={{ color: C.muted, fontSize: 12 }}>
+              Para habilitar: adicione <code style={{ background: C.border, padding: '1px 5px', borderRadius: 4 }}>VERCEL_TOKEN</code> nas
               variáveis de ambiente do seu serviço no Render.<br />
               Obtenha o token em: <a href="https://vercel.com/account/tokens"
                 target="_blank" rel="noreferrer" style={{ color: '#60a5fa' }}>

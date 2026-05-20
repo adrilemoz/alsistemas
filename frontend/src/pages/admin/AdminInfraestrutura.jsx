@@ -1,16 +1,16 @@
 /**
  * AdminInfraestrutura.jsx — Componente-roteador de abas.
  *
- * Toda a lógica e UI foi extraída para:
- *   components/admin/infra/InfraBase.jsx        — primitivos compartilhados
- *   components/admin/infra/AbaConfiguracoes.jsx — aba MongoDB/Cloudinary config
- *   components/admin/infra/AbaMongoDB.jsx       — aba exploração do banco
- *   components/admin/infra/AbaCloudinary.jsx    — aba galeria de mídia
- *   components/admin/infra/AbaSistema.jsx       — aba CPU/memória/cache
+ * Abas:
+ *   AbaConfiguracoes — MongoDB / Cloudinary config
+ *   AbaMongoDB       — exploração do banco
+ *   AbaCloudinary    — galeria de mídia
+ *   AbaSistema       — CPU / memória / cache
+ *   AbaPlataformas   — status Render + Vercel (serviços, deploys, incidentes)
  */
 import { useState, Suspense, lazy } from 'react'
 import { C, Ico, Spin } from '../../components/admin/infra/InfraBase'
-import { T as C, SPACE, RADIUS, FONT } from '../../themes/tokens'
+import { SPACE } from '../../themes/tokens'
 
 const AbaConfiguracoes = lazy(() => import('../../components/admin/infra/AbaConfiguracoes'))
 const AbaMongoDB       = lazy(() => import('../../components/admin/infra/AbaMongoDB'))
@@ -19,18 +19,18 @@ const AbaSistema       = lazy(() => import('../../components/admin/infra/AbaSist
 const AbaPlataformas   = lazy(() => import('../../components/admin/infra/AbaPlataformas'))
 
 const ABAS = [
-  { id: 'config',     label: 'Configurações', icon: Ico.gear  },
-  { id: 'mongodb',    label: 'MongoDB',       icon: Ico.db    },
-  { id: 'cloudinary', label: 'Cloudinary',    icon: Ico.cloud },
-  { id: 'sistema',    label: 'Sistema',       icon: Ico.cpu   },
-  { id: 'plataformas', label: 'Plataformas',   icon: Ico.cloud },
+  { id: 'config',      label: 'Configurações', icon: Ico.gear  },
+  { id: 'mongodb',     label: 'MongoDB',       icon: Ico.db    },
+  { id: 'cloudinary',  label: 'Cloudinary',    icon: Ico.cloud },
+  { id: 'sistema',     label: 'Sistema',       icon: Ico.cpu   },
+  { id: 'plataformas', label: 'Plataformas',   icon: Ico.info  },
 ]
 
 const ABA_COMPONENTE = {
-  config:     <AbaConfiguracoes />,
-  mongodb:    <AbaMongoDB />,
-  cloudinary: <AbaCloudinary />,
-  sistema:    <AbaSistema />,
+  config:      <AbaConfiguracoes />,
+  mongodb:     <AbaMongoDB />,
+  cloudinary:  <AbaCloudinary />,
+  sistema:     <AbaSistema />,
   plataformas: <AbaPlataformas />,
 }
 
@@ -41,7 +41,7 @@ export default function AdminInfraestrutura() {
     <div className="adm-page">
       <div className="adm-page-header">
         <h1 className="adm-page-title">Infraestrutura</h1>
-        <p className="adm-page-sub">Configurações, banco de dados, mídia e sistema</p>
+        <p className="adm-page-sub">Configurações, banco de dados, mídia, sistema e plataformas</p>
       </div>
 
       <div className="adm-tabs" style={{ marginBottom: 24 }}>
