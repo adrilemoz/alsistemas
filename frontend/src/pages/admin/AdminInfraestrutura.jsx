@@ -6,7 +6,6 @@
  *   AbaMongoDB       — exploração do banco
  *   AbaCloudinary    — galeria de mídia
  *   AbaSistema       — CPU / memória / cache
- *   AbaPlataformas   — status Render + Vercel (serviços, deploys, incidentes)
  */
 import { useState, Suspense, lazy } from 'react'
 import { C, Ico, Spin } from '../../components/admin/infra/InfraBase'
@@ -16,14 +15,12 @@ const AbaConfiguracoes = lazy(() => import('../../components/admin/infra/AbaConf
 const AbaMongoDB       = lazy(() => import('../../components/admin/infra/AbaMongoDB'))
 const AbaCloudinary    = lazy(() => import('../../components/admin/infra/AbaCloudinary'))
 const AbaSistema       = lazy(() => import('../../components/admin/infra/AbaSistema'))
-const AbaPlataformas   = lazy(() => import('../../components/admin/infra/AbaPlataformas'))
 
 const ABAS = [
   { id: 'config',      label: 'Configurações', icon: Ico.gear  },
   { id: 'mongodb',     label: 'MongoDB',       icon: Ico.db    },
   { id: 'cloudinary',  label: 'Cloudinary',    icon: Ico.cloud },
   { id: 'sistema',     label: 'Sistema',       icon: Ico.cpu   },
-  { id: 'plataformas', label: 'Plataformas',   icon: Ico.info  },
 ]
 
 const ABA_COMPONENTE = {
@@ -31,7 +28,6 @@ const ABA_COMPONENTE = {
   mongodb:     <AbaMongoDB />,
   cloudinary:  <AbaCloudinary />,
   sistema:     <AbaSistema />,
-  plataformas: <AbaPlataformas />,
 }
 
 export default function AdminInfraestrutura() {
@@ -41,7 +37,7 @@ export default function AdminInfraestrutura() {
     <div className="adm-page">
       <div className="adm-page-header">
         <h1 className="adm-page-title">Infraestrutura</h1>
-        <p className="adm-page-sub">Configurações, banco de dados, mídia, sistema e plataformas</p>
+        <p className="adm-page-sub">Configurações, banco de dados, mídia e sistema</p>
       </div>
 
       <div className="adm-tabs" style={{ marginBottom: 24 }}>

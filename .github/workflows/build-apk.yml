@@ -106,11 +106,11 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: 📱 Adicionar plataforma Android
-        run: npx cap add android --no-telemetry
+        run: npx cap add android
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: 🔄 Sincronizar assets web → Android
-        run: npx cap sync android --no-telemetry
+        run: npx cap sync android
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: 🔑 Permissão gradlew
@@ -202,11 +202,11 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: 📱 Adicionar plataforma Android
-        run: npx cap add android --no-telemetry
+        run: npx cap add android
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: 🔄 Sincronizar assets web → Android
-        run: npx cap sync android --no-telemetry
+        run: npx cap sync android
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: 🔑 Permissão gradlew
