@@ -44,4 +44,10 @@ export const infraestruturaService = {
   },
   async sistemaMetricas()     { return api('/admin/infraestrutura/sistema/metricas') },
   async limparCache()         { return api('/admin/infraestrutura/sistema/limpar-cache', { method: 'POST', body: '{}' }) },
+  // ── Plataformas (Render + Vercel) ───────────────────────────
+  async plataformasStatus()      { return api('/admin/infraestrutura/plataformas/status') },
+  async renderServicos()         { return api('/admin/infraestrutura/plataformas/render/servicos') },
+  async renderDeploys(svcId)     { return api(`/admin/infraestrutura/plataformas/render/servicos/${svcId}/deploys`) },
+  async vercelProjetos()         { return api('/admin/infraestrutura/plataformas/vercel/projetos') },
+  async vercelDeploys(projId)    { return api(`/admin/infraestrutura/plataformas/vercel/projetos/${projId}/deploys`) },
 }

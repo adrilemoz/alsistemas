@@ -549,4 +549,177 @@ router.post('/sistema/limpar-cache', async (req, res, next) => {
   } catch (err) { next(err) }
 })
 
+// ═══════════════════════════════════════════════════════════════
+//  Plataformas — Render + Vercel
+//  Status público (sem auth) + APIs autenticadas opcionais
+// ═══════════════════════════════════════════════════════════════
+
+const STATUSPAGE = {
+  render: 'https://status.render.com/api/v2',
+  vercel: 'https://www.vercel-status.com/api/v2',
+}
+
+async function fetchStatuspage(baseUrl, path, timeoutMs = 6000) {
+  const ctrl  = new AbortController()
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs)
+  try {
+    const res = await fetch(`${baseUrl}${path}`, { signal: ctrl.signal })
+    clearTimeout(timer)
+    if (!res.ok) return null
+    return await res.json()
+  } catch { clearTimeout(timer); return null }
+}
+
+function statusEmoji(indicator) {
+  const m = { none: 'operational', minor: 'minor', major: 'major', critical: 'critical' }
+  return m[indicator] || indicator
+}
+
+function componentStatus(s) {
+  return {
+    operational:            { ok: true,  label: 'Operacional' },
+    degraded_performance:   { ok: false, label: 'Desempenho degradado' },
+    partial_outage:         { ok: false, label: 'Interrupção parcial' },
+    major_outage:           { ok: false, label: 'Interrupção grave' },
+    under_maintenance:      { ok: null,  label: 'Em manutenção' },
+  }[s] || { ok: null, label: s || 'desconhecido' }
+}
+
+// ── GET /plataformas/status (status público das duas plataformas) ──
+router.get('/plataformas/status', async (_req, res, next) => {
+  try {
+    const [
+      rdStatus, rdComponents, rdIncidents,
+      vlStatus, vlComponents, vlIncidents,
+    ] = await Promise.all([
+      fetchStatuspage(STATUSPAGE.render, '/status.json'),
+      fetchStatuspage(STATUSPAGE.render, '/components.json'),
+      fetchStatuspage(STATUSPAGE.render, '/incidents/unresolved.json'),
+      fetchStatuspage(STATUSPAGE.vercel, '/status.json'),
+      fetchStatuspage(STATUSPAGE.vercel, '/components.json'),
+      fetchStatuspage(STATUSPAGE.vercel, '/incidents/unresolved.json'),
+    ])
+
+    function buildPlatform(status, components, incidents) {
+      return {
+        ok:          !!status,
+        indicador:   statusEmoji(status?.status?.indicator),
+        descricao:   status?.status?.description || '—',
+        pagina_url:  status?.page?.url || null,
+        atualizado:  status?.page?.updated_at || null,
+        componentes: (components?.components || [])
+          .filter(c => !c.group)
+          .map(c => ({ nome: c.name, status: c.status, ...componentStatus(c.status), grupo_id: c.group_id })),
+        incidentes: (incidents?.incidents || []).map(i => ({
+          id:        i.id,
+          nome:      i.name,
+          impacto:   i.impact,
+          status:    i.status,
+          criado:    i.created_at,
+          atualizacao: i.incident_updates?.[0]?.body || '',
+        })),
+      }
+    }
+
+    res.json({
+      render:    buildPlatform(rdStatus, rdComponents, rdIncidents),
+      vercel:    buildPlatform(vlStatus, vlComponents, vlIncidents),
+      timestamp: new Date().toISOString(),
+    })
+  } catch (err) { next(err) }
+})
+
+// ── Render API autenticada ─────────────────────────────────────
+router.get('/plataformas/render/servicos', async (_req, res, next) => {
+  const apiKey = process.env.RENDER_API_KEY
+  if (!apiKey) return res.status(400).json({ erro: 'RENDER_API_KEY não configurada nas variáveis de ambiente do Render' })
+  try {
+    const r = await fetch('https://api.render.com/v1/services?limit=20&type=web_service', {
+      headers: { Authorization: `Bearer ${apiKey}`, Accept: 'application/json' },
+    })
+    if (!r.ok) return res.status(r.status).json({ erro: `Render API retornou ${r.status}` })
+    const data = await r.json()
+    const servicos = data.map(({ service: s }) => ({
+      id:          s.id,
+      nome:        s.name,
+      tipo:        s.type,
+      estado:      s.state,  // live | build_in_progress | suspended | etc.
+      url:         s.serviceDetails?.url || null,
+      regiao:      s.serviceDetails?.region || null,
+      atualizado:  s.updatedAt,
+      branch:      s.branch || null,
+      repo:        s.repo   || null,
+    }))
+    res.json({ servicos })
+  } catch (err) { next(err) }
+})
+
+router.get('/plataformas/render/servicos/:serviceId/deploys', async (req, res, next) => {
+  const apiKey = process.env.RENDER_API_KEY
+  if (!apiKey) return res.status(400).json({ erro: 'RENDER_API_KEY não configurada' })
+  try {
+    const { serviceId } = req.params
+    const r = await fetch(`https://api.render.com/v1/services/${serviceId}/deploys?limit=5`, {
+      headers: { Authorization: `Bearer ${apiKey}`, Accept: 'application/json' },
+    })
+    if (!r.ok) return res.status(r.status).json({ erro: `Render API retornou ${r.status}` })
+    const data = await r.json()
+    const deploys = data.map(({ deploy: d }) => ({
+      id:       d.id,
+      status:   d.status,   // live | build_in_progress | update_in_progress | canceled | deactivated | error
+      criado:   d.createdAt,
+      finalizado: d.finishedAt || null,
+      commit:   d.commit ? { hash: d.commit.id?.slice(0, 7), mensagem: d.commit.message } : null,
+    }))
+    res.json({ deploys })
+  } catch (err) { next(err) }
+})
+
+// ── Vercel API autenticada ─────────────────────────────────────
+router.get('/plataformas/vercel/projetos', async (_req, res, next) => {
+  const token = process.env.VERCEL_TOKEN
+  if (!token) return res.status(400).json({ erro: 'VERCEL_TOKEN não configurado nas variáveis de ambiente do Render' })
+  try {
+    const r = await fetch('https://api.vercel.com/v9/projects?limit=10', {
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+    })
+    if (!r.ok) return res.status(r.status).json({ erro: `Vercel API retornou ${r.status}` })
+    const data = await r.json()
+    const projetos = (data.projects || []).map(p => ({
+      id:         p.id,
+      nome:       p.name,
+      framework:  p.framework || '—',
+      dominio:    p.alias?.[0] || null,
+      atualizado: p.updatedAt,
+      git:        p.link ? { tipo: p.link.type, repositorio: p.link.repo } : null,
+    }))
+    res.json({ projetos })
+  } catch (err) { next(err) }
+})
+
+router.get('/plataformas/vercel/projetos/:projetoId/deploys', async (req, res, next) => {
+  const token = process.env.VERCEL_TOKEN
+  if (!token) return res.status(400).json({ erro: 'VERCEL_TOKEN não configurado' })
+  try {
+    const { projetoId } = req.params
+    const r = await fetch(`https://api.vercel.com/v6/deployments?projectId=${projetoId}&limit=5`, {
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+    })
+    if (!r.ok) return res.status(r.status).json({ erro: `Vercel API retornou ${r.status}` })
+    const data = await r.json()
+    const deploys = (data.deployments || []).map(d => ({
+      id:       d.uid,
+      url:      d.url ? `https://${d.url}` : null,
+      estado:   d.state,   // READY | ERROR | BUILDING | CANCELED | QUEUED
+      ambiente: d.target || 'preview', // production | preview
+      criado:   d.createdAt,
+      pronto:   d.ready   || null,
+      branch:   d.meta?.githubCommitRef || null,
+      commit:   d.meta?.githubCommitMessage || null,
+      hash:     d.meta?.githubCommitSha?.slice(0, 7) || null,
+    }))
+    res.json({ deploys })
+  } catch (err) { next(err) }
+})
+
 export default router

@@ -16,12 +16,14 @@ const AbaConfiguracoes = lazy(() => import('../../components/admin/infra/AbaConf
 const AbaMongoDB       = lazy(() => import('../../components/admin/infra/AbaMongoDB'))
 const AbaCloudinary    = lazy(() => import('../../components/admin/infra/AbaCloudinary'))
 const AbaSistema       = lazy(() => import('../../components/admin/infra/AbaSistema'))
+const AbaPlataformas   = lazy(() => import('../../components/admin/infra/AbaPlataformas'))
 
 const ABAS = [
   { id: 'config',     label: 'Configurações', icon: Ico.gear  },
   { id: 'mongodb',    label: 'MongoDB',       icon: Ico.db    },
   { id: 'cloudinary', label: 'Cloudinary',    icon: Ico.cloud },
   { id: 'sistema',    label: 'Sistema',       icon: Ico.cpu   },
+  { id: 'plataformas', label: 'Plataformas',   icon: Ico.cloud },
 ]
 
 const ABA_COMPONENTE = {
@@ -29,6 +31,7 @@ const ABA_COMPONENTE = {
   mongodb:    <AbaMongoDB />,
   cloudinary: <AbaCloudinary />,
   sistema:    <AbaSistema />,
+  plataformas: <AbaPlataformas />,
 }
 
 export default function AdminInfraestrutura() {

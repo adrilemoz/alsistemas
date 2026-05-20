@@ -294,6 +294,65 @@ export default function Login() {
       }
     }
 
+
+    // ════════════════════════════════════════════════════════
+    // F. Status das plataformas (Render + Vercel)
+    //    Chamadas paralelas direto ao Statuspage.io (CORS público)
+    // ════════════════════════════════════════════════════════
+    sep('Plataformas')
+
+    const STATUSPAGE = {
+      render: 'https://status.render.com/api/v2',
+      vercel:  'https://www.vercel-status.com/api/v2',
+    }
+
+    const COR_IND = { none: '✓', minor: '⚠', major: '✕', critical: '✕' }
+
+    async function checkPlatform(nome, base) {
+      add('→', `Verificando ${nome} → GET ${base}/status.json`)
+      const { res, ms, timedOut, corsBlocked } = await fetchTimed(`${base}/status.json`, {}, 6000)
+      if (timedOut)    { add('⚠', `${nome}: não respondeu em 6 s`); return }
+      if (corsBlocked) { add('⚠', `${nome}: CORS bloqueou a requisição`); return }
+      if (!res)        { add('⚠', `${nome}: inacessível`); return }
+      let j = {}
+      try { j = await res.json() } catch { add('⚠', `${nome}: resposta inválida`); return }
+
+      const ind = j?.status?.indicator || 'none'
+      const ico = COR_IND[ind] || '→'
+      add(ico, `${nome}: ${j?.status?.description || ind} (${ms}ms)`)
+
+      // Componentes com problema
+      const { res: resC } = await fetchTimed(`${base}/components.json`, {}, 5000)
+      if (resC) {
+        let jc = {}
+        try { jc = await resC.json() } catch { /* ok */ }
+        const degradados = (jc.components || [])
+          .filter(c => !c.group && c.status !== 'operational' && c.status !== 'under_maintenance')
+        if (degradados.length) {
+          degradados.forEach(c => add('⚠', `  ${c.name}: ${c.status}`, true))
+        }
+      }
+
+      // Incidentes ativos
+      const { res: resI } = await fetchTimed(`${base}/incidents/unresolved.json`, {}, 5000)
+      if (resI) {
+        let ji = {}
+        try { ji = await resI.json() } catch { /* ok */ }
+        const incs = ji.incidents || []
+        if (incs.length) {
+          incs.forEach(i => add('⚠', `  Incidente: ${i.name} [${i.impact}]`, true))
+        } else if (ind === 'none') {
+          add('✓', `  Sem incidentes ativos`, true)
+        }
+      }
+    }
+
+    // Roda as duas verificações em paralelo
+    await Promise.all([
+      checkPlatform('Render', STATUSPAGE.render),
+      checkPlatform('Vercel',  STATUSPAGE.vercel),
+    ])
+
     // ════════════════════════════════════════════════════════
     // Fim
     // ════════════════════════════════════════════════════════
