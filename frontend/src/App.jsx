@@ -28,6 +28,7 @@ const AdminBackup         = lazy(() => import('./pages/admin/AdminBackup'))
 const AdminSetup          = lazy(() => import('./pages/admin/AdminSetup'))
 const AdminCloudinary      = lazy(() => import('./pages/admin/AdminCloudinary'))
 const AdminSistema         = lazy(() => import('./pages/admin/AdminSistema'))
+const AdminInfraestrutura  = lazy(() => import('./pages/admin/AdminInfraestrutura'))
 const AdminArquivos       = lazy(() => import('./pages/admin/AdminArquivos'))
 const AdminTemas          = lazy(() => import('./pages/admin/AdminTemas'))
 
@@ -93,7 +94,8 @@ export default function App() {
         <Route path="usuarios"       element={<S><AdminUsuarios /></S>} />
         <Route path="backup"         element={<S><AdminBackup /></S>} />
         <Route path="cloudinary"    element={<S><AdminCloudinary /></S>} />
-        <Route path="sistema"       element={<S><AdminSistema /></S>} />
+        <Route path="sistema"        element={<S><AdminSistema /></S>} />
+        <Route path="infraestrutura"  element={<S><AdminInfraestrutura /></S>} />
         <Route path="arquivos"       element={<S><AdminArquivos /></S>} />
         <Route path="temas"          element={<S><AdminTemas /></S>} />
 
